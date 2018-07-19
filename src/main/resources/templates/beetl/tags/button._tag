@@ -1,0 +1,29 @@
+@/*
+    页面按钮组的封装，需要的参数如下
+    tableId: 菜单id,用于用于在table上显示工具栏
+    buttons: button的集合，button对象有三个属性，name，icon和method（method也代表权限名）（默认已对增删改按钮做了封装）
+    baseUrl： 基础url参数
+    针对测试按钮，做了额外的放宽条件(留个彩蛋)
+@*/
+<div class="layui-row" id="${tableId}Toolbar" role="group" buttons="${buttons}">
+    @if (buttons != null) {
+        @for (button in buttons) {
+            @if (button == null) {
+                @continue;
+            @}
+            @if (button.name == 'add' && shiro.hasPermission(baseUrl + "add")) {
+                <button class="layui-btn" onclick="${tableId}.exec('add')"><i class="fa fa-plus"></i>&nbsp;添加</button>
+            @} else if (button.name == "edit" && shiro.hasPermission(baseUrl + "edit")) {
+                <button class="layui-btn" onclick="${tableId}.exec('edit')"><i class="fa fa-edit"></i>&nbsp;修改</button>
+            @} else if (button.name == "remove" && shiro.hasPermission(baseUrl + "remove")) {
+                <button class="layui-btn" onclick="${tableId}.exec('remove')"><i class="fa fa-remove"></i>&nbsp;删除</button>
+            @} else if (shiro.hasPermission(baseUrl + button.method)) {
+                <button class="layui-btn" onclick="${button.method}()"><i class="${button.icon}"></i>&nbsp;${button.name}</button>
+            @} else if (button.name == 'refresh') {
+                <button class="layui-btn" onclick="${tableId}.exec('refresh')"><i class="${button.icon}"></i>&nbsp;刷新表格</button>
+            @} else if (strutil.startWith(button.name, "test") && strutil.endWith(button.name, "test")) {
+                <button class="layui-btn" onclick="${button.method}"><i class="${button.icon}"></i>&nbsp;${button.name}</button>
+            @}
+        @}
+    @}
+</div>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>用户登录</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="${ctxPath}/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="${ctxPath}/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="${ctxPath}/adminlte/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="${ctxPath}/adminlte/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="${ctxPath}/iCheck/square/blue.css">
+    <link rel="stylesheet" href="${ctxPath}/layui/css/layui.css"/>
+    <link rel="stylesheet" href="${ctxPath}/css/login.css">
+</head>
+<body>
+<div class="login-box layui-anim layui-anim-upbit">
+    <div class="login-logo">
+        <a href="/blog">小 葵 博 客</a>
+    </div>
+    <div class="login-box-body">
+        <p class="login-box-msg">管理员账号： 1/1</p>
+        <p class="login-box-msg">测试账号：test/test</p>
+        <div id="login-form">
+            <div class="form-group has-feedback">
+                <input type="text" id="test" value="11" class="form-control username1" placeholder="请输入登录邮箱/用户名" autocomplete="false">
+                <span class="fa fa-user form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="password" value="11" class="form-control password1" placeholder="请输入密码" autocomplete="false">
+                <span class="fa fa-lock form-control-feedback"></span>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="checkbox icheck hidden">
+                            <label>
+                                <input type="checkbox" name="remember" checked> 记住用户
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="checkbox icheck pull-right">
+                            <a href="/forget">忘记密码</a>
+                            <span>&nbsp;/&nbsp;</span>
+                            <a href="/register" class="text-center">注册</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <button id="submitBtn" class="btn btn-primary btn-block btn-flat">登 录</button>
+                </div>
+            </div>
+            <div class="form-group" style="margin-top:4%">
+                <p class="text-center"><a href="/blog">返回主页</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="${ctxPath}/jquery/jquery.min.js"></script>
+<script src="${ctxPath}/bootstrap/js/bootstrap.min.js"></script>
+<script src="${ctxPath}/iCheck/icheck.min.js"></script>
+<script src="${ctxPath}/layer/layer.js"></script>
+<script src="${ctxPath}/js/login.js"></script>
+<script src="${ctxPath}/js/common/HK.js"></script>
+<script type="text/javascript">
+    HK.addCtx("${ctxPath}");
+</script>
+</body>
+</html>

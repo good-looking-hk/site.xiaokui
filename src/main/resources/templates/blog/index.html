@@ -1,0 +1,46 @@
+@include("/blog/_header.html"){}
+<div class="layui-main" style="padding: 20px 60px;margin-top: 26px;">
+    <!--<h3>博客列表</h3>-->
+    @var count = 0;
+    @if (isNotEmpty(user.blogList)) {
+    @for (list in user.blogList) {
+    <ul class="list-group">
+        @for (blog in list) {
+        @count++;
+        <li class="list-group-item">
+            <span class="badge">${blog.createTime, "yyyy-MM-dd"}</span>
+            <a target="_blank" href="${ctxPath + blog.blogPath}">${blog.title}</a>
+        </li>
+        @}
+    </ul>
+    @}
+    @} else {
+    <center style="margin: 60px;"><h3>空空如也</h3></center>
+    @}
+</div>
+<center>共 ${count} 篇</center>
+
+<script src="${ctxPath}/jquery/jquery.min.js"></script>
+<script src="${ctxPath}/layui/layui.js"></script>
+<script src="${ctxPath}/js/blog/index.js"></script>
+<script>
+    function search() {
+        var url = "/blog/${user.blogSpace}/search?key=";
+        var key = $("#key").val().trim();
+        if (typeof key === "string" && key.length > 0) {
+            window.open(url + key);
+        }
+    }
+
+    $(document).on('keydown', function (event) {
+        if (event.keyCode === 13) {
+            search();
+        }
+    });
+    layui.use(['element', 'layer'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+    })
+</script>
+</body>
+</html>

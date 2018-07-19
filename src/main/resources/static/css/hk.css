@@ -1,0 +1,99 @@
+/**
+本css是针对本项目而对layui及部分界面所做的细微改动
+ */
+body {
+    font-size: 14px;
+    color: #676a6c;
+}
+.white-container {
+    background-color: #fff;
+    margin: 0 0;
+    padding: 0 0;
+}
+
+/*页面标题*/
+.box-title {
+    margin: 15px 15px 15px 15px;
+}
+
+/*界面内容*/
+.box-content {
+    border-color: #e7eaec;
+    border-style: solid solid none solid;
+    border-width: 1px 0;
+    padding: 15px 20px 20px 20px;
+}
+
+.layui-form.layui-form {
+    padding-top: 15px;
+}
+
+/*界面的按钮组*/
+.box-button {
+
+}
+
+.layui-input-block input:focus {
+    border-color: #1ab394 !important;
+}
+
+.layui-form-pane .layui-form-label {
+    width: 90px;
+    background-color: #fff;
+    moz-user-select: -moz-none;
+    -moz-user-select: none;
+    -o-user-select:none;
+    -khtml-user-select:none;
+    -webkit-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+
+.layui-form-pane .layui-input-block {
+    margin-left: 90px;
+}
+
+.layui-form-pane .layui-col-md3 {
+    margin-right: 30px;
+    /*padding-right: 30px;*/
+}
+
+.layui-form-pane .layui-col-md2 {
+    margin-right: 30px;
+    /*padding-right: 30px;*/
+}
+
+button.layui-btn {
+    background-color: #1ab394;
+    border-color: #1ab394;
+    color: #FFFFFF;
+    padding: 0 15px;
+    border-radius: 3px;
+}
+
+button.layui-btn-normal {
+    background-color: #1E9FFF;
+}
+
+button.layui-btn-disabled, .layui-btn-disabled:active, .layui-btn-disabled:hover {
+    border: 1px solid #e6e6e6;
+    background-color: #FBFBFB;
+    color: #C9C9C9;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+.layui-form-item .layui-form-label {
+    width: 100px;
+    color: black;
+}
+
+.layui-form-item button {
+    margin-left: 30px;
+}
+
+legend {
+    width: auto;
+    border-bottom: none;
+    margin-bottom: 0;
+}

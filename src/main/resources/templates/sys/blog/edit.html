@@ -1,0 +1,52 @@
+@layout("/beetl/box_container.html"){
+<div class="layui-row box-content">
+    <form class="layui-form" lay-filter="setValue">
+        <#input title="博客ID" id="id" placeholder="博客ID" readonly="true"/>
+        <#input title="博客标题" id="title" placeholder="例如 测试博客：测试博客一"/>
+
+        <#input title="排序" id="orderNum" placeholder="排序"/>
+        <#input title="创建日期" value="${blog.createTime}" formatDate="true" id="createTime" placeholder="创建日期"/>
+
+        @values1 = ["公开","私有","申请访问"];
+        <#select title="博客状态" id="status" values="${values1}"/>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="modify">修改博客信息</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+    <script>
+        //Demo
+        layui.use(['form', 'laydate'], function () {
+            var form = layui.form, laydate = layui.laydate;
+            // 监听提交
+            form.on('submit(modify)', function (data) {
+                // HK.toString(data.field);
+                HK.post("/sys/blog/edit", data.field, "修改博客信息成功");
+                return false;
+            });
+            var code = "${blog.status}";
+            var status = "";
+            if (code === '1') {
+                status = "公开";
+            } else if (code === '0') {
+                status = "私有";
+            } else {
+                status = "申请访问";
+            }
+            // 表单初始赋值
+            form.val('setValue', {
+                id: "${blog.id}",
+                title: "${blog.title}",
+                orderNum: "${blog.orderNum}",
+                status: status,
+            })
+            laydate.render({
+                elem: '#createTime' //指定元素
+            });
+        });
+    </script>
+</div>
+@}

@@ -1,0 +1,3817 @@
+TaocodeAliyun Code项目买服务器
+
+请输入搜索内容
+项目
+用户
+语言
+搜索登录注册
+首页  >   zhouzhiwengang / zzg_corps
+项目语言:None
+源码
+issues
+文档
+
+http://code.taobao.org/svn/zzg_corps/
+权限:read-only(如需更高权限请先加入项目)
+zzg_corps/ trunk / Corps / src / com / smallchill /
+Index: controller/GenerateController.java
+===================================================================
+--- controller/GenerateController.java	(revision 0)
+ controller/GenerateController.java	(revision 3)
+@@ -0,0 1,167 @@
+package com.smallchill.system.controller;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.beetl.sql.core.db.TableDesc;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.smallchill.core.base.controller.CurdController;
+import com.smallchill.core.beetl.BeetlMaker;
+import com.smallchill.core.constant.Cst;
+import com.smallchill.core.interfaces.IMeta;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.core.toolbox.kit.StrKit;
+import com.smallchill.system.meta.factory.GenerateFactory;
+import com.smallchill.system.model.Generate;
+
+@Controller
+@RequestMapping("/generate")
+public class GenerateController extends CurdController<Generate> {
+
+	@Override
+	protected Class<? extends IMeta> metaFactoryClass() {
+		return GenerateFactory.class;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/pojo/{table}")
+	public String createPojo(HttpServletResponse response, @PathVariable String table) {
+		try {
+			Blade.dao().genPojoCodeToConsole(table);
+			return "[ "  table  " ] pojo生成成功,请查看控制台";
+		} catch (Exception e) {
+			return "[ "  table  " ] pojo生成失败:"  e.getMessage();
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping("/pojo/{slave}/{table}")
+	public String createPojoSlave(HttpServletResponse response, @PathVariable String slave, @PathVariable String table) {
+		try {
+			Blade.dao(slave).genPojoCodeToConsole(table);
+			return "[ "  table  " ] pojo生成成功,请查看控制台";
+		} catch (Exception e) {
+			return "[ "  table  " ] pojo生成失败:"  e.getMessage();
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping("/code")
+	public AjaxResult gencode(){
+		String ids = getParameter("ids");
+		List<Generate> list = Blade.create(Generate.class).findBy("id in (#{join(ids)})", Record.create().set("ids", ids.split(",")));
+
+		for (Generate gen : list) {
+			boolean flag = false;
+			
+			String realPath = gen.getRealpath()  File.separator  "src"  File.separator  "main";
+			String packageName = gen.getPackagename();
+			String modelName = gen.getModelname();
+			String upperModelName = StrKit.firstCharToUpperCase(modelName);
+			String lowerModelName = StrKit.firstCharToLowerCase(modelName);
+			
+			String tableName = gen.getTablename();
+			String pkName = gen.getPkname();
+			String path = realPath  File.separator  "java"  File.separator  packageName.replace(StrKit.DOT, File.separator);
+			String resourcesPath = realPath  File.separator  "resources";
+			String webappPath = realPath  File.separator  "webapp"  File.separator  "WEB-INF"  File.separator  "view";
+			
+			//java
+			String controllerPath = path  File.separator  "controller"  File.separator  upperModelName  "Controller.java";
+			String modelPath = path  File.separator  "model"  File.separator  upperModelName  ".java";
+			String servicePath = path  File.separator  "service"  File.separator  upperModelName  "Service.java";
+			String serviceimplPath = path  File.separator  "service"  File.separator  "impl"  File.separator  upperModelName  "ServiceImpl.java";
+			
+			//resources
+			String sqlPath = resourcesPath  File.separator  "beetlsql"  File.separator  upperModelName  ".md";
+			
+			//webapp
+			String indexPath = webappPath  File.separator  "gen"  File.separator  lowerModelName  File.separator  lowerModelName  ".html";
+			String addPath = webappPath  File.separator  "gen"  File.separator  lowerModelName  File.separator  lowerModelName  "_add.html";
+			String editPath = webappPath  File.separator  "gen"  File.separator  lowerModelName  File.separator  lowerModelName  "_edit.html";
+			String viewPath = webappPath  File.separator  "gen"  File.separator  lowerModelName  File.separator  lowerModelName  "_view.html";
+			
+			Map<String, String> pathMap = new HashMap<>();
+			pathMap.put("controllerPath", controllerPath);
+			pathMap.put("modelPath", modelPath);
+			pathMap.put("servicePath", servicePath);
+			pathMap.put("serviceimplPath", serviceimplPath);
+			pathMap.put("sqlPath", sqlPath);
+			pathMap.put("indexPath", indexPath);
+			pathMap.put("addPath", addPath);
+			pathMap.put("editPath", editPath);
+			pathMap.put("viewPath", viewPath);
+			
+			for (Map.Entry<String, String> entry : pathMap.entrySet()) {  
+				File file = new File(entry.getValue());
+				if (file.exists()) {
+					flag = true;
+					break;
+				} else {
+					file.getParentFile().mkdirs();
+				}
+			}
+			
+			if (flag) {
+				continue;
+			}
+			
+			//java
+			String baseTemplatePath = Cst.me().getRealPath()  "WEB-INF" File.separator  "view"  File.separator  "common"  File.separator  "_template"  File.separator;
+			String controllerTemplatePath = baseTemplatePath  "_controller"  File.separator  "_controller.bld";
+			String modelTemplatePath = baseTemplatePath  "_model"  File.separator   "_model.bld";
+			String serviceTemplatePath = baseTemplatePath  "_service"  File.separator  "_service.bld";
+			String serviceimplTemplatePath = baseTemplatePath  "_service"  File.separator  "_impl"  File.separator  "_serviceimpl.bld";
+			
+			//resources
+			String sqlTemplatePath = baseTemplatePath  "_sql"  File.separator  "_sql.bld";
+			
+			//webapp
+			String indexTemplatePath = baseTemplatePath  "_view"  File.separator  "_index.bld";
+			String addTemplatePath = baseTemplatePath  "_view"  File.separator  "_add.bld";
+			String editTemplatePath = baseTemplatePath  "_view"  File.separator  "_edit.bld";
+			String viewTemplatePath = baseTemplatePath  "_view"  File.separator  "_view.bld";
+			
+			Record rd = Record.create();
+			rd.set("realPath", realPath);
+			rd.set("packageName", packageName);
+			rd.set("modelName", upperModelName);
+			rd.set("lowerModelName", lowerModelName);
+			rd.set("tableName", tableName);
+			rd.set("pkName", pkName);
+			
+			//java
+			BeetlMaker.makeHtml(controllerTemplatePath, rd, controllerPath);
+			BeetlMaker.makeHtml(modelTemplatePath, rd, modelPath);
+			BeetlMaker.makeHtml(serviceTemplatePath, rd, servicePath);
+			BeetlMaker.makeHtml(serviceimplTemplatePath, rd, serviceimplPath);
+			
+			//resources
+			BeetlMaker.makeHtml(sqlTemplatePath, rd, sqlPath);
+			
+			//webapp
+			final TableDesc tableDesc = Blade.dao().getMetaDataManager().getTable(tableName);
+			Set<String> cols = tableDesc.getIdNames();
+			rd.set("cols", cols);
+			
+			BeetlMaker.makeHtml(indexTemplatePath, rd, indexPath);
+			BeetlMaker.makeHtml(addTemplatePath, rd, addPath);
+			BeetlMaker.makeHtml(editTemplatePath, rd, editPath);
+			BeetlMaker.makeHtml(viewTemplatePath, rd, viewPath);
+			
+		}
+		
+		return success("生成成功,已经存在的文件将会跳过!");
+	}
+}
+Index: controller/DeptController.java
+===================================================================
+--- controller/DeptController.java	(revision 0)
+ controller/DeptController.java	(revision 3)
+@@ -0,0 1,150 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.smallchill.common.base.BaseController;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.core.toolbox.kit.CacheKit;
+import com.smallchill.core.toolbox.kit.JsonKit;
+import com.smallchill.core.toolbox.kit.StrKit;
+import com.smallchill.system.meta.intercept.DeptIntercept;
+import com.smallchill.system.model.Dept;
+
+@Controller
+@RequestMapping("/dept")
+public class DeptController extends BaseController{
+	private static String LIST_SOURCE = "Dept.list";
+	private static String BASE_PATH = "/system/dept/";
+	private static String CODE = "dept";
+	private static String PERFIX = "tfw_dept";
+	
+	@RequestMapping("/")
+	public String index(ModelMap mm) {
+		mm.put("code", CODE);
+		return BASE_PATH  "dept.html";
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(KEY_LIST)
+	public Object list() {
+		Object gird = paginate(LIST_SOURCE, new DeptIntercept());
+		return gird;
+	}
+	
+	@RequestMapping(KEY_ADD)
+	public String add(ModelMap mm) {
+		mm.put("code", CODE);
+		return BASE_PATH  "dept_add.html";
+	}
+	
+	@RequestMapping(KEY_ADD  "/{id}")
+	public String add(@PathVariable String id, ModelMap mm) {
+		if (StrKit.notBlank(id)) {
+			mm.put("pId", id);
+			mm.put("num", findLastNum(id));
+		}
+		mm.put("code", CODE);
+		return BASE_PATH  "dept_add.html";
+	}
+	
+	@RequestMapping(KEY_EDIT  "/{id}")
+	public String edit(@PathVariable String id, ModelMap mm) {
+		Dept Dept = Blade.create(Dept.class).findById(id);
+		mm.put("model", JsonKit.toJson(Dept));
+		mm.put("code", CODE);
+		return BASE_PATH  "dept_edit.html";
+	}
+
+	@RequestMapping(KEY_VIEW  "/{id}")
+	public String view(@PathVariable String id, ModelMap mm) {
+		Blade blade = Blade.create(Dept.class);
+		Dept Dept = blade.findById(id);
+		Dept parent = blade.findById(Dept.getPid());
+		String pName = (null == parent) ? "" : parent.getSimplename();
+		Record rd = Record.parse(Dept);
+		rd.set("pName", pName);
+		mm.put("model", JsonKit.toJson(rd));
+		mm.put("code", CODE);
+		return BASE_PATH  "dept_view.html";
+	}
+	
+	@ResponseBody
+	@RequestMapping(KEY_SAVE)
+	public AjaxResult save() {
+		Dept dept = mapping(PERFIX, Dept.class);
+		boolean temp = Blade.create(Dept.class).save(dept);
+		if (temp) {
+			CacheKit.removeAll(DEPT_CACHE);
+			return success("新增成功");
+		} else {
+			return error("新增失败");
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(KEY_UPDATE)
+	public AjaxResult update() {
+		Dept dept = mapping(PERFIX, Dept.class);
+		dept.setVersion(getParameterToInt("VERSION", 0)  1);
+		boolean temp =  Blade.create(Dept.class).update(dept);
+		if (temp) {
+			CacheKit.removeAll(DEPT_CACHE);
+			return success("修改成功");
+		} else {
+			return error("修改失败");
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(KEY_REMOVE)
+	public AjaxResult remove() {
+		int cnt = Blade.create(Dept.class).deleteByIds(getParameter("ids"));
+		if (cnt > 0) {
+			CacheKit.removeAll(DEPT_CACHE);
+			return success("删除成功!");
+		} else {
+			return error("删除失败!");
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	private int findLastNum(String id){
+		try{
+			Blade blade = Blade.create(Dept.class);
+			Dept dept = blade.findFirstBy("pId = #{pId} order by num desc", Record.create().set("pId", id));
+			return dept.getNum()  1;
+		}
+		catch(Exception ex){
+			return 1;
+		}
+	}
+	
+	
+}
+Index: controller/LLogController.java
+===================================================================
+--- controller/LLogController.java	(revision 0)
+ controller/LLogController.java	(revision 3)
+@@ -0,0 1,36 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.smallchill.common.vo.LoginLog;
+import com.smallchill.core.base.controller.CurdController;
+import com.smallchill.core.interfaces.IMeta;
+import com.smallchill.system.meta.factory.LLogFactory;
+
+@Controller
+@RequestMapping("/llog")
+public class LLogController extends CurdController<LoginLog>{
+
+	@Override
+	protected Class<? extends IMeta> metaFactoryClass() {
+		// TODO Auto-generated method stub
+		return LLogFactory.class;
+	}
+
+}
+Index: controller/UserController.java
+===================================================================
+--- controller/UserController.java	(revision 0)
+ controller/UserController.java	(revision 3)
+@@ -0,0 1,458 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.controller;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.smallchill.common.base.BaseController;
+import com.smallchill.common.vo.User;
+import com.smallchill.core.annotation.Before;
+import com.smallchill.core.annotation.Permission;
+import com.smallchill.core.aop.AopContext;
+import com.smallchill.core.constant.ConstShiro;
+import com.smallchill.core.interfaces.ILoader;
+import com.smallchill.core.interfaces.IQuery;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.plugins.dao.Db;
+import com.smallchill.core.shiro.ShiroKit;
+import com.smallchill.core.toolbox.Func;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.core.toolbox.kit.CacheKit;
+import com.smallchill.core.toolbox.kit.StrKit;
+import com.smallchill.system.meta.intercept.PasswordValidator;
+import com.smallchill.system.meta.intercept.UserIntercept;
+import com.smallchill.system.meta.intercept.UserValidator;
+import com.smallchill.system.model.RoleExt;
+
+@Controller
+@RequestMapping("/user")
+public class UserController extends BaseController implements ConstShiro{
+	private static String LIST_SOURCE = "User.list";
+	private static String BASE_PATH = "/system/user/";
+	private static String CODE = "user";
+	private static String PERFIX = "TFW_USER";
+
+	@RequestMapping("/")
+	@Permission({ ADMINISTRATOR, ADMIN })
+	public String index(ModelMap mm) {
+		mm.put("code", CODE);
+		return BASE_PATH  "user.html";
+	}
+	
+	/**
+	 * 分页aop
+	 * 普通用法
+	 */
+	@ResponseBody
+	@RequestMapping(KEY_LIST)
+	@Permission({ ADMINISTRATOR, ADMIN })
+	public Object list() {
+		Object gird = paginate(LIST_SOURCE, new UserIntercept());
+		return gird;
+	}
+	
+	@RequestMapping(KEY_ADD)
+	@Permission({ ADMINISTRATOR, ADMIN })
+	public String add(ModelMap mm) {
+		mm.put("code", CODE);
+		return BASE_PATH  "user_add.html";
+	}
+	
+	@RequestMapping(KEY_EDIT  "/{id}")
+	@Permission({ ADMINISTRATOR, ADMIN })
+	public String edit(@PathVariable String id, ModelMap mm) {
+		User user = Blade.create(User.class).findById(id);
+		Record rd = Record.parse(user);
+		rd.set("roleName", Func.getRoleName(user.getRoleid()));
+		mm.put("user", rd);
+		mm.put("code", CODE);
+		return BASE_PATH  "user_edit.html";
+	}
+	
+	@RequestMapping("/editMySelf/{id}")
+	public String editMySelf(@PathVariable String id, ModelMap mm) {
+		User user = Blade.create(User.class).findById(id);
+		Record rd = Record.parse(user);
+		rd.set("roleName", Func.getRoleName(user.getRoleid()));
+		mm.put("user", rd);
+		mm.put("code", CODE);
+		mm.put("methodName", "editMySelf");
+		return BASE_PATH  "user_edit.html";
+	}
+	
+	@RequestMapping("/editPassword/{id}")
+	public String editPassword(@PathVariable String id, ModelMap mm){
+		User user = Blade.create(User.class).findById(id);
+		mm.put("user", user);
+		mm.put("code", CODE);
+		return BASE_PATH  "user_edit_password.html";
+	}
+
+	@ResponseBody
+	@Before(PasswordValidator.class)
+	@RequestMapping("/updatePassword")
+	public AjaxResult updatePassword(){
+		Blade blade = Blade.create(User.class);
+		String userId = getParameter("user.id");
+		String password = getParameter("user.newPassword");
+		User user = blade.findById(userId);
+		String salt = user.getSalt();
+		user.setPassword(ShiroKit.md5(password, salt));
+		user.setVersion(user.getVersion()  1);
+		boolean temp = blade.update(user);
+		if (temp) {
+			return success(UPDATE_SUCCESS_MSG);
+		} else {
+			return error(UPDATE_FAIL_MSG);
+		}
+	}
+
+	@RequestMapping(KEY_VIEW  "/{id}")
+	@Permission({ ADMINISTRATOR, ADMIN })
+	public String view(@PathVariable String id, ModelMap mm) {
+		User user = Blade.create(User.class).findById(id);
+		Record rd = Record.parse(user);
+		rd.set("deptName", Func.getDeptName(user.getDeptid()))
+			.set("roleName", Func.getRoleName(user.getRoleid()))
+			.set("sexName", Func.getDictName(101, user.getSex()));
+		mm.put("user", rd);
+		mm.put("code", CODE);
+		return BASE_PATH  "user_view.html";
+	}
+	
+	
+	@ResponseBody
+	@Before(UserValidator.class)
+	@RequestMapping(KEY_SAVE)
+	@Permission({ ADMINISTRATOR, ADMIN })
+	public AjaxResult save() {
+		User user = mapping(PERFIX, User.class);
+		String pwd = user.getPassword();
+		String salt = ShiroKit.getRandomSalt(5);
+		String pwdMd5 = ShiroKit.md5(pwd, salt);
+		user.setPassword(pwdMd5);
+		user.setSalt(salt);
+		user.setStatus(3);
+		user.setCreatetime(new Date());
+		boolean temp = Blade.create(User.class).save(user);
+		if (temp) {
+			CacheKit.removeAll(DEPT_CACHE);
+			CacheKit.removeAll(DICT_CACHE);
+			CacheKit.removeAll(USER_CACHE);
+			return success(SAVE_SUCCESS_MSG);
+		} else {
+			return error(SAVE_FAIL_MSG);
+		}
+	}
+	
+	@ResponseBody
+	@Before(UserValidator.class)
+	@RequestMapping(KEY_UPDATE)
+	public AjaxResult update() {
+		User user = mapping(PERFIX, User.class);
+		if(StrKit.notBlank(PERFIX  "PASSWORD")){
+			String pwd = user.getPassword();
+			User oldUser = Blade.create(User.class).findById(user.getId());
+			if(!pwd.equals(oldUser.getPassword())){
+				String salt = oldUser.getSalt();
+				String pwdMd5 = ShiroKit.md5(pwd, salt);
+				user.setPassword(pwdMd5);
+			}
+		}
+		user.setVersion(getParameterToInt("VERSION", 0)  1);
+		boolean temp = Blade.create(User.class).update(user);
+		if (temp) {
+			CacheKit.removeAll(DEPT_CACHE);
+			CacheKit.removeAll(DICT_CACHE);
+			CacheKit.removeAll(USER_CACHE);
+			return success(UPDATE_SUCCESS_MSG);
+		} else {
+			return error(UPDATE_FAIL_MSG);
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(KEY_DEL)
+	@Permission({ ADMINISTRATOR, ADMIN })
+	public AjaxResult del() {
+		boolean temp = Blade.create(User.class).updateBy("status = #{status}", "id in (#{join(ids)})", Record.create().set("status", 5).set("ids", getParameter("ids").split(",")));
+		if (temp) {
+			return success(DEL_SUCCESS_MSG);
+		} else {
+			return error(DEL_FAIL_MSG);
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping("/reset")
+	@Permission({ ADMINISTRATOR, ADMIN })
+	public AjaxResult reset() {
+		String ids = getParameter("ids");
+		Blade blade = Blade.create(User.class);
+		String [] idArr = ids.split(",");
+		int cnt = 0;
+		for(String id : idArr){
+			User user = blade.findById(id);
+			String pwd = "111111";
+			String salt = user.getSalt();
+			String pwdMd5 = ShiroKit.md5(pwd, salt);
+			user.setVersion(((user.getVersion() == null) ? 0 : user.getVersion())  1);
+			user.setPassword(pwdMd5);
+			boolean temp = blade.update(user);
+			if(temp){
+				cnt;
+			}
+		}
+		if (cnt == idArr.length) {
+			return success("重置密码成功");
+		} else {
+			return error("重置密码失败");
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping("/auditOk")
+	public AjaxResult auditOk() {
+		String ids = getParameter("ids");
+		Blade blade = Blade.create(User.class);
+		Record countMap = Record.create().set("ids", ids.split(","));
+		int cnt = blade.count("id in (#{join(ids)}) and (roleId='' or roleId is null)", countMap);
+		if (cnt > 0) {
+			return warn("存在没有分配角色的账号!");
+		}
+		Record updateMap = Record.create().set("status", 1).set("ids", ids.split(","));
+		boolean temp = blade.updateBy("status = #{status}", "id in (#{join(ids)})", updateMap);
+		if (temp) {
+			return success("审核成功!");
+		} else {
+			return error("审核失败!");
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping("/auditRefuse")
+	public AjaxResult auditRefuse() {
+		String ids = getParameter("ids");
+		Record updateMap = Record.create().set("status", 4).set("ids", ids.split(","));
+		boolean temp = Blade.create(User.class).updateBy("status = #{status}", "id in (#{join(ids)})", updateMap);
+		if (temp) {
+			return success("审核拒绝成功!");
+		} else {
+			return error("审核拒绝失败!");
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping("/ban")
+	public AjaxResult ban() {
+		String ids = getParameter("ids");
+		Record updateMap = Record.create().set("ids", ids.split(","));
+		boolean temp = Blade.create(User.class).updateBy("status = (CASE WHEN STATUS=2 THEN 3 ELSE 2 END)", "id in (#{join(ids)})", updateMap);
+		if (temp) {
+			return success("操作成功!");
+		} else {
+			return error("操作失败!");
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping("/restore")
+	public AjaxResult restore() {
+		String ids = getParameter("ids");
+		Record updateMap = Record.create().set("status", 3).set("ids", ids.split(","));
+		boolean temp = Blade.create(User.class).updateBy("status = #{status}", "id in (#{join(ids)})", updateMap);
+		if (temp) {
+			return success("还原成功!");
+		} else {
+			return error("还原失败!");
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping(KEY_REMOVE)
+	public AjaxResult remove() {
+		String ids = getParameter("ids");
+		boolean temp = Blade.create(User.class).deleteByIds(ids) > 0;
+		if (temp) {
+			CacheKit.removeAll(USER_CACHE);
+			return success("删除成功!");
+		} else {
+			return error("删除失败!");
+		}
+	}
+	
+	@RequestMapping("/extrole/{id}/{roleName}")
+	public String extrole(@PathVariable String id, @PathVariable String roleName, ModelMap mm) {
+		User user = Blade.create(User.class).findById(id);
+		String roleId = user.getRoleid();
+		mm.put("userId", id);
+		mm.put("roleId", roleId);
+		mm.put("roleName", Func.decodeUrl(roleName));
+		return BASE_PATH  "user_extrole.html";
+	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@ResponseBody
+	@RequestMapping("/menuTreeIn")
+	public AjaxResult menuTreeIn() {
+		String userId = getParameter("userId");
+		Map<String, Object> roleIn = Db.selectOne("select ROLEIN from tfw_role_ext where userId = #{userId}", Record.create().set("userId",userId));
+		
+		String in = "0";
+		if (!Func.isEmpty(roleIn)) {
+			in = Func.toStr(roleIn.get("ROLEIN"));
+		}
+		
+		StringBuilder sb = Func.builder(
+				"select m.id \"id\",(select id from tfw_menu  where code=m.pCode) \"pId\",name \"name\",(case when m.levels=1 then 'true' else 'false' end) \"open\",(case when r.id is not null then 'true' else 'false' end) \"checked\"",
+				" from tfw_menu m",
+				" left join (select id from tfw_menu where id in ("  in  ")) r",
+				" on m.id=r.id",
+				" where m.status=1 order by m.levels,m.num asc"
+				);
+		
+		List<Map> menu = Db.selectList(sb.toString());
+		return json(menu);
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@ResponseBody
+	@RequestMapping("/menuTreeOut")
+	public AjaxResult menuTreeOut() {
+		String userId = getParameter("userId");
+		Map roleOut = Db.selectOne("select ROLEOUT from tfw_role_ext where userId = #{userId}", Record.create().set("userId",userId));
+		
+		String out = "0";
+		if (!Func.isEmpty(roleOut)) {
+			out = Func.toStr(roleOut.get("ROLEOUT"));
+		}
+		
+		StringBuilder sb = Func.builder(
+				"select m.id \"id\",(select id from tfw_menu  where code=m.pCode) \"pId\",name \"name\",(case when m.levels=1 then 'true' else 'false' end) \"open\",(case when r.id is not null then 'true' else 'false' end) \"checked\"",
+				" from tfw_menu m",
+				" left join (select id from tfw_menu where id in ("  out  ")) r",
+				" on m.id=r.id",
+				" where m.status=1 order by m.levels,m.num asc"
+				);
+		
+		List<Map> menu = Db.selectList(sb.toString());
+		return json(menu);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/saveRoleExt")
+	public AjaxResult saveRoleExt() {
+		Blade blade = Blade.create(RoleExt.class);
+		String userId = getParameter("userId");
+		String roleIn = getParameter("idsIn", "0");
+		String roleOut = getParameter("idsOut", "0");
+		RoleExt roleExt = blade.findFirstBy("userId = #{userId}", Record.create().set("userId", userId));	
+		boolean flag = false;
+		if (Func.isEmpty(roleExt)) {
+			roleExt = new RoleExt();
+			flag = true;
+		}
+		roleExt.setUserid(userId);  
+		roleExt.setRolein(roleIn); 
+		roleExt.setRoleout(roleOut);
+		if (flag) {
+			blade.save(roleExt);
+		} else {
+			blade.update(roleExt);
+		}
+		CacheKit.removeAll(MENU_CACHE);
+		return success("配置成功!"); 
+	}
+	
+	@RequestMapping("/roleAssign/{id}/{name}/{roleId}")
+	public String roleAssign(@PathVariable String id, @PathVariable String name, @PathVariable String roleId, ModelMap mm) {
+		mm.put("id", id);
+		mm.put("roleId", roleId);
+		mm.put("name", Func.decodeUrl(name));
+		return BASE_PATH  "user_roleassign.html";
+	}
+	
+	@ResponseBody
+	@RequestMapping("/saveRole")
+	public AjaxResult saveRole() {
+		String id = getParameter("id");
+		String roleIds = getParameter("roleIds");
+		Record rd = Record.create();
+		rd.set("roleIds", roleIds).set("id", id.split(","));
+		boolean temp = Blade.create(User.class).updateBy("ROLEID = #{roleIds}", "id in (#{join(id)})", rd);
+		if (temp) {
+			CacheKit.removeAll(ROLE_CACHE);
+			CacheKit.removeAll(MENU_CACHE);
+			return success("配置成功!");
+		} else {
+			return error("配置失败!");
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping("/userTreeList")
+	public AjaxResult userTreeList() {
+		List<Map<String, Object>> dept = CacheKit.get(DEPT_CACHE, "user_tree_all",
+				new ILoader() {
+					public Object load() {
+						return Db.selectList("select id \"id\",pId \"pId\",simpleName as \"name\",(case when (pId=0 or pId is null) then 'true' else 'false' end) \"open\" from  TFW_DEPT order by pId,num asc", Record.create(), new AopContext(), new IQuery() {
+							
+							@Override
+							public void queryBefore(AopContext ac) {
+								
+							}
+							
+							@SuppressWarnings("unchecked")
+							@Override
+							public void queryAfter(AopContext ac) {
+								List<Map<String, Object>> list = (List<Map<String, Object>>) ac.getObject();
+								List<Map<String, Object>> _list = new ArrayList<>(); 
+								for (Map<String, Object> map : list) {
+									String [] deptIds = map.get("id").toString().split(",");
+									List<User> users = Blade.create(User.class).findBy("DEPTID in (#{join(deptId)})", Record.create().set("deptId", deptIds));
+									for (User user : users) {
+										for (String deptId : deptIds) {
+											Map<String, Object> userMap = Record.createHashMap();
+											userMap.put("id", user.getId()  9999);
+											userMap.put("pId", deptId);
+											userMap.put("name", user.getName());
+											userMap.put("open", "false");
+											userMap.put("iconSkin", "iconPerson");
+											_list.add(userMap);
+										}
+									}
+								}
+								list.addAll(_list);
+							}
+						});
+					}
+				});
+
+		return json(dept);
+	}
+	
+	
+}
+Index: controller/OLogController.java
+===================================================================
+--- controller/OLogController.java	(revision 0)
+ controller/OLogController.java	(revision 3)
+@@ -0,0 1,36 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.smallchill.common.vo.OperationLog;
+import com.smallchill.core.base.controller.CurdController;
+import com.smallchill.core.interfaces.IMeta;
+import com.smallchill.system.meta.factory.OLogFactory;
+
+@Controller
+@RequestMapping("/olog")
+public class OLogController extends CurdController<OperationLog>{
+
+	@Override
+	protected Class<? extends IMeta> metaFactoryClass() {
+		// TODO Auto-generated method stub
+		return OLogFactory.class;
+	}
+
+}
+Index: controller/ParameterContorller.java
+===================================================================
+--- controller/ParameterContorller.java	(revision 0)
+ controller/ParameterContorller.java	(revision 3)
+@@ -0,0 1,36 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.smallchill.core.base.controller.CurdController;
+import com.smallchill.core.interfaces.IMeta;
+import com.smallchill.system.meta.factory.ParameterFactory;
+import com.smallchill.system.model.Parameter;
+
+@Controller
+@RequestMapping("/parameter")
+public class ParameterContorller extends CurdController<Parameter>{
+
+	@Override
+	protected Class<? extends IMeta> metaFactoryClass() {
+		// TODO Auto-generated method stub
+		return ParameterFactory.class;
+	}
+	
+}
+Index: controller/RoleController.java
+===================================================================
+--- controller/RoleController.java	(revision 0)
+ controller/RoleController.java	(revision 3)
+@@ -0,0 1,183 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.smallchill.common.base.BaseController;
+import com.smallchill.core.constant.ConstShiro;
+import com.smallchill.core.shiro.ShiroKit;
+import com.smallchill.core.toolbox.Func;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.core.toolbox.kit.CacheKit;
+import com.smallchill.core.toolbox.kit.JsonKit;
+import com.smallchill.core.toolbox.kit.StrKit;
+import com.smallchill.system.meta.intercept.RoleIntercept;
+import com.smallchill.system.model.Role;
+import com.smallchill.system.service.RoleService;
+
+@Controller
+@RequestMapping("/role")
+public class RoleController extends BaseController{
+	private static String LIST_SOURCE = "Role.list";
+	private static String BASE_PATH = "/system/role/";
+	private static String CODE = "role";
+	private static String PERFIX = "tfw_role";
+	
+	@Autowired
+	RoleService service;
+
+	@RequestMapping("/")
+	public String index(ModelMap mm) {
+		mm.put("code", CODE);
+		return BASE_PATH  "role.html";
+	}
+	
+	@ResponseBody
+	@RequestMapping(KEY_LIST)
+	public Object list() {
+		Object gird = paginate(LIST_SOURCE, new RoleIntercept());
+		return gird;
+	}
+	
+	@RequestMapping(KEY_ADD)
+	public String add(ModelMap mm) {
+		mm.put("code", CODE);
+		return BASE_PATH  "role_add.html";
+	}
+	
+	@RequestMapping(KEY_ADD  "/{id}")
+	public String add(@PathVariable String id, ModelMap mm) {
+		if (StrKit.notBlank(id)) {
+			mm.put("pId", id);
+			mm.put("num", service.findLastNum(id));
+		}
+		mm.put("code", CODE);
+		return BASE_PATH  "role_add.html";
+	}
+	
+	@RequestMapping(KEY_EDIT  "/{id}")
+	public String edit(@PathVariable String id, ModelMap mm) {
+		Role role = service.findById(id);
+		mm.put("model", JsonKit.toJson(role));
+		mm.put("code", CODE);
+		return BASE_PATH  "role_edit.html";
+	}
+
+	@RequestMapping(KEY_VIEW  "/{id}")
+	public String view(@PathVariable String id, ModelMap mm) {
+		Role role = service.findById(id);
+		Role parent = service.findById(role.getPid());
+		String pName = (null == parent) ? "" : parent.getName();
+		Record rd = Record.parse(role);
+		rd.set("deptName", Func.getDeptName(role.getDeptid()))
+			.set("pName", pName);
+		mm.put("model", JsonKit.toJson(rd));
+		mm.put("code", CODE);
+		return BASE_PATH  "role_view.html";
+	}
+	
+	@RequestMapping("/authority/{roleId}/{roleName}")
+	public String authority(@PathVariable String roleId, @PathVariable String roleName, ModelMap mm) {
+		if(!ShiroKit.hasAnyRoles(ConstShiro.ADMINISTRATOR  ","  ConstShiro.ADMIN)){
+			return "redirect:/unauth";
+		}
+		mm.put("roleId", roleId);
+		mm.put("roleName", Func.decodeUrl(roleName));
+		return BASE_PATH  "role_authority.html";
+	}
+	
+	@ResponseBody
+	@RequestMapping("/saveAuthority")
+	public AjaxResult saveAuthority() {
+		String ids = getParameter("ids");
+		String roleId = getParameter("roleId");
+		String[] id = ids.split(",");
+		if (id.length <= 1) {
+			CacheKit.removeAll(ROLE_CACHE);
+			CacheKit.removeAll(MENU_CACHE);
+			return success("设置成功");
+		}
+		boolean temp = service.saveAuthority(ids, roleId);
+		if (temp) {
+			CacheKit.removeAll(ROLE_CACHE);
+			CacheKit.removeAll(MENU_CACHE);
+			return success("设置成功");
+		} else {
+			return error("设置失败");
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping(KEY_SAVE)
+	public AjaxResult save() {
+		Role role = mapping(PERFIX, Role.class);
+		boolean temp = service.save(role);
+		if (temp) {
+			CacheKit.removeAll(ROLE_CACHE);
+			CacheKit.removeAll(MENU_CACHE);
+			return success(SAVE_SUCCESS_MSG);
+		} else {
+			return error(SAVE_FAIL_MSG);
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping(KEY_UPDATE)
+	public AjaxResult update() {
+		Role role = mapping(PERFIX, Role.class);
+		role.setVersion(getParameterToInt("VERSION", 0)  1);
+		boolean temp = service.update(role);
+		if (temp) {
+			CacheKit.removeAll(ROLE_CACHE);
+			CacheKit.removeAll(MENU_CACHE);
+			return success(UPDATE_SUCCESS_MSG);
+		} else {
+			return error(UPDATE_FAIL_MSG);
+		}
+	}
+	
+	@ResponseBody
+	@RequestMapping(KEY_REMOVE)
+	public AjaxResult remove() {
+		int cnt = service.deleteByIds(getParameter("ids"));
+		if (cnt > 0) {
+			CacheKit.removeAll(ROLE_CACHE);
+			CacheKit.removeAll(MENU_CACHE);
+			return success(DEL_SUCCESS_MSG);
+		} else {
+			return error(DEL_FAIL_MSG);
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping("/getPowerById")
+	public AjaxResult getPowerById() {
+		int cnt = service.getParentCnt(getParameter("id"));
+		if (cnt > 0) {
+			return success("success");
+		} else {
+			return error("error");
+		}
+	}
+	
+}
+Index: controller/DictController.java
+===================================================================
+--- controller/DictController.java	(revision 0)
+ controller/DictController.java	(revision 3)
+@@ -0,0 1,146 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.smallchill.common.base.BaseController;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.core.toolbox.kit.CacheKit;
+import com.smallchill.core.toolbox.kit.JsonKit;
+import com.smallchill.core.toolbox.kit.StrKit;
+import com.smallchill.system.model.Dict;
+
+@Controller
+@RequestMapping("/dict")
+public class DictController extends BaseController{
+	private static String LIST_SOURCE = "Dict.list";
+	private static String BASE_PATH = "/system/dict/";
+	private static String CODE = "dict";
+	private static String PERFIX = "tfw_dict";
+	
+	@RequestMapping("/")
+	public String index(ModelMap mm) {
+		mm.put("code", CODE);
+		return BASE_PATH  "dict.html";
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping(KEY_LIST)
+	public Object list() {
+		Object gird = paginate(LIST_SOURCE);
+		return gird;
+	}
+	
+	@RequestMapping(KEY_ADD)
+	public String add(ModelMap mm) {
+		mm.put("code", CODE);
+		return BASE_PATH  "dict_add.html";
+	}
+	
+	@RequestMapping(KEY_ADD  "/{id}")
+	public String add(@PathVariable String id, ModelMap mm) {
+		if (StrKit.notBlank(id)) {
+			Dict dict = Blade.create(Dict.class).findById(id);
+			mm.put("dictcode", dict.getCode());
+			mm.put("pId", id);
+			mm.put("num", findLastNum(dict.getCode()));
+		}
+		mm.put("code", CODE);
+		return BASE_PATH  "dict_add.html";
+	}
+	
+	@RequestMapping(KEY_EDIT  "/{id}")
+	public String edit(@PathVariable String id, ModelMap mm) {
+		Dict dict = Blade.create(Dict.class).findById(id);
+		mm.put("model", JsonKit.toJson(dict));
+		mm.put("code", CODE);
+		return BASE_PATH  "dict_edit.html";
+	}
+
+	@RequestMapping(KEY_VIEW  "/{id}")
+	public String view(@PathVariable String id, ModelMap mm) {
+		Blade blade = Blade.create(Dict.class);
+		Dict dict = blade.findById(id);
+		Dict parent = blade.findById(dict.getPid());
+		String pName = (null == parent) ? "" : parent.getName();
+		Record rd = Record.parse(dict);
+		rd.set("pName", pName);
+		mm.put("model", JsonKit.toJson(rd));
+		mm.put("code", CODE);
+		return BASE_PATH  "dict_view.html";
+	}
+	
+	@ResponseBody
+	@RequestMapping(KEY_SAVE)
+	public AjaxResult save() {
+		Dict dict = mapping(PERFIX, Dict.class);
+		boolean temp = Blade.create(Dict.class).save(dict);
+		if (temp) {
+			CacheKit.removeAll(DICT_CACHE);
+			return success(SAVE_SUCCESS_MSG);
+		} else {
+			return error(SAVE_FAIL_MSG);
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(KEY_UPDATE)
+	public AjaxResult update() {
+		Dict dict = mapping(PERFIX, Dict.class);
+		dict.setVersion(getParameterToInt("VERSION", 0)  1);
+		boolean temp =  Blade.create(Dict.class).update(dict);
+		if (temp) {
+			CacheKit.removeAll(DICT_CACHE);
+			return success(UPDATE_SUCCESS_MSG);
+		} else {
+			return error(UPDATE_FAIL_MSG);
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(KEY_REMOVE)
+	public AjaxResult remove() {
+		int cnt = Blade.create(Dict.class).deleteByIds(getParameter("ids"));
+		if (cnt > 0) {
+			CacheKit.removeAll(DICT_CACHE);
+			return success(DEL_SUCCESS_MSG);
+		} else {
+			return error(DEL_FAIL_MSG);
+		}
+	}
+
+	
+	private int findLastNum(String code){
+		try{
+			Blade blade = Blade.create(Dict.class);
+			Dict dict = blade.findFirstBy("code = #{code} order by num desc", Record.create().set("code", code));
+			return dict.getNum()  1;
+		}
+		catch(Exception ex){
+			return 1;
+		}
+	}
+	
+	
+}
+Index: controller/AttachController.java
+===================================================================
+--- controller/AttachController.java	(revision 0)
+ controller/AttachController.java	(revision 3)
+@@ -0,0 1,36 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.smallchill.core.base.controller.CurdController;
+import com.smallchill.core.interfaces.IMeta;
+import com.smallchill.system.meta.factory.AttachFactory;
+import com.smallchill.system.model.Attach;
+
+@Controller
+@RequestMapping("/attach")
+public class AttachController extends CurdController<Attach>{
+
+	@Override
+	protected Class<? extends IMeta> metaFactoryClass() {
+		// TODO Auto-generated method stub
+		return AttachFactory.class;
+	}
+
+}
+Index: controller/MenuController.java
+===================================================================
+--- controller/MenuController.java	(revision 0)
+ controller/MenuController.java	(revision 3)
+@@ -0,0 1,234 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.smallchill.common.base.BaseController;
+import com.smallchill.core.annotation.Before;
+import com.smallchill.core.annotation.Permission;
+import com.smallchill.core.constant.ConstCache;
+import com.smallchill.core.constant.ConstShiro;
+import com.smallchill.core.interfaces.ILoader;
+import com.smallchill.core.plugins.dao.Db;
+import com.smallchill.core.shiro.ShiroKit;
+import com.smallchill.core.toolbox.Func;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.core.toolbox.kit.CacheKit;
+import com.smallchill.core.toolbox.kit.JsonKit;
+import com.smallchill.core.toolbox.kit.StrKit;
+import com.smallchill.system.meta.intercept.MenuValidator;
+import com.smallchill.system.model.Menu;
+import com.smallchill.system.service.MenuService;
+
+@Controller
+@RequestMapping("/menu")
+public class MenuController extends BaseController implements ConstShiro{
+	private static String LIST_SOURCE = "Menu.list";
+	private static String BASE_PATH = "/system/menu/";
+	private static String CODE = "menu";
+	private static String PERFIX = "TFW_MENU";
+
+	@Autowired
+	MenuService service;
+
+	@RequestMapping("/")
+	@Permission(ADMINISTRATOR)
+	public String index(ModelMap mm) {
+		mm.put("code", CODE);
+		return BASE_PATH  "menu.html";
+	}
+
+	@RequestMapping(KEY_ADD)
+	public String add(ModelMap mm) {
+		if(ShiroKit.lacksRole(ADMINISTRATOR)){
+			return REDIRECT_UNAUTH;
+		}
+		mm.put("code", CODE);
+		return BASE_PATH  "menu_add.html";
+	}
+	
+	@RequestMapping(KEY_ADD  "/{id}")
+	@Permission(ADMINISTRATOR)
+	public String add(@PathVariable String id, ModelMap mm) {
+		if (StrKit.notBlank(id)) {
+			Menu menu = service.findById(id);
+			mm.put("PCODE", menu.getCode());
+			mm.put("LEVELS", menu.getLevels()  1);
+			mm.put("NUM", service.findLastNum(menu.getCode()));
+		}
+		mm.put("code", CODE);
+		return BASE_PATH  "menu_add.html";
+	}
+
+	@RequestMapping(KEY_EDIT  "/{id}")
+	@Permission(ADMINISTRATOR)
+	public String edit(@PathVariable String id, ModelMap mm) {
+		Menu menu = service.findById(id);
+		mm.put("model", JsonKit.toJson(menu));
+		mm.put("code", CODE);
+		return BASE_PATH  "menu_edit.html";
+	}
+
+	@RequestMapping(KEY_VIEW  "/{id}")
+	@Permission(ADMINISTRATOR)
+	public String view(@PathVariable String id, ModelMap mm) {
+		Menu menu = service.findById(id);
+		mm.put("model", JsonKit.toJson(menu));
+		mm.put("code", CODE);
+		return BASE_PATH  "menu_view.html";
+	}
+
+	@ResponseBody
+	@RequestMapping(KEY_LIST)
+	@Permission(ADMINISTRATOR)
+	public Object list() {
+		Object gird = paginate(LIST_SOURCE);
+		return gird;
+	}
+
+	@ResponseBody
+	@Before(MenuValidator.class)
+	@RequestMapping(KEY_SAVE)
+	@Permission(ADMINISTRATOR)
+	public AjaxResult save() {
+		Menu menu = mapping(PERFIX, Menu.class);
+		menu.setStatus(1);
+		boolean temp = service.save(menu);
+		if (temp) {
+			CacheKit.removeAll(MENU_CACHE);
+			return success(SAVE_SUCCESS_MSG);
+		} else {
+			return error(SAVE_FAIL_MSG);
+		}
+	}
+
+	@ResponseBody
+	@Before(MenuValidator.class)
+	@RequestMapping(KEY_UPDATE)
+	@Permission(ADMINISTRATOR)
+	public AjaxResult update() {
+		Menu menu = mapping(PERFIX, Menu.class);
+		menu.setVersion(getParameterToInt("VERSION", 0)  1);
+		boolean temp = service.update(menu);
+		if (temp) {
+			if(Func.equals(menu.getUrl(), "")){
+				service.updateBy("url = ''", "id = #{id}", Record.create().set("id", menu.getId()));
+			}
+			if(Func.equals(menu.getTips(), "")){
+				service.updateBy("tips = ''", "id = #{id}", Record.create().set("id", menu.getId()));
+			}
+			CacheKit.removeAll(MENU_CACHE);
+			return success(UPDATE_SUCCESS_MSG);
+		} else {
+			return error(UPDATE_FAIL_MSG);
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(KEY_DEL)
+	@Permission(ADMINISTRATOR)
+	public AjaxResult del() {
+		boolean temp = service.updateStatus(getParameter("ids"), 2);
+		if (temp) {
+			CacheKit.removeAll(MENU_CACHE);
+			return success(DEL_SUCCESS_MSG);
+		} else {
+			return error(DEL_FAIL_MSG);
+		}
+	}
+
+	@ResponseBody
+	@RequestMapping(KEY_RESTORE)
+	@Permission(ADMINISTRATOR)
+	public AjaxResult restore(@RequestParam String ids) {
+		boolean temp = service.updateStatus(ids, 1);
+		if (temp) {
+			CacheKit.removeAll(MENU_CACHE);
+			return success(RESTORE_SUCCESS_MSG);
+		} else {
+			return error(RESTORE_FAIL_MSG);
+		}
+
+	}
+
+	@ResponseBody
+	@RequestMapping(KEY_REMOVE)
+	@Permission(ADMINISTRATOR)
+	public AjaxResult remove(@RequestParam String ids) {
+		int cnt = service.deleteByIds(ids);
+		if (cnt > 0) {
+			CacheKit.removeAll(MENU_CACHE);
+			return success(DEL_SUCCESS_MSG);
+		} else {
+			return error(DEL_FAIL_MSG);
+		}
+	}
+	
+	
+	
+	@ResponseBody
+	@RequestMapping("/getMenu")
+	public List<Map<String, Object>> getMenu(){
+		String MENU_CACHE = ConstCache.MENU_CACHE;
+		final Object userId = getParameter("userId");
+		final Object roleId = getParameter("roleId");
+
+		Map<String, Object> userRole = CacheKit.get(MENU_CACHE, "role_ext_"  userId, new ILoader() {
+			@Override
+			public Object load() {
+				return Db.selectOne("select * from TFW_ROLE_EXT where USERID=#{userId}", Record.create().set("userId", userId));
+			}
+		}); 
+
+
+		String roleIn = "0";
+		String roleOut = "0";
+		if (!Func.isEmpty(userRole)) {
+			Record rd = Record.parse(userRole);
+			roleIn = rd.getStr("ROLEIN");
+			roleOut = rd.getStr("ROLEOUT");
+		}
+		final StringBuilder sql = new StringBuilder();
+		sql.append("select * from TFW_MENU  ");
+		sql.append(" where ( ");
+		sql.append("	 (status=1)");
+		sql.append("	 and (icon is not null and icon not LIKE '%btn%' and icon not LIKE '%icon%' ) ");
+		sql.append("	 and (id in (select menuId from TFW_RELATION where roleId in ("  roleId  ")) or id in ("  roleIn  "))");
+		sql.append("	 and id not in("  roleOut  ")");
+		sql.append("	)");
+		sql.append(" order by levels,pCode,num");
+
+		List<Map<String, Object>> sideBar = CacheKit.get(MENU_CACHE, "sideBar_"  userId, new ILoader() {
+			@Override
+			public Object load() {
+				return Db.selectList(sql.toString());
+			}
+		}); 
+		return sideBar;
+	}
+
+}
+Index: controller/LoginController.java
+===================================================================
+--- controller/LoginController.java	(revision 0)
+ controller/LoginController.java	(revision 3)
+@@ -0,0 1,149 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.controller;
+
+import java.util.Date;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.authc.DisabledAccountException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.smallchill.common.base.BaseController;
+import com.smallchill.common.vo.LoginLog;
+import com.smallchill.core.annotation.Before;
+import com.smallchill.core.constant.Const;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.shiro.ShiroKit;
+import com.smallchill.core.toolbox.Func;
+import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.core.toolbox.captcha.Captcha;
+import com.smallchill.core.toolbox.kit.LogKit;
+import com.smallchill.core.toolbox.log.LogManager;
+import com.smallchill.system.meta.intercept.LoginValidator;
+
+@Controller
+public class LoginController extends BaseController implements Const{
+
+	private static Logger log = LoggerFactory.getLogger(LoginController.class);
+
+	@RequestMapping("/")
+	public String index() {
+		return indexRealPath;
+	}
+	
+	/**
+	 * GET 登录
+	 */
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	public String login() {
+		if (ShiroKit.isAuthenticated()) {
+			return redirect  "/";
+		}
+		return loginRealPath;
+	}
+
+	/**
+	 * POST 登录
+	 */
+	@Before(LoginValidator.class)
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	@ResponseBody
+	public AjaxResult login(HttpServletRequest request, HttpServletResponse response) {
+		String account = getParameter("account");
+		String password = getParameter("password");
+		String imgCode = getParameter("imgCode");
+		
+		if (!Captcha.validate(request, response, imgCode)) {
+			return error("验证码错误");
+		}
+		Subject currentUser = ShiroKit.getSubject();
+		UsernamePasswordToken token = new UsernamePasswordToken(account, password.toCharArray());
+		token.setRememberMe(false);
+		try {
+			currentUser.login(token);
+			Session session = ShiroKit.getSession();
+			LogKit.println("sessionID	: {} ", session.getId());
+			LogKit.println("sessionHost	: {}", session.getHost());
+			LogKit.println("sessionTimeOut	: {}", session.getTimeout());
+		} catch (UnknownAccountException e) {
+			log.error("账号不存在：{}", e);
+			return error("账号不存在");
+		} catch (DisabledAccountException e) {
+			log.error("账号未启用：{}", e);
+			return error("账号未启用");
+		} catch (IncorrectCredentialsException e) {
+			log.error("密码错误：{}", e);
+			return error("密码错误");
+		} catch (RuntimeException e) {
+			log.error("未知错误,请联系管理员：{}", e);
+			return error("未知错误,请联系管理员");
+		}
+		doLog(ShiroKit.getSession(), "登录");
+		return success("登录成功");
+	}
+
+	@RequestMapping("/logout")
+	public String logout() {
+		doLog(ShiroKit.getSession(), "登出");
+		Subject currentUser = ShiroKit.getSubject();
+		currentUser.logout();
+		return redirect  "/login";
+	}
+
+	@RequestMapping(value = "/unauth")
+	public String unauth() {
+		if (ShiroKit.notAuthenticated()) {
+			return redirect  "/login";
+		}
+		return noPermissionPath;
+	}
+
+	@RequestMapping("/captcha")
+	public void captcha(HttpServletResponse response) {
+		Captcha.init(response).render();
+	}
+
+	public void doLog(Session session, String type){
+		if(!LogManager.isDoLog()){
+			return;
+		}
+		try{
+			LoginLog log = new LoginLog();
+			String msg = Func.format("[sessionID]: {} [sessionHost]: {} [sessionHost]: {}", session.getId(), session.getHost(), session.getTimeout());
+			log.setLogname(type);
+			log.setMethod(msg);
+			log.setCreatetime(new Date());
+			log.setSucceed("1");
+			log.setUserid(Func.toStr(ShiroKit.getUser().getId()));
+			Blade.create(LoginLog.class).save(log);
+		}catch(Exception ex){
+			LogKit.logNothing(ex);
+		}
+	}
+	
+}
+Index: meta/intercept/UserIntercept.java
+===================================================================
+--- meta/intercept/UserIntercept.java	(revision 0)
+ meta/intercept/UserIntercept.java	(revision 3)
+@@ -0,0 1,44 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.intercept;
+
+import java.util.List;
+import java.util.Map;
+
+import com.smallchill.core.aop.AopContext;
+import com.smallchill.core.meta.PageIntercept;
+import com.smallchill.core.toolbox.Func;
+import com.smallchill.core.toolbox.support.BladePage;
+
+public class UserIntercept extends PageIntercept {
+
+	/**
+	 * 查询后操作 字典项、部门不通过数据库查询,通过缓存附加,减轻数据库压力,提高分页效率
+	 * 
+	 * @param ac
+	 */
+	@SuppressWarnings("unchecked")
+	public void queryAfter(AopContext ac) {
+		BladePage<Map<String, Object>> page = (BladePage<Map<String, Object>>) ac.getObject();
+		List<Map<String, Object>> list = page.getRows();
+		for (Map<String, Object> map : list) {
+			map.put("ROLENAME", Func.getRoleName(map.get("ROLEID")));
+			map.put("STATUSNAME", Func.getDictName(901, map.get("STATUS")));
+			map.put("SEXNAME", Func.getDictName(101, map.get("SEX")));
+			map.put("DEPTNAME", Func.getDeptName(map.get("DEPTID")));
+		}
+	}
+}
+Index: meta/intercept/LoginValidator.java
+===================================================================
+--- meta/intercept/LoginValidator.java	(revision 0)
+ meta/intercept/LoginValidator.java	(revision 3)
+@@ -0,0 1,30 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.intercept;
+
+import com.smallchill.core.aop.Invocation;
+import com.smallchill.core.intercept.BladeValidator;
+
+public class LoginValidator extends BladeValidator {
+
+	@Override
+	protected void doValidate(Invocation inv) {
+		validateRequired("account", "请输入您的账号");
+		validateRequired("password",  "请输入您的密码");
+	}
+	
+
+}
+Index: meta/intercept/ParameterIntercept.java
+===================================================================
+--- meta/intercept/ParameterIntercept.java	(revision 0)
+ meta/intercept/ParameterIntercept.java	(revision 3)
+@@ -0,0 1,129 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.intercept;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.web.servlet.ModelAndView;
+
+import com.smallchill.core.aop.AopContext;
+import com.smallchill.core.base.controller.BladeController;
+import com.smallchill.core.constant.ConstCache;
+import com.smallchill.core.constant.ConstShiro;
+import com.smallchill.core.meta.MetaIntercept;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.shiro.ShiroKit;
+import com.smallchill.core.toolbox.Func;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.ajax.AjaxResult;
+import com.smallchill.core.toolbox.kit.CacheKit;
+import com.smallchill.core.toolbox.support.BladePage;
+import com.smallchill.system.model.Parameter;
+
+public class ParameterIntercept extends MetaIntercept {
+
+	/**
+	 * 列表转向前操作 只有超管才能访问参数管理
+	 * 
+	 * @param ac
+	 */
+	public void renderIndexBefore(AopContext ac) {
+		if(ShiroKit.lacksRole(ConstShiro.ADMINISTRATOR)){
+			ModelAndView view = ac.getView();
+			view.setViewName("redirect:/unauth");
+		}
+	}
+	
+	/**
+	 * 查询后操作
+	 * 
+	 * @param ac
+	 */
+	@SuppressWarnings("unchecked")
+	public void queryAfter(AopContext ac) {
+		BladePage<Map<String, Object>> page = (BladePage<Map<String, Object>>) ac.getObject();
+		List<Map<String, Object>> list = page.getRows();
+		for (Map<String, Object> map : list) {
+			map.put("STATUSNAME", Func.getDictName(901, map.get("STATUS")));
+		}
+	}
+	
+	/**
+	 * 主表新增前操作
+	 * 
+	 * @param ac
+	 */
+	public void saveBefore(AopContext ac) {
+		BladeController ctrl = ac.getCtrl();
+		String code = ctrl.getParameter("tfw_parameter.code");
+		int cnt = Blade.create(Parameter.class).count("code = #{code}", Record.create().set("code", code));
+		if(cnt > 0){
+			throw new RuntimeException("参数编号已存在!");
+		}
+	}
+	
+	/**
+	 * 主表新增后操作(事务内)
+	 * 
+	 * @param ac
+	 */
+	public boolean saveAfter(AopContext ac) {
+		CacheKit.remove(ConstCache.SYS_CACHE, "parameter_log");
+		return super.saveAfter(ac);
+	}
+	
+	/**
+	 * 主表修改后操作(事务内)
+	 * 
+	 * @param ac
+	 */
+	public boolean updateAfter(AopContext ac) {
+		CacheKit.remove(ConstCache.SYS_CACHE, "parameter_log");
+		return super.updateAfter(ac);
+	}
+	
+	/**
+	 * 删除全部完毕后操作(事务外)
+	 * 
+	 * @param ac
+	 */
+	public AjaxResult removeSucceed(AopContext ac) {
+		CacheKit.remove(ConstCache.SYS_CACHE, "parameter_log");
+		return super.removeSucceed(ac);
+	}
+	
+	/**
+	 * 逻辑删除后操作(事务外)
+	 * 
+	 * @param ac
+	 */
+	public AjaxResult delSucceed(AopContext ac) {
+		CacheKit.remove(ConstCache.SYS_CACHE, "parameter_log");
+		return super.delSucceed(ac);
+	}
+	
+	/**
+	 * 还原全部完毕后操作(事务外)
+	 * 
+	 * @param ac
+	 */
+	public AjaxResult restoreSucceed(AopContext ac) {
+		CacheKit.remove(ConstCache.SYS_CACHE, "parameter_log");
+		return super.restoreSucceed(ac);
+	}
+	
+}
+Index: meta/intercept/LogIntercept.java
+===================================================================
+--- meta/intercept/LogIntercept.java	(revision 0)
+ meta/intercept/LogIntercept.java	(revision 3)
+@@ -0,0 1,90 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.intercept;
+
+import java.util.List;
+import java.util.Map;
+
+import com.smallchill.core.aop.AopContext;
+import com.smallchill.core.constant.ConstCache;
+import com.smallchill.core.meta.MetaIntercept;
+import com.smallchill.core.toolbox.Func;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.CacheKit;
+import com.smallchill.core.toolbox.support.BladePage;
+
+public class LogIntercept extends MetaIntercept {
+	/**
+	 * 查询后操作
+	 * 
+	 * @param ac
+	 */
+	@SuppressWarnings("unchecked")
+	public void queryAfter(AopContext ac) {
+		BladePage<Map<String, Object>> page = (BladePage<Map<String, Object>>) ac.getObject();
+		List<Map<String, Object>> list = page.getRows();
+		for (Map<String, Object> map : list) {
+			String succeedName = (Func.toInt(map.get("SUCCEED"), 1) == 1) ? "成功" : "失败";
+			map.put("SUCCEEDNAME", succeedName);
+			map.put("USERNAME", Func.getUserName(map.get("USERID")));
+		}
+	}
+
+	/**
+	 * 查看转向前操作
+	 * 
+	 * @param ac
+	 */
+	public void renderViewBefore(AopContext ac) {
+		Record rd = (Record) ac.getObject();
+		String succeedName = (rd.getInt("succeed") == 1) ? "成功" : "失败";
+		rd.set("succeedName", succeedName).set("userName", Func.getUserName(rd.get("userid")));
+	}
+	
+	
+	
+	/**
+	 * 主表新增后操作(事务内)
+	 * 
+	 * @param ac
+	 */
+	public boolean saveAfter(AopContext ac) {
+		CacheKit.removeAll(ConstCache.SYS_CACHE);
+		return true;
+	}
+	
+	/**
+	 * 主表修改后操作(事务内)
+	 * 
+	 * @param ac
+	 */
+	public boolean updateAfter(AopContext ac) {
+		CacheKit.removeAll(ConstCache.SYS_CACHE);
+		return true;
+	}
+
+	
+	/**
+	 * 物理删除后操作(事务内)
+	 * 
+	 * @param ac
+	 */
+	public boolean removeAfter(AopContext ac) {
+		CacheKit.removeAll(ConstCache.SYS_CACHE);
+		return true;
+	}
+	
+}
+Index: meta/intercept/RoleIntercept.java
+===================================================================
+--- meta/intercept/RoleIntercept.java	(revision 0)
+ meta/intercept/RoleIntercept.java	(revision 3)
+@@ -0,0 1,19 @@
+package com.smallchill.system.meta.intercept;
+
+import com.smallchill.core.aop.AopContext;
+import com.smallchill.core.constant.ConstShiro;
+import com.smallchill.core.meta.PageIntercept;
+import com.smallchill.core.shiro.ShiroKit;
+import com.smallchill.core.toolbox.kit.StrKit;
+
+public class RoleIntercept extends PageIntercept {
+
+	public void queryBefore(AopContext ac) {
+		if (ShiroKit.lacksRole(ConstShiro.ADMINISTRATOR)) {
+			String roles = ShiroKit.getUser().getRoles()  ","  ShiroKit.getUser().getSubRoles();
+			String condition = "and id in ("  StrKit.removeSuffix(roles, ",")  ")";
+			ac.setCondition(condition);
+		}
+	}
+
+}
+Index: meta/intercept/AttachIntercept.java
+===================================================================
+--- meta/intercept/AttachIntercept.java	(revision 0)
+ meta/intercept/AttachIntercept.java	(revision 3)
+@@ -0,0 1,80 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.intercept;
+
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+
+import com.smallchill.core.aop.AopContext;
+import com.smallchill.core.constant.Cst;
+import com.smallchill.core.meta.MetaIntercept;
+import com.smallchill.core.plugins.dao.Db;
+import com.smallchill.core.toolbox.Func;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.support.BladePage;
+
+public class AttachIntercept extends MetaIntercept {
+	/**
+	 * 查询后操作
+	 * 
+	 * @param ac
+	 */
+	@SuppressWarnings("unchecked")
+	public void queryAfter(AopContext ac) {
+		BladePage<Map<String, Object>> page = (BladePage<Map<String, Object>>) ac.getObject();
+		List<Map<String, Object>> list = page.getRows();
+		for (Map<String, Object> map : list) {
+			map.put("ATTACHURL", Cst.me().getContextPath()  "/kindeditor/renderFile/"  map.get("ID"));
+			map.put("STATUSNAME", Func.getDictName(902, map.get("STATUS")));
+			map.put("CREATERNAME", Func.getUserName(map.get("CREATER")));
+		}
+	}
+
+	/**
+	 * 查看转向前操作
+	 * 
+	 * @param ac
+	 */
+	public void renderViewBefore(AopContext ac) {
+		Record rd = (Record) ac.getObject();
+		rd
+		.set("attachUrl", Cst.me().getContextPath()  "/kindeditor/renderFile/"  rd.get("id"))
+		.set("statusName", Func.getDictName(902, rd.get("status")))
+		.set("createrName", Func.getUserName(rd.get("creater")));
+	}
+	
+	/**
+	 * 物理删除前操作(事务内)
+	 * 
+	 * @param ac
+	 */
+	@SuppressWarnings("unchecked")
+	public void removeBefore(AopContext ac) {
+		Map<String, Object> file = Db.findById("TFW_ATTACH", ac.getId().toString());
+		if (Func.isEmpty(file)) {
+			throw new RuntimeException("文件不存在!");
+		} else {
+			String url = file.get("URL").toString();
+			File f = new File(Cst.me().getUploadRealPath()  url);
+			if(null == f || !f.isFile()){
+				throw new RuntimeException("文件不存在!");
+			}
+			f.delete();
+		}
+	}
+	
+}
+\ No newline at end of file
+Index: meta/intercept/UserValidator.java
+===================================================================
+--- meta/intercept/UserValidator.java	(revision 0)
+ meta/intercept/UserValidator.java	(revision 3)
+@@ -0,0 1,58 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.intercept;
+
+import com.smallchill.common.vo.User;
+import com.smallchill.core.aop.Invocation;
+import com.smallchill.core.intercept.BladeValidator;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.core.toolbox.kit.StrKit;
+
+public class UserValidator extends BladeValidator {
+
+	@Override
+	protected void doValidate(Invocation inv) {
+		// TODO Auto-generated method stub
+		if (inv.getMethod().toString().indexOf("update") == -1) {
+			validateAccount("TFW_USER.ACCOUNT", "账号已存在");
+			validateStringExt("TFW_USER.ACCOUNT",  "含有非法字符,请检查");
+			validateRequired("TFW_USER.ACCOUNT",  "请输入账号");
+			validateString("TFW_USER.ACCOUNT", 5, 11,  "请输入5~11位的账号");
+		}
+		validateStringExt("TFW_USER.NAME",  "含有非法字符,请检查");
+		validateRequired("TFW_USER.NAME",  "请输入姓名");
+		
+		validateRequired("TFW_USER.BIRTHDAY",  "请选择出生日期");
+		validateDate("TFW_USER.BIRTHDAY",  "请输入正确的日期格式");
+		
+		validateRequired("TFW_USER.PASSWORD",  "请输入密码");
+		
+		validateRequired("password",  "请输入确认密码");
+		validateTwoEqual("TFW_USER.PASSWORD", "password",  "两次密码不相同");
+	}
+
+	protected void validateAccount(String field, String errorMessage) {
+		String account = request.getParameter(field);
+		if (StrKit.isBlank(account)) {
+			addError("请输入账号!");
+		}
+		if (Blade.create(User.class).isExist("SELECT * FROM tfw_user WHERE account = #{account} and status=1", Record.create().set("account", account))) {
+			addError(errorMessage);
+		}
+	}
+
+}
+Index: meta/intercept/PasswordValidator.java
+===================================================================
+--- meta/intercept/PasswordValidator.java	(revision 0)
+ meta/intercept/PasswordValidator.java	(revision 3)
+@@ -0,0 1,55 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.intercept;
+
+import com.smallchill.common.vo.User;
+import com.smallchill.core.aop.Invocation;
+import com.smallchill.core.intercept.BladeValidator;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.shiro.ShiroKit;
+import com.smallchill.core.toolbox.kit.StrKit;
+
+public class PasswordValidator extends BladeValidator {
+
+	@Override
+	protected void doValidate(Invocation inv) {
+		validateOldPwd("user.id", "user.oldPassword", "原密码错误!");
+		validateRequired("user.newPassword", "新密码不能为空");
+		validateRequired("user.newPasswordr", "确认密码不能为空");
+		validateTwoNotEqual("user.oldPassword", "user.newPassword", "新密码不能与原密码相同!");
+		validateTwoEqual("user.newPassword", "user.newPasswordr", "确认密码与新密码不相同!");
+	}
+
+	protected void validateOldPwd(String field1, String field2, String errorMessage) {
+		String userId = request.getParameter(field1);
+		String password = request.getParameter(field2);
+		if (StrKit.isBlank(password)) {
+			addError("请输入原密码!");
+		}
+		Blade blade = Blade.create(User.class);
+		User user = blade.findById(userId);
+		if(null == user){
+			addError("未找到该用户!");
+		}
+		String pwd = user.getPassword();
+		String salt = user.getSalt();
+		boolean temp = (ShiroKit.md5(password, salt).equals(pwd));
+		if (!temp) {
+			addError(errorMessage);
+		}
+	}
+
+}
+Index: meta/intercept/DeptIntercept.java
+===================================================================
+--- meta/intercept/DeptIntercept.java	(revision 0)
+ meta/intercept/DeptIntercept.java	(revision 3)
+@@ -0,0 1,19 @@
+package com.smallchill.system.meta.intercept;
+
+import com.smallchill.core.aop.AopContext;
+import com.smallchill.core.constant.ConstShiro;
+import com.smallchill.core.meta.PageIntercept;
+import com.smallchill.core.shiro.ShiroKit;
+import com.smallchill.core.toolbox.kit.StrKit;
+
+public class DeptIntercept extends PageIntercept {
+
+	public void queryBefore(AopContext ac) {
+		if (ShiroKit.lacksRole(ConstShiro.ADMINISTRATOR)) {
+			String depts = ShiroKit.getUser().getDeptId()  ","  ShiroKit.getUser().getSubDepts();
+			String condition = "and id in ("  StrKit.removeSuffix(depts, ",")  ")";
+			ac.setCondition(condition);
+		}
+	}
+
+}
+Index: meta/intercept/MenuValidator.java
+===================================================================
+--- meta/intercept/MenuValidator.java	(revision 0)
+ meta/intercept/MenuValidator.java	(revision 3)
+@@ -0,0 1,50 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.intercept;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.smallchill.core.aop.Invocation;
+import com.smallchill.core.intercept.BladeValidator;
+import com.smallchill.core.toolbox.kit.StrKit;
+import com.smallchill.system.service.MenuService;
+
+public class MenuValidator extends BladeValidator {
+
+	@Autowired
+	MenuService service;
+
+	@Override
+	protected void doValidate(Invocation inv) {
+		// TODO Auto-generated method stub
+		if (inv.getMethod().toString().indexOf("update") == -1) {
+			validateRequired("tfw_menu.pcode", "请输入菜单父编号");
+			validateCode("tfw_menu.code", "菜单编号已存在!");
+		}
+		validateSql("tfw_menu.source", "含有非法字符,请仔细检查!");
+	}
+
+	protected void validateCode(String field, String errorMessage) {
+		String code = request.getParameter(field);
+		if (StrKit.isBlank(code)) {
+			addError("请输入菜单编号!");
+		}
+		if (service.isExistCode(code)) {
+			addError(errorMessage);
+		}
+	}
+
+}
+Index: meta/factory/GenerateFactory.java
+===================================================================
+--- meta/factory/GenerateFactory.java	(revision 0)
+ meta/factory/GenerateFactory.java	(revision 3)
+@@ -0,0 1,49 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.factory;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.smallchill.core.meta.MetaManager;
+import com.smallchill.system.model.Generate;
+
+public class GenerateFactory extends MetaManager {
+	
+	public String controllerKey() {
+		return "generate";
+	}
+
+	public String paraPerfix() {
+		return getTableName(Generate.class);
+	}
+
+	public Map<String, String> renderMap() {
+		Map<String, String> renderMap = new HashMap<>();
+		renderMap.put(KEY_INDEX, "/system/generate/generate.html");
+		renderMap.put(KEY_ADD, "/system/generate/generate_add.html");
+		renderMap.put(KEY_EDIT, "/system/generate/generate_edit.html");
+		renderMap.put(KEY_VIEW, "/system/generate/generate_view.html");
+		return renderMap;
+	}
+
+	public Map<String, String> sourceMap() {
+		Map<String, String> sourceMap = new HashMap<>();
+		sourceMap.put(KEY_INDEX, "Generate.sourceList");
+		return sourceMap;
+	}
+
+}
+Index: meta/factory/LLogFactory.java
+===================================================================
+--- meta/factory/LLogFactory.java	(revision 0)
+ meta/factory/LLogFactory.java	(revision 3)
+@@ -0,0 1,55 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.factory;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.smallchill.common.vo.LoginLog;
+import com.smallchill.core.meta.MetaIntercept;
+import com.smallchill.core.meta.MetaManager;
+import com.smallchill.system.meta.intercept.LogIntercept;
+
+public class LLogFactory extends MetaManager {
+
+	public Class<? extends MetaIntercept> intercept() {
+		return LogIntercept.class;
+	}
+	
+	public String controllerKey() {
+		return "llog";
+	}
+
+	public String paraPerfix() {
+		return getTableName(LoginLog.class);
+	}
+
+	public Map<String, String> renderMap() {
+		Map<String, String> renderMap = new HashMap<>();
+		renderMap.put(KEY_INDEX, "/system/log/llog.html");
+		renderMap.put(KEY_ADD, "/system/log/llog_add.html");
+		renderMap.put(KEY_EDIT, "/system/log/llog_edit.html");
+		renderMap.put(KEY_VIEW, "/system/log/llog_view.html");
+		return renderMap;
+	}
+
+	public Map<String, String> sourceMap() {
+		Map<String, String> sourceMap = new HashMap<>();
+		sourceMap.put(KEY_INDEX, "LLog.sourceList");
+		return sourceMap;
+	}
+
+}
+Index: meta/factory/OLogFactory.java
+===================================================================
+--- meta/factory/OLogFactory.java	(revision 0)
+ meta/factory/OLogFactory.java	(revision 3)
+@@ -0,0 1,55 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.factory;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.smallchill.common.vo.OperationLog;
+import com.smallchill.core.meta.MetaIntercept;
+import com.smallchill.core.meta.MetaManager;
+import com.smallchill.system.meta.intercept.LogIntercept;
+
+public class OLogFactory extends MetaManager {
+
+	public Class<? extends MetaIntercept> intercept() {
+		return LogIntercept.class;
+	}
+	
+	public String controllerKey() {
+		return "olog";
+	}
+
+	public String paraPerfix() {
+		return getTableName(OperationLog.class);
+	}
+
+	public Map<String, String> renderMap() {
+		Map<String, String> renderMap = new HashMap<>();
+		renderMap.put(KEY_INDEX, "/system/log/olog.html");
+		renderMap.put(KEY_ADD, "/system/log/olog_add.html");
+		renderMap.put(KEY_EDIT, "/system/log/olog_edit.html");
+		renderMap.put(KEY_VIEW, "/system/log/olog_view.html");
+		return renderMap;
+	}
+
+	public Map<String, String> sourceMap() {
+		Map<String, String> sourceMap = new HashMap<>();
+		sourceMap.put(KEY_INDEX, "OLog.sourceList");
+		return sourceMap;
+	}
+
+}
+Index: meta/factory/ParameterFactory.java
+===================================================================
+--- meta/factory/ParameterFactory.java	(revision 0)
+ meta/factory/ParameterFactory.java	(revision 3)
+@@ -0,0 1,55 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.factory;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.smallchill.core.meta.MetaIntercept;
+import com.smallchill.core.meta.MetaManager;
+import com.smallchill.system.meta.intercept.ParameterIntercept;
+import com.smallchill.system.model.Parameter;
+
+public class ParameterFactory extends MetaManager {
+
+	public Class<? extends MetaIntercept> intercept() {
+		return ParameterIntercept.class;
+	}
+
+	public String controllerKey() {
+		return "parameter";
+	}
+
+	public String paraPerfix() {
+		return getTableName(Parameter.class);
+	}
+
+	public Map<String, String> renderMap() {
+		Map<String, String> renderMap = new HashMap<>();
+		renderMap.put(KEY_INDEX, "/system/parameter/parameter.html");
+		renderMap.put(KEY_ADD, "/system/parameter/parameter_add.html");
+		renderMap.put(KEY_EDIT, "/system/parameter/parameter_edit.html");
+		renderMap.put(KEY_VIEW, "/system/parameter/parameter_view.html");
+		return renderMap;
+	}
+
+	public Map<String, String> sourceMap() {
+		Map<String, String> sourceMap = new HashMap<>();
+		sourceMap.put(KEY_INDEX, "Parameter.sourceList");
+		return sourceMap;
+	}
+
+}
+Index: meta/factory/AttachFactory.java
+===================================================================
+--- meta/factory/AttachFactory.java	(revision 0)
+ meta/factory/AttachFactory.java	(revision 3)
+@@ -0,0 1,55 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.meta.factory;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.smallchill.core.meta.MetaIntercept;
+import com.smallchill.core.meta.MetaManager;
+import com.smallchill.system.meta.intercept.AttachIntercept;
+import com.smallchill.system.model.Attach;
+
+public class AttachFactory extends MetaManager {
+
+	public Class<? extends MetaIntercept> intercept() {
+		return AttachIntercept.class;
+	}
+	
+	public String controllerKey() {
+		return "attach";
+	}
+
+	public String paraPerfix() {
+		return getTableName(Attach.class);
+	}
+
+	public Map<String, String> renderMap() {
+		Map<String, String> renderMap = new HashMap<>();
+		renderMap.put(KEY_INDEX, "/system/attach/attach.html");
+		renderMap.put(KEY_ADD, "/system/attach/attach_add.html");
+		renderMap.put(KEY_EDIT, "/system/attach/attach_edit.html");
+		renderMap.put(KEY_VIEW, "/system/attach/attach_view.html");
+		return renderMap;
+	}
+
+	public Map<String, String> sourceMap() {
+		Map<String, String> sourceMap = new HashMap<>();
+		sourceMap.put(KEY_INDEX, "Attach.sourceList");
+		return sourceMap;
+	}
+
+}
+Index: model/RoleExt.java
+===================================================================
+--- model/RoleExt.java	(revision 0)
+ model/RoleExt.java	(revision 3)
+@@ -0,0 1,69 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.model;
+
+import org.beetl.sql.core.annotatoin.AutoID;
+import org.beetl.sql.core.annotatoin.SeqID;
+import org.beetl.sql.core.annotatoin.Table;
+
+import com.smallchill.core.annotation.BindID;
+import com.smallchill.core.base.model.BaseModel;
+
+@Table(name = "tfw_role_ext")
+@BindID(name = "id")
+@SuppressWarnings("serial")
+//角色代理表
+public class RoleExt extends BaseModel {
+	private Integer id; //主键
+	private String rolein; //额外附加的权限
+	private String roleout; //额外剔除的权限
+	private String userid; //用户id
+
+	@AutoID
+	@SeqID(name = "SEQ_ROLE_EXT")
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getRolein() {
+		return rolein;
+	}
+
+	public void setRolein(String rolein) {
+		this.rolein = rolein;
+	}
+
+	public String getRoleout() {
+		return roleout;
+	}
+
+	public void setRoleout(String roleout) {
+		this.roleout = roleout;
+	}
+
+	public String getUserid() {
+		return userid;
+	}
+
+	public void setUserid(String userid) {
+		this.userid = userid;
+	}
+
+}
+Index: model/Dict.java
+===================================================================
+--- model/Dict.java	(revision 0)
+ model/Dict.java	(revision 3)
+@@ -0,0 1,96 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.model;
+
+import org.beetl.sql.core.annotatoin.AutoID;
+import org.beetl.sql.core.annotatoin.SeqID;
+import org.beetl.sql.core.annotatoin.Table;
+
+import com.smallchill.core.annotation.BindID;
+import com.smallchill.core.base.model.BaseModel;
+
+@Table(name = "tfw_dict")
+@BindID(name = "id")
+@SuppressWarnings("serial")
+//字典表
+public class Dict extends BaseModel {
+	private Integer id; //主键
+	private String code; //字典编码
+	private String name; //字典名
+	private Integer num; //排序号
+	private Integer pid; //父字典
+	private String tips; //备注
+	private Integer version; //版本号
+
+	@AutoID
+	@SeqID(name = "SEQ_DICT")
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getNum() {
+		return num;
+	}
+
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+
+	public Integer getPid() {
+		return pid;
+	}
+
+	public void setPid(Integer pid) {
+		this.pid = pid;
+	}
+
+	public String getTips() {
+		return tips;
+	}
+
+	public void setTips(String tips) {
+		this.tips = tips;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
+}
+Index: model/Attach.java
+===================================================================
+--- model/Attach.java	(revision 0)
+ model/Attach.java	(revision 3)
+@@ -0,0 1,83 @@
+package com.smallchill.system.model;
+
+import java.util.Date;
+
+import org.beetl.sql.core.annotatoin.AutoID;
+import org.beetl.sql.core.annotatoin.SeqID;
+import org.beetl.sql.core.annotatoin.Table;
+
+import com.smallchill.core.annotation.BindID;
+import com.smallchill.core.base.model.BaseModel;
+
+@Table(name = "tfw_attach")
+@BindID(name = "id")
+@SuppressWarnings("serial")
+//附件表
+public class Attach extends BaseModel {
+	private Integer id; //主键
+	private String code; //编码
+	private Integer creater; //创建人
+	private String name; //附件名
+	private Integer status; //状态
+	private String url; //附件地址
+	private Date createtime; //上传时间
+
+	@AutoID
+	@SeqID(name = "SEQ_ATTACH")
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public Integer getCreater() {
+		return creater;
+	}
+
+	public void setCreater(Integer creater) {
+		this.creater = creater;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public Date getCreatetime() {
+		return createtime;
+	}
+
+	public void setCreatetime(Date createtime) {
+		this.createtime = createtime;
+	}
+
+}
+Index: model/Menu.java
+===================================================================
+--- model/Menu.java	(revision 0)
+ model/Menu.java	(revision 3)
+@@ -0,0 1,177 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.model;
+
+import org.beetl.sql.core.annotatoin.AutoID;
+import org.beetl.sql.core.annotatoin.SeqID;
+import org.beetl.sql.core.annotatoin.Table;
+
+import com.smallchill.core.annotation.BindID;
+import com.smallchill.core.base.model.BaseModel;
+
+@Table(name = "tfw_menu")
+@BindID(name = "id")
+@SuppressWarnings("serial")
+//菜单表
+public class Menu extends BaseModel {
+	private Integer id; //主键
+	private String code; //菜单编号
+	private String alias; //菜单别名
+	private String icon; //图标
+	private String isopen; //是否打开tab
+	private String istemplate; //是否模板
+	private Integer levels; //菜单层级
+	private String name; //菜单名称
+	private Integer num; //排序号
+	private String path; //地址
+	private String pcode; //父编号
+	private String source; //数据源
+	private Integer status; //状态
+	private String tips; //备注
+	private String url; //接口地址
+	private Integer version; //版本号
+
+	@AutoID
+	@SeqID(name = "SEQ_MENU")
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
+
+	public String getIsopen() {
+		return isopen;
+	}
+
+	public void setIsopen(String isopen) {
+		this.isopen = isopen;
+	}
+
+	public String getIstemplate() {
+		return istemplate;
+	}
+
+	public void setIstemplate(String istemplate) {
+		this.istemplate = istemplate;
+	}
+
+	public Integer getLevels() {
+		return levels;
+	}
+
+	public void setLevels(Integer levels) {
+		this.levels = levels;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getNum() {
+		return num;
+	}
+
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public String getPcode() {
+		return pcode;
+	}
+
+	public void setPcode(String pcode) {
+		this.pcode = pcode;
+	}
+
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public String getTips() {
+		return tips;
+	}
+
+	public void setTips(String tips) {
+		this.tips = tips;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
+}
+Index: model/Generate.java
+===================================================================
+--- model/Generate.java	(revision 0)
+ model/Generate.java	(revision 3)
+@@ -0,0 1,90 @@
+package com.smallchill.system.model;
+
+import org.beetl.sql.core.annotatoin.AutoID;
+import org.beetl.sql.core.annotatoin.SeqID;
+import org.beetl.sql.core.annotatoin.Table;
+
+import com.smallchill.core.annotation.BindID;
+import com.smallchill.core.base.model.BaseModel;
+
+@Table(name = "tfw_generate")
+@BindID(name = "id")
+@SuppressWarnings("serial")
+//在线开发
+public class Generate extends BaseModel {
+	private Integer id; //主键
+	private String modelname; //实体类名
+	private String name; //模块名称
+	private String realpath; //物理地址
+	private String packagename; //package包名
+	private String pkname; //主键名
+	private String tablename; //表名
+	private String tips; //备注
+
+	@AutoID
+	@SeqID(name = "SEQ_GENERATE")
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getModelname() {
+		return modelname;
+	}
+
+	public void setModelname(String modelname) {
+		this.modelname = modelname;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getRealpath() {
+		return realpath;
+	}
+
+	public void setRealpath(String realpath) {
+		this.realpath = realpath;
+	}
+
+	public String getPackagename() {
+		return packagename;
+	}
+
+	public void setPackagename(String packagename) {
+		this.packagename = packagename;
+	}
+
+	public String getPkname() {
+		return pkname;
+	}
+
+	public void setPkname(String pkname) {
+		this.pkname = pkname;
+	}
+
+	public String getTablename() {
+		return tablename;
+	}
+
+	public void setTablename(String tablename) {
+		this.tablename = tablename;
+	}
+
+	public String getTips() {
+		return tips;
+	}
+
+	public void setTips(String tips) {
+		this.tips = tips;
+	}
+
+}
+Index: model/Dept.java
+===================================================================
+--- model/Dept.java	(revision 0)
+ model/Dept.java	(revision 3)
+@@ -0,0 1,96 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.model;
+
+import org.beetl.sql.core.annotatoin.AutoID;
+import org.beetl.sql.core.annotatoin.SeqID;
+import org.beetl.sql.core.annotatoin.Table;
+
+import com.smallchill.core.annotation.BindID;
+import com.smallchill.core.base.model.BaseModel;
+
+@Table(name = "tfw_dept")
+@BindID(name = "id")
+@SuppressWarnings("serial")
+//部门表
+public class Dept extends BaseModel {
+	private Integer id; //主键
+	private String fullname; //全称
+	private Integer num; //排序号
+	private Integer pid; //上级部门
+	private String simplename; //简称
+	private String tips; //备注
+	private Integer version; //版本号
+
+	@AutoID
+	@SeqID(name = "SEQ_DEPT")
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getFullname() {
+		return fullname;
+	}
+
+	public void setFullname(String fullname) {
+		this.fullname = fullname;
+	}
+
+	public Integer getNum() {
+		return num;
+	}
+
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+
+	public Integer getPid() {
+		return pid;
+	}
+
+	public void setPid(Integer pid) {
+		this.pid = pid;
+	}
+
+	public String getSimplename() {
+		return simplename;
+	}
+
+	public void setSimplename(String simplename) {
+		this.simplename = simplename;
+	}
+
+	public String getTips() {
+		return tips;
+	}
+
+	public void setTips(String tips) {
+		this.tips = tips;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
+}
+Index: model/Parameter.java
+===================================================================
+--- model/Parameter.java	(revision 0)
+ model/Parameter.java	(revision 3)
+@@ -0,0 1,105 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.model;
+
+import org.beetl.sql.core.annotatoin.AutoID;
+import org.beetl.sql.core.annotatoin.SeqID;
+import org.beetl.sql.core.annotatoin.Table;
+
+import com.smallchill.core.annotation.BindID;
+import com.smallchill.core.base.model.BaseModel;
+
+@Table(name = "tfw_parameter")
+@BindID(name = "id")
+@SuppressWarnings("serial")
+//参数表
+public class Parameter extends BaseModel {
+	private Integer id; //主键
+	private String code; //参数编号
+	private String name; //参数名
+	private Integer num; //排序号
+	private String para; //参数值
+	private Integer status; //状态
+	private String tips; //备注
+	private Integer version; //版本号
+
+	@AutoID
+	@SeqID(name = "SEQ_PARAMETER")
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getNum() {
+		return num;
+	}
+
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+
+	public String getPara() {
+		return para;
+	}
+
+	public void setPara(String para) {
+		this.para = para;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
+	}
+
+	public String getTips() {
+		return tips;
+	}
+
+	public void setTips(String tips) {
+		this.tips = tips;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
+}
+Index: model/Role.java
+===================================================================
+--- model/Role.java	(revision 0)
+ model/Role.java	(revision 3)
+@@ -0,0 1,96 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.model;
+
+import org.beetl.sql.core.annotatoin.AutoID;
+import org.beetl.sql.core.annotatoin.SeqID;
+import org.beetl.sql.core.annotatoin.Table;
+
+import com.smallchill.core.annotation.BindID;
+import com.smallchill.core.base.model.BaseModel;
+
+@Table(name = "tfw_role")
+@BindID(name = "id")
+@SuppressWarnings("serial")
+//角色表
+public class Role extends BaseModel {
+	private Integer id; //主键
+	private Integer deptid; //部门id
+	private String name; //角色名
+	private Integer num; //排序号
+	private Integer pid; //父角色
+	private String tips; //角色别名(用于Permission注解权限检查)
+	private Integer version; //版本号
+
+	@AutoID
+	@SeqID(name = "SEQ_ROLE")
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getDeptid() {
+		return deptid;
+	}
+
+	public void setDeptid(Integer deptid) {
+		this.deptid = deptid;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getNum() {
+		return num;
+	}
+
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+
+	public Integer getPid() {
+		return pid;
+	}
+
+	public void setPid(Integer pid) {
+		this.pid = pid;
+	}
+
+	public String getTips() {
+		return tips;
+	}
+
+	public void setTips(String tips) {
+		this.tips = tips;
+	}
+
+	public Integer getVersion() {
+		return version;
+	}
+
+	public void setVersion(Integer version) {
+		this.version = version;
+	}
+
+}
+Index: service/RoleService.java
+===================================================================
+--- service/RoleService.java	(revision 0)
+ service/RoleService.java	(revision 3)
+@@ -0,0 1,27 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.service;
+
+import com.smallchill.core.base.service.IService;
+import com.smallchill.system.model.Role;
+
+public interface RoleService extends IService<Role> {
+	int findLastNum(String id);
+
+	boolean saveAuthority(String ids, String roleId);
+
+	int getParentCnt(String id);
+}
+Index: service/MenuService.java
+===================================================================
+--- service/MenuService.java	(revision 0)
+ service/MenuService.java	(revision 3)
+@@ -0,0 1,27 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.service;
+
+import com.smallchill.core.base.service.IService;
+import com.smallchill.system.model.Menu;
+
+public interface MenuService extends IService<Menu> {
+	int findLastNum(String code);
+
+	boolean isExistCode(String code);
+
+	boolean updateStatus(String col, Object status);
+}
+Index: service/impl/RoleServiceImpl.java
+===================================================================
+--- service/impl/RoleServiceImpl.java	(revision 0)
+ service/impl/RoleServiceImpl.java	(revision 3)
+@@ -0,0 1,87 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.service.impl;
+
+import org.springframework.stereotype.Service;
+
+import com.smallchill.core.base.service.BaseService;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.plugins.dao.Db;
+import com.smallchill.core.toolbox.Func;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.system.model.Role;
+import com.smallchill.system.service.RoleService;
+
+@Service
+public class RoleServiceImpl extends BaseService<Role> implements RoleService {
+
+	@Override
+	public int findLastNum(String id) {
+		try{
+			Blade blade = Blade.create(Role.class);
+			Role rloe = blade.findFirstBy("pId = #{pId} order by num desc", Record.create().set("pId", id));
+			return rloe.getNum()  1;
+		}
+		catch(Exception ex){
+			return 1;
+		}
+	}
+
+	@Override
+	public boolean saveAuthority(String ids, String roleId) {
+		Db.deleteByIds("TFW_RELATION", "ROLEID", roleId);
+		
+		String sql = "";
+		String insertSql = "";
+		String union_all = "";
+		String[] id = ids.split(",");
+		String dual = (Func.isOracle()) ? " from dual " : "";
+		for (int i = 0; i < id.length; i) {
+			union_all = (i < id.length - 1) ? " union all " : "";
+			sql = " (select "  id[i]  " menuId,"  roleId  " roleId "
+					 dual  ")"  union_all;
+		}
+
+		if (Func.isOracle()) {
+			sql = "select SEQ_RELATION.nextval,i.* from ("  sql  ") i";
+			insertSql = "insert into TFW_RELATION(id,menuId,roleId) ";
+		} else {
+			sql = "select i.* from ("  sql  ") i";
+			insertSql = "insert into TFW_RELATION(menuId,roleId) ";
+		}
+
+		int cnt = Db.update(insertSql  sql, null);
+		return cnt > 0;
+	}
+
+	@Override
+	public int getParentCnt(String id) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT");
+		sb.append("(CASE WHEN ");
+		sb.append("	(select (CASE when (PID=0 or PID is null) then ID else 0 end) as ID from TFW_ROLE where ID=#{id})>0 ");
+		sb.append("THEN 1 ");
+		sb.append("ELSE");
+		sb.append("	(select count(*) from TFW_RELATION where ROLEID=(select (CASE when (PID=0 or PID is null) then ID else PID end) as ID from TFW_ROLE where ID=#{id})) ");
+		sb.append("END) CNT");
+		if (Func.isOracle()) {
+			sb.append(" from dual");
+		}
+		Object cnt = Db.selectOne(sb.toString(), Record.create().set("id", id)).get("CNT");
+		return Func.toInt(cnt, 0);
+	}
+
+}
+Index: service/impl/MenuServiceImpl.java
+===================================================================
+--- service/impl/MenuServiceImpl.java	(revision 0)
+ service/impl/MenuServiceImpl.java	(revision 3)
+@@ -0,0 1,60 @@
+/**
+ * Copyright (c) 2015-2016, Chill Zhuang 庄骞 (smallchill@163.com).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.smallchill.system.service.impl;
+
+import org.springframework.stereotype.Service;
+
+import com.smallchill.core.base.service.BaseService;
+import com.smallchill.core.plugins.dao.Blade;
+import com.smallchill.core.toolbox.Record;
+import com.smallchill.system.model.Menu;
+import com.smallchill.system.service.MenuService;
+
+@Service
+public class MenuServiceImpl extends BaseService<Menu> implements MenuService {
+
+	@Override
+	public int findLastNum(String code) {
+		try{
+			Blade blade = Blade.create(Menu.class);
+			Menu menu = blade.findFirstBy("pCode = #{pCode} order by num desc", Record.create().set("pCode", code));
+			return menu.getNum()  1;
+		}
+		catch(Exception ex){
+			return 1;
+		}
+	}
+
+	@Override
+	public boolean isExistCode(String code) {
+		Blade blade = Blade.create(Menu.class);
+		String sql = "select * from tfw_menu where code = #{code}";
+		boolean temp = blade.isExist(sql, Record.create().set("code", code));
+		return temp;
+	}
+
+	@Override
+	public boolean updateStatus(String ids, Object status) {
+		Record paras = Record.create().set("status", status).set("ids", ids.split(","));
+		/*SQLManager sql = Blade.dao();
+		int cnt = sql.executeUpdate("update tfw_menu set status=#{status} where id in (#{join(ids)})", paras);
+		return cnt > 0;*/
+		Blade blade = Blade.create(Menu.class);
+		boolean temp = blade.updateBy("status=#{status}", "id in (#{join(ids)})", paras);
+		return temp;
+	}
+
+}
+关于Taocode
+关于我们
+帮助中心
+如何创建项目
+如何成为项目成员
+问题反馈
+联系我们
+邮箱微博
+©  2013  Alibaba  Inc.  All  rights  resvered. Powered by 
+
+站长统计
+
+        <!--<div class="layui-row" id="menuToolbar" role="group">-->
+            <!--<button class="layui-btn" onclick="add()"><i class="fa fa-plus"></i>&nbsp;添加-->
+            <!--</button>-->
+            <!--<button class="layui-btn" onclick="edit()"><i class="fa fa-edit"></i>&nbsp;修改-->
+            <!--</button>-->
+            <!--<button class="layui-btn" onclick="remove()"><i class="fa fa-remove"></i>&nbsp;删除-->
+            <!--</button>-->
+        <!--</div>-->
+
+                @* var add = { name:"add" }, edit = {name:"edit"}, remove = {name:"remove"};
+
+        @* <#buttonGroup menuId="${menuId}", buttons="${buttons}" />
+
+                @var add = { name:"add" };
+                @var edit = {name:"edit"};
+                @var remove = {name:"remove"};
+                @var buttons = [add, edit, remove];
+
+
+
+<div class="layui-row layui-form-pane">
+    <div class="layui-col-md3">
+        <label class="layui-form-label">菜单名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-col-md3">
+        <label class="layui-form-label">长输入框</label>
+        <div class="layui-input-block">
+            <input type="text" name="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-col-md3">
+        <button class="layui-btn"><i class="fa fa-search"></i>&nbsp;搜索
+        </button>
+        <button class="layui-btn"><i class="fa fa-trash"></i>&nbsp;重置
+        </button>
+    </div>
+</div>
+<div class="layui-form-item">
+    <div class="layui-col-md5" style="padding-right: 20px">
+        <label class="layui-form-label">父菜单ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="parentId" id="parentId" lay-verify="required" placeholder="父菜单ID(自动填充)" autocomplete="off"
+                class="layui-input">
+        </div>
+    </div>
+    <div class="layui-col-md5" style="padding-right: 20px">
+        <label class="layui-form-label">父菜单ID</label>
+        <div class="layui-input-block">
+            <input type="text" name="parentId" id="parentId" lay-verify="required" placeholder="父菜单ID(自动填充)" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-col-md5" style="margin-right: 20px">
+        <label class="layui-form-label">父菜单名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="parentName" id="parentName" lay-verify="required" placeholder="父菜单名称(自动填充)"
+                   autocomplete="off"
+                   class="layui-input" readonly>
+        </div>
+    </div>
+    <div class="layui-col-md1">
+        <button class="layui-btn" onclick="openTree()">请选择</button>
+    </div>
+</div>
+
+        <div class="layui-form-item">
+            <div class="layui-col-md5" style="margin-right: 20px">
+                <label class="layui-form-label">父菜单ID</label>
+                <div class="layui-input-block">
+                    <input type="text" name="parentId" id="parentId" lay-verify="required" placeholder="父菜单ID(自动填充)"
+                           autocomplete="off"
+                           class="layui-input" readonly>
+                </div>
+            </div>
+            <div class="layui-col-md5" style="margin-right: 20px">
+                <label class="layui-form-label">父菜单名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="parentName" id="parentName" lay-verify="required" placeholder="父菜单名称(自动填充)"
+                           autocomplete="off"
+                           class="layui-input" readonly>
+                </div>
+            </div>
+            <div class="layui-col-md1">
+                <button class="layui-btn" onclick="openTree()">请选择</button>
+            </div>
+        </div>
+        <div class="layui-row layui-form-pane">
+            <div class="layui-col-md3">
+                <label class="layui-form-label">菜单名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" lay-verify="title" autocomplete="off" placeholder="请输入标题"
+                           class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <label class="layui-form-label">长输入框</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" autocomplete="off" placeholder="请输入标题" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <button class="layui-btn"><i class="fa fa-search"></i>&nbsp;搜索
+                </button>
+                <button class="layui-btn"><i class="fa fa-trash"></i>&nbsp;重置
+                </button>
+            </div>
+        </div>

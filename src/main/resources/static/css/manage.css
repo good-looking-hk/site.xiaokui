@@ -1,0 +1,27 @@
+body {
+    font-size: 16px;
+    font-family: "微软雅黑", "Microsoft YaHei UI", Helvetica Neue, Helvetica, PingFang SC, Tahoma, Arial, sans-serif;
+    overflow:scroll;
+    overflow-y:hidden;
+    overflow-x:hidden;
+}
+
+[v-cloak] {
+    display: none !important;
+}
+
+.content {
+    padding: 0 0;
+}
+
+.head-info {
+    display: inline-block;
+}
+
+.head-info span {
+    margin-top: 12px;
+    margin-left: 5px;
+    margin-right: 15px;
+    display: inline-block;
+    vertical-align: middle;
+}

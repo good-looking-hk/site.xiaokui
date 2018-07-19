@@ -1,0 +1,12 @@
+body {
+    font-size: 14px;
+    font-family: "微软雅黑", "Microsoft YaHei UI", Helvetica Neue, Helvetica, PingFang SC, Tahoma, Arial, sans-serif;
+    background: #eeeeee;
+    height: auto;
+}
+
+.login-box {
+    width: 360px;
+    margin: 6% auto;
+}
+

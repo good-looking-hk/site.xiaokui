@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type"/>
+    <title>${user.name!"咦，该用户竟然没有名字"}</title>
+    <link href="${ctxPath}/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="${ctxPath}/layui/css/layui.css" rel="stylesheet"/>
+    <link href="${ctxPath}/css/blog.css" rel="stylesheet"/>
+    <link href="${ctxPath}/css/typora.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="header-nav">
+    <div class="layui-main">
+        <ul class="layui-nav fly-nav" id="nav-log" >
+            <a href="/login" onclick="play()">
+                <img class="img-circle" alt="用户头像" height="54" title="${user.selfDescription!'该用户的什么都没留下'}"
+                     width="54" src="${ctxPath + user.avatar!'/img/rabbit.gif'}"/>
+                ${user.name}
+            </a>
+        </ul>
+        <div class="layui-form" id="nav-search">
+            <div class="layui-row layui-form-pane">
+                <div class="layui-col-md8">
+                    <div class="layui-input-block" style="padding-top:1px;">
+                        <input type="text" name="key" id="key" autocomplete="off" placeholder="快速搜索"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <button class="layui-btn layui-btn-primary" onclick="search()">
+                        搜索
+                    </button>
+                </div>
+            </div>
+        </div>
+        <ul class="layui-nav fly-nav" id="nav-title">
+            <li class="layui-nav-item"><a href="${ctxPath}/blog" target="_blank">博客</a></li>
+            <li class="layui-nav-item"><a href="${ctxPath}/manage#/sys/blog" target="_blank">管理</a></li>
+            <li class="layui-nav-item"><a href="${ctxPath}/version">版本</a></li>
+            <li class="layui-nav-item"><a href="${ctxPath}/${user.blogSpace}/about" target="_blank">关于</a></li>
+        </ul>
+    </div>
+</div>
