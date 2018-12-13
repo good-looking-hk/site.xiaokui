@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import site.xiaokui.module.base.entity.BaseEntity;
+import site.xiaokui.module.base.entity.ParentEntity;
 
 /**
  * @author HK
@@ -11,7 +12,7 @@ import site.xiaokui.module.base.entity.BaseEntity;
  */
 @ToString(callSuper = true)
 @Getter@Setter
-public class SysRole extends BaseEntity<SysRole> {
+public class SysRole extends ParentEntity {
 
     private String description;
 

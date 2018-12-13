@@ -24,6 +24,12 @@ public class UserService extends BaseService<SysUser> {
         return matchOne(user);
     }
 
+    public SysUser getUserByPhone(String phone) {
+        SysUser user = new SysUser();
+        user.setPhone(phone);
+        return matchOne(user);
+    }
+
     public SysUser getUserByBlogSpace(String blogSpace) {
         SysUser user = new SysUser();
         user.setBlogSpace(blogSpace);

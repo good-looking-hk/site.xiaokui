@@ -13,11 +13,13 @@ import java.util.Date;
  */
 @ToString(callSuper = true)
 @Getter@Setter
-public class SysUser extends BaseEntity<SysMenu> {
+public class SysUser extends BaseEntity {
 
     private String password;
 
     private String email;
+
+    private String phone;
 
     private String blogSpace;
 

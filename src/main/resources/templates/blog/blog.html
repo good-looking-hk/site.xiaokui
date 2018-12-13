@@ -2,9 +2,9 @@
 <div id="content">
     <div class="panel panel-default content-body markdown-body">
         <div class="panel-heading content-title">
-            <span class="pre-blog"><a href='${ctxPath}${user.blog.preBlog!"#"'>上一篇:${user.blog.preBlogTitle!"无"}</a></span>
+            <span class="pre-blog"><a href='${ctxPath}${user.blog.preBlog!"#"}'>上一篇:${user.blog.preBlogTitle!"无"}</a></span>
             ${user.blog.title!"咦，竟然没有标题"}
-            <span class="next-blog"><a href='${ctxPath}${user.blog.nextBlog}!"#"'>下一篇:${user.blog.nextBlogTitle!"无"}</a></span>
+            <span class="next-blog"><a href='${ctxPath}${user.blog.nextBlog!"#"}'>下一篇:${user.blog.nextBlogTitle!"本系列完"}</a></span>
         </div>
         <div class="panel-body">
             @printFile("blog:" + user.blog.filePath + ".html");

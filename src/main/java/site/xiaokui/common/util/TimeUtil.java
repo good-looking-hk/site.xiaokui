@@ -1,4 +1,7 @@
-package site.xiaokui.common.util.hk;
+package site.xiaokui.common.util;
+
+import cn.hutool.core.date.DateUtil;
+import site.xiaokui.common.util.hk.Week;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -7,11 +10,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 /**
+ * 继承自hutool，以拥有父类的更多特性
  * @author HK
  * @date 2017/4/3
  * 本类默认规范日期显示格式为:2011-01-01 11:11:11
  */
-public class TimeUtil {
+public class TimeUtil extends DateUtil {
 
     /**
      * 默认的具体日期时间显示格式

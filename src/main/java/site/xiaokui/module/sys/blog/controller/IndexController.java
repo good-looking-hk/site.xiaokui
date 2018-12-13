@@ -1,5 +1,6 @@
 package site.xiaokui.module.sys.blog.controller;
 
+import cn.hutool.core.util.NumberUtil;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.controller.BaseController;
 import site.xiaokui.module.sys.blog.BlogConstants;
 import site.xiaokui.module.sys.blog.entity.BlogUser;
@@ -48,10 +50,13 @@ public class IndexController extends BaseController {
     @GetMapping({EMPTY, INDEX})
     public String index() {
         SysUser user = userService.top();
-        if (user == null || this.isEmpty(user.getBlogSpace())) {
+        if (user == null) {
             return FORWARD_ERROR;
         }
-        return FORWARD + BLOG_PREFIX + "/" + user.getBlogSpace();
+        if (!this.isEmpty(user.getBlogSpace())) {
+            return FORWARD + BLOG_PREFIX + "/" + user.getBlogSpace();
+        }
+        return FORWARD + BLOG_PREFIX + "/" + user.getId();
     }
 
     @GetMapping("/{blogSpace}/search")
@@ -59,13 +64,14 @@ public class IndexController extends BaseController {
         if (this.isEmpty(blogSpace) || this.isEmpty(key)) {
             return ERROR;
         }
-        SysUser user = userService.getUserByBlogSpace(blogSpace);
+        SysUser user = trueUser(blogSpace);
         if (user == null) {
             return ERROR;
         }
         Query<SysBlog> query = blogService.createQuery();
-        query.andEq("user_id", user.getId()).andLike("title", "%" + key + "%");
-        List<SysBlog> blogList = this.blogService.query(query);
+        query.andEq("user_id", user.getId())
+                .and(query.condition().orLike("dir", "%" + key + "%").orLike("name", "%" + key + "%"));
+        List<SysBlog> blogList = blogService.query(query);
         List<List<SysBlog>> lists = BlogUtil.resolveBlogList(blogList, blogSpace);
 
         BlogUser blogUser = new BlogUser(user);
@@ -79,11 +85,11 @@ public class IndexController extends BaseController {
         if (this.isEmpty(blogSpace)) {
             return ERROR;
         }
-        SysUser user = userService.getUserByBlogSpace(blogSpace);
+        SysUser user = trueUser(blogSpace);
         if (user == null) {
             return ERROR;
         }
-        List<SysBlog> blogList = this.blogService.listBlogByUserId(user.getId());
+        List<SysBlog> blogList = blogService.listBlogByUserId(user.getId());
         List<List<SysBlog>> lists = BlogUtil.resolveBlogList(blogList, blogSpace);
 
         BlogUser blogUser = new BlogUser(user);
@@ -97,7 +103,7 @@ public class IndexController extends BaseController {
      */
     @GetMapping("/{blogSpace}/{id}")
     public String showBlog(@PathVariable String blogSpace, @PathVariable Integer id, Model model) {
-        SysUser user = userService.getUserByBlogSpace(blogSpace);
+        SysUser user = trueUser(blogSpace);
         if (user == null) {
             return ERROR;
         }
@@ -129,11 +135,11 @@ public class IndexController extends BaseController {
      */
     @GetMapping({"/{blogSpace}/{blogDir}/{blogName}"})
     public String showBlog(@PathVariable String blogSpace, @PathVariable String blogDir, @PathVariable String blogName, Model model) {
-        SysUser user = userService.getUserByBlogSpace(blogSpace);
+        SysUser user = trueUser(blogSpace);
         if (user == null) {
             return ERROR;
         }
-        SysBlog blog = blogService.getBlog(user.getId(), blogDir, blogName);
+        SysBlog blog = blogService.findBlog(user.getId(), blogDir, blogName);
         if (blog == null) {
             return ERROR;
         }
@@ -156,13 +162,18 @@ public class IndexController extends BaseController {
         return SHOW_BLOG;
     }
 
+    @GetMapping("/version")
+    public String version() {
+        return BLOG_PREFIX + "/version";
+    }
+
     @GetMapping({"/{blogSpace}/about"})
     public String about(@PathVariable String blogSpace, Model model) {
-        SysUser user = userService.getUserByBlogSpace(blogSpace);
+        SysUser user = trueUser(blogSpace);
         if (user == null) {
             return ERROR;
         }
-        SysBlog blog = blogService.getBlog(user.getId(), "about", "about");
+        SysBlog blog = blogService.findBlog(user.getId(), "about", "about");
         if (blog == null) {
             return ERROR;
         }
@@ -177,7 +188,7 @@ public class IndexController extends BaseController {
     @RequiresAuthentication
     @GetMapping({"/{blogSpace}/preview"})
     public String preview(@PathVariable String blogSpace, String blogName, Model model) {
-        SysUser user = userService.getUserByBlogSpace(blogSpace);
+        SysUser user = trueUser(blogSpace);
         if (user == null) {
             return ERROR;
         }
@@ -190,5 +201,15 @@ public class IndexController extends BaseController {
         blogUser.setBlog(blog);
         model.addAttribute("user", blogUser);
         return SHOW_BLOG;
+    }
+
+    private SysUser trueUser(String blogSpace) {
+        SysUser user = userService.getUserByBlogSpace(blogSpace);
+        if (user == null) {
+            if (NumberUtil.isInteger(blogSpace)) {
+                user = userService.getById(Integer.valueOf(blogSpace));
+            }
+        }
+        return user;
     }
 }

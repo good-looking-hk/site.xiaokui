@@ -2,10 +2,11 @@ package site.xiaokui.module.base.controller;
 
 import org.apache.shiro.subject.Subject;
 import site.xiaokui.common.support.HttpUtil;
-import site.xiaokui.common.util.hk.StringUtil;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.config.shiro.ShiroKit;
 import site.xiaokui.config.shiro.ShiroUser;
 import site.xiaokui.module.base.entity.ResultEntity;
+import site.xiaokui.module.base.enums.DeptTypeEnum;
 import site.xiaokui.module.base.enums.RoleTypeEnum;
 import site.xiaokui.module.sys.user.entity.SysUser;
 import site.xiaokui.module.sys.user.entity.enums.SexTypeEnum;
@@ -88,11 +89,16 @@ public class BaseController implements ConstantController{
         user.setStatus(UserStatusEnum.OK.getCode());
         user.setSex(SexTypeEnum.UNKNOWN.getCode());
         user.setRoleId(RoleTypeEnum.USER.getCode());
+        user.setDeptId(DeptTypeEnum.NONE.getCode());
         return user;
     }
 
     protected ResultEntity ok() {
         return ResultEntity.ok();
+    }
+
+    protected ResultEntity ok(String msg) {
+        return ResultEntity.ok(msg);
     }
 
     protected ResultEntity error(String msg) {

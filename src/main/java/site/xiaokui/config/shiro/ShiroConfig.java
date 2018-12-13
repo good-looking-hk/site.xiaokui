@@ -19,10 +19,13 @@ import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.web.session.mgt.WebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import site.xiaokui.common.util.StringUtil;
+import site.xiaokui.module.base.BaseConstants;
 
 import javax.servlet.Filter;
 import java.util.LinkedHashMap;
@@ -32,17 +35,22 @@ import java.util.Map;
 import static org.apache.shiro.session.mgt.AbstractSessionManager.DEFAULT_GLOBAL_SESSION_TIMEOUT;
 import static org.apache.shiro.session.mgt.AbstractValidatingSessionManager.DEFAULT_SESSION_VALIDATION_INTERVAL;
 import static site.xiaokui.config.shiro.ShiroConstants.SHIRO_ACTIVE_SESSION_CACHE_NAME;
+import static site.xiaokui.module.base.BaseConstants.PROFILE_LOCAL;
+import static site.xiaokui.module.base.BaseConstants.PROFILE_ONLINE;
 
 /**
  * 配置shiro
+ * <p>
  * 一：对于shiro的使用，由于她所提供的API非常精简，以至于我们都觉得她太简单了，但其实不是，shiro对于
  * 复杂的配置都进行的简化及默认实现（即你如果没配置，那么就是她的默认实现），这种方式对于小白是友好的，但
  * 是对于需要深度定制的人来说，还是得自己去研究她的内部构造，
  * </p>
+ * <p>
  * 二：这里说明两个概念，一个是关于session的概念，我们知道，
  * 1.session的有效期是会话期间，而session是依托cookie的，这里cookie的有效期是被设置为直至会话结束
  * 2.rememberMe也是个cookie，只不过它的有效期值是由服务端设定的（一般来说比较长，浏览器可以修改）
  * </p>
+ * <p><
  * 三：简单的配置，那么只需要配置一个Reaml、一个shiroFilter以及一个securityManager就可以满足简单的日常开发了
  * 1.大体上shiro的流程是Application Code->Subject->Security Manager->Realm,这个有过一定经验就能体会到这一点
  * 2.SecurityManager是shiro的心脏，这也是为什么SecurityManager是必须注入的。DefaultWebSecurityManager是
@@ -57,11 +65,14 @@ import static site.xiaokui.config.shiro.ShiroConstants.SHIRO_ACTIVE_SESSION_CACH
  * 5.对于ehcache缓存的使用，大致有两个地方可以用到，一个是对于realm的缓存，一个是对于session的缓存。而如果使用默认配置的话，那么对于realm缓存
  * 是需要显式在realm中进行缓存判断的，否则即使配置了也不会生效；而对于session的缓存，shiro默认使用的是MemorySessionDAO，即将session信息保存
  * 在{@link java.util.concurrent.ConcurrentMap}中，这里为了迎合使用ehcache，我们替换掉
+ * </p>
  * @author HK
  * @date 2018-05-22 19:03
  */
 @Configuration
 public class ShiroConfig {
+
+    private static final String ANYBODY = BaseConstants.ANYBODY, REMEMBER_ME = BaseConstants.REMEMBER_ME, LOGIN_USER = BaseConstants.LOGIN_USER;
 
     /**
      * 项目自定义的Realm，必须作为bean注入到Spring
@@ -71,6 +82,9 @@ public class ShiroConfig {
     @Bean
     public ShiroDbRealm getShiroDbRealm() {
         ShiroDbRealm shiroDbRealm = new ShiroDbRealm();
+        // 是否对realm处理的结果进行缓存，这样可以避免重复执行realm中的权限验证
+        // 由于已经在realm中实现了权限的缓存，所以这一步没必要
+        // 简单的缓存实现可以使用MemoryConstrainedCacheManager
         shiroDbRealm.setCachingEnabled(false);
         return shiroDbRealm;
     }
@@ -82,19 +96,10 @@ public class ShiroConfig {
     public DefaultWebSecurityManager securityManager(WebSessionManager sessionManager) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(this.getShiroDbRealm());
+        // 针对session做缓存，这里可以为扩展为分布式session
         securityManager.setSessionManager(sessionManager);
         securityManager.setRememberMeManager(this.getRememberMeManager(this.getSimpleCookie()));
         return securityManager;
-    }
-
-    /**
-     * 缓存管理器 使用Ehcache实现
-     */
-    @Bean
-    public CacheManager getCacheShiroManager(EhCacheManagerFactoryBean ehcache) {
-        EhCacheManager ehCacheManager = new EhCacheManager();
-        ehCacheManager.setCacheManager(ehcache.getObject());
-        return ehCacheManager;
     }
 
     /**
@@ -106,70 +111,74 @@ public class ShiroConfig {
      * 当应用开启了rememberMe时,用户下次访问时可以是一个user,但不会是authc,因为authc是需要重新认证的
      * 1. /**的意思是所有文件夹及里面的子文件夹(包含文件夹里面的子文件)
      * 2. /*是所有文件夹，不含子文件夹
-     * TODO
+     * @param securityManager shiro的核心，默认使用{@link DefaultWebSecurityManager}
+     * @param onlineSessionFilter 在线过滤器
+     * @return shiro过滤链（以FactoryBean）
      */
     @Bean
-    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, OnlineSessionFilter onlineSessionFilter) {
+    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, OnlineSessionFilter onlineSessionFilter,
+                                                    @Value("${spring.profiles.active}") String profile) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
         // 登陆访问url,默认为/login.jsp(一般情况下建议主动修改)
         shiroFilter.setLoginUrl("/login");
-        //登陆成功后跳转的url
-//        shiroFilter.setSuccessUrl("/");
-        //没有权限跳转的url
+        // 没有权限跳转的url
         shiroFilter.setUnauthorizedUrl("/global/error");
 
-        //覆盖默认的user拦截器(默认拦截器解决不了ajax请求 session超时的问题,若有更好的办法请及时反馈作者)
-//        HashMap<String, Filter> myFilters = new HashMap<>();
-//        myFilters.put("user", new GunsUserFilter());
-//        shiroFilter.setFilters(myFilters);
-
-        // 自定义拦截器
         Map<String, Filter> map = new LinkedHashMap<String, Filter>();
-        //限制同一帐号同时在线的个数。
-        map.put("online", onlineSessionFilter);
+        // 限制同一帐号同时在线的个数
+        map.put(onlineSessionFilter.getFilterName(), onlineSessionFilter);
         shiroFilter.setFilters(map);
 
         Map<String, String> filterMap = new LinkedHashMap<>();
-        //静态资源的过滤
-        filterMap.put("/plugins/**", "anon");
-        filterMap.put("/img/**", "anon");
-        filterMap.put("/music/**", "anon");
-        filterMap.put("/**/*.js", "anon");
-        filterMap.put("/**/*.css", "anon");
-        filterMap.put("/**/*.png", "anon");
-        filterMap.put("/**/*.json", "anon");
-        filterMap.put("/unauthorized", "anon");
-        filterMap.put("/error", "anon");
-        filterMap.put("/favicon.ico", "anon");
 
-        //特定请求的过滤
-        filterMap.put("/kaptcha", "anon");
-        filterMap.put("/druid/**", "anon");
-        filterMap.put("/", "anon");
-        filterMap.put("/index", "anon");
-        filterMap.put("/login", "anon");
-        filterMap.put("/register", "anon");
-        filterMap.put("/sys/login", "anon");
-        filterMap.put("/sys/register", "anon");
-        filterMap.put("/blog/**", "anon");
+        // 静态资源的过滤
+        filterMap.put("/plugins/**", ANYBODY);
+        filterMap.put("/font-awesome/**", ANYBODY);
+        filterMap.put("/bootstrap/**", ANYBODY);
+        filterMap.put("/layui/**", ANYBODY);
+        filterMap.put("/**/font/**", ANYBODY);
+        filterMap.put("/img/**", ANYBODY);
+        filterMap.put("/music/**", ANYBODY);
 
-        filterMap.put("/csms/**", "anon");
+        filterMap.put("/**/*.js", ANYBODY);
+        filterMap.put("/**/*.css", ANYBODY);
+        filterMap.put("/**/*.png", ANYBODY);
+        filterMap.put("/**/*.json", ANYBODY);
+        filterMap.put("/unauthorized", ANYBODY);
+        filterMap.put("/error", ANYBODY);
+        filterMap.put("/favicon.ico", ANYBODY);
 
-        //其余都需要验证
-        filterMap.put("/user", "user");
-        filterMap.put("/swagger/**", "user");
+        // 特定请求的过滤
+        filterMap.put("/kaptcha", ANYBODY);
+        filterMap.put("/druid/**", ANYBODY);
+        filterMap.put("/", ANYBODY);
+        filterMap.put("/index", ANYBODY);
+        filterMap.put("/login", ANYBODY);
+        filterMap.put("/register", ANYBODY);
+        filterMap.put("/sys/login", ANYBODY);
+        filterMap.put("/sys/register", ANYBODY);
+        filterMap.put("/blog/**", ANYBODY);
 
-        /// 正式环境用filterMap.put("/**", "online,authc"); //user
+        // 其余都需要验证
+        filterMap.put("/user", REMEMBER_ME);
+        filterMap.put("/swagger/**", REMEMBER_ME);
 
-        filterMap.put("/**", "online,authc");
-
+        if (PROFILE_LOCAL.equals(profile)) {
+            // 本地免登录
+            filterMap.put("/**", StringUtil.addDot(onlineSessionFilter.getFilterName(), REMEMBER_ME));
+        } else if (PROFILE_ONLINE.equals(profile)) {
+            // 线上需要登录
+            filterMap.put("/**", StringUtil.addDot(onlineSessionFilter.getFilterName(), LOGIN_USER));
+        } else {
+            throw new RuntimeException("profile值只能为local,online:" + profile);
+        }
         shiroFilter.setFilterChainDefinitionMap(filterMap);
         return shiroFilter;
     }
 
     @Bean
-    public OnlineSessionFilter onlineSessionFilter(EnterpriseCacheSessionDAO cacheSessionDAO) {
+    public OnlineSessionFilter onlineSessionFilter(SessionDAO cacheSessionDAO) {
         OnlineSessionFilter onlineSessionFilter = new OnlineSessionFilter();
         onlineSessionFilter.setSessionDAO(cacheSessionDAO);
         return onlineSessionFilter;
@@ -177,26 +186,28 @@ public class ShiroConfig {
 
     /**
      * DefaultWebSessionManager
+     * 注意，{@code DefaultWebSessionManager}设置的缓存<b>一定</b>会覆盖{@code SessionDAO}设置的缓存
+     * 具体请看{@link org.apache.shiro.session.mgt.DefaultSessionManager#applyCacheManagerToSessionDAO}和
+     * {@link org.apache.shiro.session.mgt.DefaultSessionManager#setSessionDAO}
      */
     @Bean
     public DefaultWebSessionManager getDefaultWebSessionManager(SessionDAO sessionDAO) {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
         LinkedList<SessionListener> list = new LinkedList<>();
+        // 添加监听
         list.add(new ShiroSessionListener());
         sessionManager.setSessionListeners(list);
+        // 设置sessionDAO，不需要在此处设置缓存,如setCacheManager(xxx);会覆盖sessionDAO的缓存
         sessionManager.setSessionDAO(sessionDAO);
-        //session失效时间，单位秒,shiro默认60分钟
+        // session失效时间，单位秒,shiro默认60分钟
         sessionManager.setSessionValidationInterval(DEFAULT_SESSION_VALIDATION_INTERVAL);
-        //多久检测一次失效的session,shiro默认30分钟
+        // 多久检测一次失效的session,shiro默认30分钟
         sessionManager.setGlobalSessionTimeout(DEFAULT_GLOBAL_SESSION_TIMEOUT);
         // 网上找的，处理JSESSIONID
         sessionManager.setSessionIdUrlRewritingEnabled(false);
+        // 删除失效session
         sessionManager.setDeleteInvalidSessions(true);
         sessionManager.setSessionValidationSchedulerEnabled(true);
-        Cookie cookie = new SimpleCookie(ShiroHttpSession.DEFAULT_SESSION_ID_NAME);
-        cookie.setName("shiroCookie");
-        cookie.setHttpOnly(true);
-        sessionManager.setSessionIdCookie(cookie);
         return sessionManager;
     }
 
@@ -209,12 +220,22 @@ public class ShiroConfig {
      * {@link org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO#ACTIVE_SESSION_CACHE_NAME}
      */
     @Bean
-    public EnterpriseCacheSessionDAO getEnterpriseCacheSessionDAO(CacheManager cacheManager) {
+    public SessionDAO getEnterpriseCacheSessionDAO(CacheManager cacheManager) {
         EnterpriseCacheSessionDAO enterCacheSessionDAO = new EnterpriseCacheSessionDAO();
-        //添加缓存管理器
+        // 添加缓存管理器
         enterCacheSessionDAO.setCacheManager(cacheManager);
         enterCacheSessionDAO.setActiveSessionsCacheName(SHIRO_ACTIVE_SESSION_CACHE_NAME);
         return enterCacheSessionDAO;
+    }
+
+    /**
+     * 缓存管理器，默认使用Ehcache实现，由Spring自动注入进SessionDAO
+     */
+    @Bean
+    public CacheManager getCacheShiroManager(EhCacheManagerFactoryBean ehcache) {
+        EhCacheManager ehCacheManager = new EhCacheManager();
+        ehCacheManager.setCacheManager(ehcache.getObject());
+        return ehCacheManager;
     }
 
     /**
@@ -224,7 +245,7 @@ public class ShiroConfig {
     public SimpleCookie getSimpleCookie() {
         SimpleCookie simpleCookie = new SimpleCookie("rememberMe");
         simpleCookie.setHttpOnly(true);
-        //7天
+        // 7天
         simpleCookie.setMaxAge(7 * 24 * 60 * 60);
         return simpleCookie;
     }

@@ -51,6 +51,10 @@ public class OnlineSessionFilter extends AccessControlFilter {
 
     private SessionDAO sessionDAO;
 
+    public final String getFilterName() {
+        return "online";
+    }
+
     /**
      * @return true：如果请求允许正常通过该过滤器,反之进入{@link #onAccessDenied}方法
      */

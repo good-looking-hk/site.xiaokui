@@ -17,4 +17,21 @@ public class BaseConstants {
 
     public static final String GUEST = "guest";
 
+    // 默认profile
+
+    public static final String PROFILE_LOCAL = "local";
+
+    public static final String PROFILE_ONLINE = "online";
+
+    // shiro常量
+
+    /**
+     * 具体请看{@link org.apache.shiro.web.filter.mgt.DefaultFilter}
+     */
+    public static final String ANYBODY = "anon";
+
+    public static final String REMEMBER_ME = "user";
+
+    public static final String LOGIN_USER = "authc";
+
 }

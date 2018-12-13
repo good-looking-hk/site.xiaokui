@@ -1,33 +1,35 @@
 package site.xiaokui.module.sys.blog.util;
 
+import cn.hutool.core.date.DatePattern;
 import org.springframework.web.multipart.MultipartFile;
-import site.xiaokui.common.util.hk.StringUtil;
+import site.xiaokui.common.util.StringUtil;
+import site.xiaokui.common.util.TimeUtil;
 import site.xiaokui.module.sys.blog.entity.BlogStatusEnum;
 import site.xiaokui.module.sys.blog.entity.SysBlog;
 import site.xiaokui.module.sys.blog.entity.UploadBlog;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static site.xiaokui.module.sys.blog.BlogConstants.HTML_SUFFIX;
 import static site.xiaokui.module.sys.blog.BlogConstants.PREFIX;
-import static site.xiaokui.module.sys.blog.BlogConstants.UPLOAD_PATH;
 
 /**
  * @author HK
  * @date 2018-06-25 00:01
  */
-
 public class BlogUtil {
 
     private static final String BLOG_PREFIX = PREFIX + "/";
 
     /**
-     * 获取博客实体对象的对应的url路径
+     * 获取博客实体对象的对应的访问url路径
      */
     public static String getBlogPath(String blogDir, String blogName, String blogSpace) {
         if (StringUtil.isEmpty(blogName) || StringUtil.isEmpty(blogSpace)) {
-            throw new RuntimeException("参数错误[" + blogName + "," + blogSpace + "]");
+            throw new IllegalArgumentException("参数错误[" + blogName + "," + blogSpace + "]");
         }
         StringBuilder sb = new StringBuilder();
         if (StringUtil.isEmpty(blogDir)) {
@@ -39,11 +41,11 @@ public class BlogUtil {
     }
 
     /**
-     * 获取博客实体对象对应的html文件路径
+     * 获取博客实体对象对应的服务器本地html文件路径
      */
     public static String getFilePath(Integer userId, String blogDir, String blogName) {
         if (userId <= 0 || StringUtil.isEmpty(blogName)) {
-            throw new RuntimeException("参数错误[" + userId + "," + blogDir + "," + blogName + "]");
+            throw new IllegalArgumentException("参数错误[" + userId + "," + blogDir + "," + blogName + "]");
         }
         StringBuilder sb = new StringBuilder();
         if (StringUtil.isEmpty(blogDir)) {
@@ -56,11 +58,13 @@ public class BlogUtil {
 
     /**
      * 对博客实体按目录划分成多个子List，由前段模板渲染显示
+     * 排序操作也可在数据库进行，在数据量大时可以做比较选择
      */
     public static List<List<SysBlog>> resolveBlogList(List<SysBlog> blogList, String blogSpace) {
         List<List<SysBlog>> list = null;
         if (blogList != null && blogList.size() != 0) {
-            Collections.sort(blogList);
+            // 自定义比较器
+            blogList.sort(new SysBlog.BlogComparator());
             String newDir = blogList.get(0).getDir();
             list = new LinkedList<>();
             List<SysBlog> temp = new LinkedList<>();
@@ -96,45 +100,8 @@ public class BlogUtil {
      * 解析Typora生成的html文件
      */
     public static UploadBlog resolveUploadFile(MultipartFile upload, Integer userId) {
-        UploadBlog blog = new UploadBlog();
         String fullName = upload.getOriginalFilename();
-        if (StringUtil.isEmpty(fullName) || !fullName.endsWith(HTML_SUFFIX)) {
-            blog.setErrorInfo("不合法的文件：" + fullName);
-            return blog;
-        }
-        String[] temp = StringUtil.split(fullName, ".");
-        if (temp.length != 2) {
-            blog.setErrorInfo("文件格式可能有点不正确：" + fullName);
-        }
-        // 获取文件前缀，去掉后缀，假设文件名fullName为 测试目录：测试博客-1
-        fullName = temp[0];
-
-        int index = fullName.indexOf("：");
-        if (index < 0) {
-            blog.setErrorInfo("您可能没有包含中文的分号（：）");
-        }
-        // 获取目录，此时dir为 测试目录
-        blog.setDir(fullName.substring(0, index));
-
-        // 此时fullNam为 测试博客-1
-        fullName = fullName.substring(index + 1);
-        index = fullName.indexOf("-");
-        if (index > -1) {
-            String str = fullName.substring(index + 1);
-            int orderNumb;
-            try {
-                orderNumb = Integer.valueOf(str);
-            } catch (NumberFormatException e) {
-                blog.setErrorInfo("非法排序数字：" + str);
-                return blog;
-            }
-            // 如果包括序号的化，orderNum为-后面的数字，此时fullName为测试博客
-            fullName = fullName.substring(0, index);
-            blog.setOrderNum(orderNumb);
-        }
-        blog.setCreateTime(new Date());
-        blog.setName(fullName);
-
+        UploadBlog blog = resolveFileName(fullName);
         BufferedReader reader = null;
         BufferedWriter writer = null;
         boolean isSuccess = false;
@@ -143,7 +110,7 @@ public class BlogUtil {
             /// 留作测试用的InputStreamReader inputFileReader = new InputStreamReader(new FileInputStream(upload), "UTF-8");
             InputStreamReader inputFileReader = new InputStreamReader(upload.getInputStream(), "UTF-8");
             reader = new BufferedReader(inputFileReader);
-            targetFile = FileUtil.createTempFile(userId, fullName + ".html");
+            targetFile = FileUtil.createTempFile(userId, blog.getName() + HTML_SUFFIX);
             if (targetFile == null) {
                 throw new RuntimeException("创建文件失败，" + fullName);
             }
@@ -174,6 +141,78 @@ public class BlogUtil {
         return blog;
     }
 
+    /**
+     * 例如 Spring源码：bean的加载-6-20180808.html，解析格式为 目录：标题-序号-日期.后缀
+     *
+     * @param fullName html文件全名
+     * @return 解析后上传博客对象
+     */
+    private static UploadBlog resolveFileName(String fullName) {
+        UploadBlog blog = new UploadBlog();
+        if (StringUtil.isEmpty(fullName) || !fullName.endsWith(HTML_SUFFIX)) {
+            blog.setErrorInfo("不合法的文件：" + fullName);
+            return blog;
+        }
+        // 去掉后缀
+        int index = fullName.lastIndexOf(".");
+        fullName = fullName.substring(0, index);
+
+        // 取出目录，建议使用中文分号
+        index = fullName.contains("：") ? fullName.indexOf("：") : fullName.indexOf(":");
+        if (index < 0) {
+            blog.setErrorInfo("您可能没有包含中文分号（：）");
+            return blog;
+        }
+        blog.setDir(fullName.substring(0, index));
+
+        // 去掉目录和分号
+        fullName = fullName.substring(index + 1);
+        index = fullName.lastIndexOf("-");
+        if (index < 0) {
+            blog.setErrorInfo("您没有为博客指定序号");
+            return blog;
+        }
+
+        // 取出日期或序号
+        String str = fullName.substring(index + 1);
+        // 默认日期格式为yyyyMMdd
+        if (str.length() == 8 && str.startsWith("20")) {
+            Date date = TimeUtil.parse(str, DatePattern.PURE_DATE_PATTERN);
+            blog.setCreateTime(date);
+            // 去掉日期
+            fullName = fullName.substring(0, index);
+            index = fullName.lastIndexOf("-");
+            if (index < 0) {
+                blog.setErrorInfo("博客必须指定序号");
+                return blog;
+            }
+            str = fullName.substring(index + 1);
+        }
+        // 规定最大序号不超过99
+        if (str.length() < 3) {
+            int orderNumb;
+            try {
+                orderNumb = Integer.valueOf(str);
+            } catch (NumberFormatException e) {
+                blog.setErrorInfo("非法排序数字：" + str);
+                return blog;
+            }
+            blog.setOrderNum(orderNumb);
+        }
+
+        // 取出标题
+        fullName = fullName.substring(0, index);
+        if (fullName.length() == 0) {
+            blog.setErrorInfo("博客标题不能为空");
+            return blog;
+        }
+        blog.setName(fullName);
+        if (blog.getCreateTime() == null) {
+            blog.setCreateTime(new Date());
+        }
+        return blog;
+    }
+
     private static void closeStream(Reader reader, Writer writer) {
         try {
             if (writer != null) {
@@ -190,36 +229,9 @@ public class BlogUtil {
 
     public static void main(String[] args) {
         String fullName = "Spring源码：bean的加载-6.html";
-        String name = StringUtil.split(fullName, ".")[0];
-        System.out.println(name);
-
-        // 通过两个index
-        int index1 = name.indexOf("：");
-        String dir = name.substring(0, index1);
-        System.out.println(dir);
-
-        int index2 = fullName.indexOf("-");
-        String orderNum = name.substring(index2 + 1);
-        System.out.println(orderNum);
-
-        name = name.substring(index1 + 1, index2);
-        System.out.println(name);
-
-        // 通过一个index
-        fullName = "Spring源码：bean的加载-6.html";
-        name = StringUtil.split(fullName, ".")[0];
-        System.out.println(name);
-
-        int index = name.indexOf("：");
-        dir = name.substring(0, index);
-        System.out.println(dir);
-        name = name.substring(index + 1);
-        System.out.println(name);
-
-        index = name.indexOf("-");
-        orderNum = name.substring(index + 1);
-        System.out.println(orderNum);
-        System.out.println(name.substring(0, index));
+        System.out.println(resolveFileName(fullName));
+        fullName = "Spring源码：bean的加载-6-20181122.html";
+        System.out.println(resolveFileName(fullName));
     }
 }
 

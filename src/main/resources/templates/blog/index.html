@@ -9,7 +9,7 @@
         @count++;
         <li class="list-group-item">
             <span class="badge">${blog.createTime, "yyyy-MM-dd"}</span>
-            <a target="_blank" href="${ctxPath + blog.blogPath}">${blog.title}</a>
+            <a target="_blank" href="${ctxPath + blog.blogPath}">${blog.dir}：${blog.title}</a>
         </li>
         @}
     </ul>
@@ -22,7 +22,6 @@
 
 <script src="${ctxPath}/jquery/jquery.min.js"></script>
 <script src="${ctxPath}/layui/layui.js"></script>
-<script src="${ctxPath}/js/blog/index.js"></script>
 <script>
     function search() {
         var url = "/blog/${user.blogSpace}/search?key=";

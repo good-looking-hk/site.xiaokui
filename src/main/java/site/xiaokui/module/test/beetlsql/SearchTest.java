@@ -3,7 +3,6 @@ package site.xiaokui.module.test.beetlsql;
 import cn.hutool.json.JSONObject;
 import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.query.Query;
-import site.xiaokui.module.sys.csms.GoodsService;
 import site.xiaokui.module.sys.user.entity.SysMenu;
 import site.xiaokui.module.sys.user.entity.SysUser;
 import site.xiaokui.module.base.service.BaseService;
@@ -26,7 +25,6 @@ public class SearchTest {
 //        query();
 //        date();
 //        limit();
-        fruit();
     }
 
     private static void selectAll() {
@@ -101,11 +99,5 @@ public class SearchTest {
         System.out.println(baseService.nextEntity(1));
         System.out.println(baseService.nextEntity(100));
     }
-
-    private static void fruit() {
-        GoodsService fruitService = new GoodsService();
-        fruitService.setSqlManager(sqlManager);
-    }
-
     private static class Base extends BaseService<SysUser> {}
 }

@@ -16,33 +16,25 @@ import java.util.Date;
 @ToString
 @Getter
 @Setter
-public class BaseEntity<T extends BaseEntity> implements ToZTreeNode, Serializable, Comparable<T> {
+public class BaseEntity implements ToZTreeNode, Serializable {
 
     protected Integer id;
 
     protected String name;
 
-    protected Integer parentId;
-
-    protected Integer orderNum;
-
+    /**
+     * 创建时间在数据库中一般用datetime类型
+     */
     protected Date createTime;
 
+    /**
+     * 修改时间在数据库中一般用timestamp类型，由数据库自动修改
+     * 但个人而言，还是习惯用datetime，自己完全控制在代码层，不依赖于数据库
+     */
     protected Date modifiedTime;
 
     @Override
-    public int compareTo(T t) {
-        if (!this.parentId.equals(t.getParentId())) {
-            return this.parentId.compareTo(t.getParentId());
-        }
-        if (!this.orderNum.equals(t.getOrderNum())) {
-            return this.orderNum.compareTo(t.getOrderNum());
-        }
-        return this.id.compareTo(t.getId());
-    }
-
-    @Override
     public ZTreeNode toZTreeNode() {
-        return new ZTreeNode(this.id, this.parentId, this.name);
+        return new ZTreeNode(this.id, null, this.name);
     }
 }

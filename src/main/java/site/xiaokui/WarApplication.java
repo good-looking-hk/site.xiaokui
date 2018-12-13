@@ -5,7 +5,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 
 /**
  * @author HK
- * @date 2017/08/25 20:22
+ * @date 2017/06/25 20:22
  */
 public class WarApplication extends SpringBootServletInitializer {
 

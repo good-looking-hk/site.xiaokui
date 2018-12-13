@@ -9,9 +9,7 @@ import site.xiaokui.module.base.controller.AbstractController;
 import site.xiaokui.module.sys.user.UserConstants;
 import site.xiaokui.module.sys.user.entity.enums.MenuStatusEnum;
 import site.xiaokui.module.base.enums.MenuTypeEnum;
-import site.xiaokui.common.util.hk.StringUtil;
-import site.xiaokui.module.base.controller.BaseController;
-import site.xiaokui.module.base.controller.CrudController;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.entity.ResultEntity;
 import site.xiaokui.module.sys.user.entity.SysMenu;
 import site.xiaokui.module.sys.user.entity.ZTreeNode;
@@ -79,7 +77,6 @@ public class MenuController extends AbstractController {
      *
      * @param name       菜单名称
      * @param parentId   父菜单id
-     * @param code       菜单编号
      * @param orderNum   排序号
      * @param url        url地址
      *                   <p>
@@ -172,7 +169,7 @@ public class MenuController extends AbstractController {
      * @param id       菜单id
      * @param name     菜单名称
      * @param parentId 父菜单id
-     * @param code     菜单标号
+     * @param parentName 父菜单名称
      * @param orderNum 菜单排序
      * @param url      url地址
      * @param icon     图标（如果是一级菜单，否则会自动忽略）
@@ -224,7 +221,7 @@ public class MenuController extends AbstractController {
         if (id <= 0) {
             return ResultEntity.paramError();
         }
-        boolean success = menuService.deleteById(id);
+        boolean success = menuService.deleteMenu(id);
         return returnResult(success, "删除菜单失败");
     }
 }

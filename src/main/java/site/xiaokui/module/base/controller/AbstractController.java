@@ -35,7 +35,6 @@ public abstract class AbstractController extends BaseController implements CrudC
     public String index() {
         Subject subject = SHIRO.getSubject();
         if (subject.isPermitted(PREFIX)) {
-            System.out.println(TO_INDEX);
             return TO_INDEX;
         }
         return FORWARD_UNAUTHORIZED;

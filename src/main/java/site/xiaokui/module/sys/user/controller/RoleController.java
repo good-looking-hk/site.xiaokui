@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import site.xiaokui.module.sys.user.UserConstants;
 import site.xiaokui.module.base.controller.AbstractController;
 import site.xiaokui.module.base.enums.RoleTypeEnum;
-import site.xiaokui.common.util.hk.StringUtil;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.entity.ResultEntity;
 import site.xiaokui.module.sys.user.entity.SysMenu;
 import site.xiaokui.module.sys.user.entity.SysRole;

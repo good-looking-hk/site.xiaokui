@@ -1,7 +1,5 @@
 package site.xiaokui.module.sys.user;
 
-import org.apache.shiro.subject.support.DefaultSubjectContext;
-
 /**
  * @author HK
  * @date 2018-05-29 10:52
@@ -10,7 +8,7 @@ public class UserConstants {
 
     // ============User Constant==========
 
-    public static final String REMEMBER_FLAT = "on";
+    public static final String REMEMBER_FLAG = "on";
 
     public static final int DEFAULT_SALT_LENGTH = 10;
 
@@ -22,6 +20,11 @@ public class UserConstants {
     // ============Role Constant==========
 
     public static final String SET_AUTHORITY = "/setAuthority";
+
+    /**
+     * 是否强制删除菜单（一二级菜单）
+     */
+    public static final boolean IS_FOCUS_DELETE_MENU = false;
 
 
     // ============Menu Constant==========

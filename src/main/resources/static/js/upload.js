@@ -140,6 +140,7 @@ var vm = new Vue({
                     dir: blogInfo[0],
                     orderNum: parseInt(blogInfo[1]),
                     name: blogInfo[2],
+                    createTime: blogInfo[3]
                 };
                 HK.toString(data);
                 // return;

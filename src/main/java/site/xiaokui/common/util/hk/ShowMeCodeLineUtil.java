@@ -10,19 +10,25 @@ public class ShowMeCodeLineUtil {
 
     private static final String JAVA_SUFFIX = ".java";
 
+    private static final String IGNORE_KEY = "hk";
+
     private static int javaFileTotal = 0;
     private static int javaCodeLine = 0;
     private static int whiteSpaceLine = 0;
     private static int javaCommentLine = 0;
 
     public static void main(String[] hk) {
-        String path = "/home/hk/IdeaWorkSpace/newxiaokui/src/main/java";
-//        String test = path + "/site/xiaokui/common/util/hk/CodeLineTest.java";
-//        showMeCodeLine(test);
+        String basePath = "/home/hk/IdeaWorkSpace/newxiaokui/src/main/java";
+        showMeCodeLine(basePath);
+    }
+
+    private static void testThisClass(String basePath) {
+        String path = basePath + "/site/xiaokui/common/util/hk/CodeLineTest.java";
         showMeCodeLine(path);
     }
 
-    private ShowMeCodeLineUtil(){}
+    private ShowMeCodeLineUtil() {
+    }
 
     /**
      * 来，看看你写了多少行bug了
@@ -39,7 +45,7 @@ public class ShowMeCodeLineUtil {
             System.out.println("目录" + path + "下共有：");
             System.out.println("java文件" + javaFileTotal + "个，有效java代码(不含注释和空行)" + javaCodeLine + "行，java注释" + javaCommentLine + "行" + "，空白行" + whiteSpaceLine + "行");
         } catch (IOException e) {
-            throw new RuntimeException("统计代码行数时出现错误,错误信息：" + e.getMessage());
+            System.out.println("统计代码行数时出现错误,错误信息：" + e.getMessage());
         }
         long endTime = System.currentTimeMillis();
         System.out.println("统计耗时：" + (endTime - beginTime) + "ms");
@@ -47,6 +53,9 @@ public class ShowMeCodeLineUtil {
 
     private static void readFile(File file) throws IOException {
         if (file.isDirectory()) {
+            if (file.getName().contains(IGNORE_KEY)) {
+                return;
+            }
             File[] files = file.listFiles();
             if (files == null || files.length == 0) {
                 return;

@@ -47,6 +47,21 @@ var HK = {
         //     layer.msg(JSON.stringify(data));
         // }
     },
+    showTime: function (id) {
+        if (this.isEmpty(id)) {
+            return;
+        }
+        setInterval(function () {
+            var nowtime = new Date();
+            var year = nowtime.getFullYear();
+            var month = nowtime.getMonth() + 1;
+            var date = nowtime.getDate();
+            var hour = nowtime.getHours();
+            var minute = nowtime.getMinutes() < 10 ? '0' + nowtime.getMinutes() : nowtime.getMinutes();
+            var second = nowtime.getSeconds() < 10 ? '0' + nowtime.getSeconds() : nowtime.getSeconds();
+            document.getElementById(id).innerText = year + "年" + month + "月" + date + "日 " + hour + ":" + minute + ":" + second;
+        }, 1000);
+    },
     addCtx: function (ctx) {
         if (this.ctxPath === "" && !this.isEmpty(ctx)) {
             this.ctxPath = ctx;

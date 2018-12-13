@@ -9,18 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import site.xiaokui.module.base.enums.MenuTypeEnum;
 import site.xiaokui.module.sys.user.UserConstants;
-import site.xiaokui.common.util.hk.StringUtil;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.config.shiro.ShiroUser;
 import site.xiaokui.module.base.controller.AbstractController;
 import site.xiaokui.module.base.entity.ResultEntity;
 import site.xiaokui.module.base.enums.RoleTypeEnum;
 import site.xiaokui.module.sys.user.entity.SysDept;
-import site.xiaokui.module.sys.user.entity.SysMenu;
 import site.xiaokui.module.sys.user.entity.SysRole;
 import site.xiaokui.module.sys.user.entity.SysUser;
-import site.xiaokui.module.sys.user.entity.enums.MenuStatusEnum;
 import site.xiaokui.module.sys.user.entity.enums.SexTypeEnum;
 import site.xiaokui.module.sys.user.entity.wrapper.SysUserWrapper;
 import site.xiaokui.module.sys.user.service.DeptService;
@@ -28,7 +25,6 @@ import site.xiaokui.module.sys.user.service.RoleService;
 import site.xiaokui.module.sys.user.service.ServiceFactory;
 import site.xiaokui.module.sys.user.service.UserService;
 
-import java.util.Date;
 import java.util.List;
 
 import static site.xiaokui.module.base.BaseConstants.SUPER_ADMIN;

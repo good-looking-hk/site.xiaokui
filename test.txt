@@ -1,2 +1,0 @@
-this is a test txt
-version = 2.0

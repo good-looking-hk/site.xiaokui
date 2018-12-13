@@ -8,7 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import site.xiaokui.common.util.hk.StringUtil;
+import site.xiaokui.common.util.StringUtil;
+import site.xiaokui.common.util.TimeUtil;
 import site.xiaokui.module.base.controller.AbstractController;
 import site.xiaokui.module.base.entity.ResultEntity;
 import site.xiaokui.module.sys.blog.BlogConstants;
@@ -16,11 +17,8 @@ import site.xiaokui.module.sys.blog.entity.BlogStatusEnum;
 import site.xiaokui.module.sys.blog.entity.SysBlog;
 import site.xiaokui.module.sys.blog.entity.UploadBlog;
 import site.xiaokui.module.sys.blog.service.BlogService;
-import site.xiaokui.module.sys.user.entity.SysUser;
-import site.xiaokui.module.sys.user.entity.wrapper.SysUserWrapper;
 
 import java.util.Date;
-import java.util.List;
 
 import static site.xiaokui.module.sys.blog.BlogConstants.HTML_SUFFIX;
 import static site.xiaokui.module.sys.blog.BlogConstants.MAX_UPLOAD_FILE;
@@ -78,13 +76,11 @@ public class BlogController extends AbstractController {
             return this.error("文件为空或过大");
         }
         String fileName = file.getOriginalFilename();
-        if (!fileName.endsWith(HTML_SUFFIX)) {
+        if (this.isEmpty(fileName) || !fileName.endsWith(HTML_SUFFIX)) {
             return this.error("文件格式只能为html");
         }
         UploadBlog blog = blogService.saveTemp(file, this.getUserId());
-        if (blog == null) {
-            return this.error("不合法格式文件");
-        } else if (blog.getErrorInfo() != null) {
+        if (blog.getErrorInfo() != null) {
             return this.error(blog.getErrorInfo());
         }
         blog.setBlogSpace(this.getUser().getBlogSpace());
@@ -94,22 +90,21 @@ public class BlogController extends AbstractController {
     @RequiresPermissions(BLOG_PREFIX + ADD)
     @PostMapping(ADD)
     @ResponseBody
-    public ResultEntity add(String dir, String name, Integer orderNum) {
+    public ResultEntity add(String dir, String name, Integer orderNum, String createTime) {
         if (StringUtil.hasEmpty(dir, name)) {
             return this.paramError(dir, name);
         }
         SysBlog blog = new SysBlog();
         blog.setUserId(this.getUserId());
         blog.setName(name);
-        blog.setTitle(dir + "：" + name);
+        blog.setTitle(name);
         blog.setDir(dir);
-        blog.setCreateTime(new Date());
+        blog.setCreateTime(TimeUtil.parseDate(createTime));
         blog.setModifiedTime(blog.getCreateTime());
         blog.setOrderNum(orderNum);
         // 默认博客为公开，用户可以进一步修改
         blog.setStatus(BlogStatusEnum.PUBLIC.getCode());
-
-        return blogService.saveBlog(blog, this.getUserId());
+        return blogService.saveBlog(blog);
     }
 
     @RequiresPermissions(BLOG_PREFIX + EDIT)

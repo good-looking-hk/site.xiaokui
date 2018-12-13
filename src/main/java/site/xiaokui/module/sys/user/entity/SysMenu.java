@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import site.xiaokui.module.base.entity.BaseEntity;
+import site.xiaokui.module.base.entity.ParentEntity;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  */
 @ToString(callSuper = true)
 @Getter@Setter
-public class SysMenu extends BaseEntity<SysMenu> {
+public class SysMenu extends ParentEntity {
 
     private String icon;
 

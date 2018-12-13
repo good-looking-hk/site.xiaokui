@@ -2,9 +2,8 @@ package site.xiaokui.config.shiro;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import site.xiaokui.config.shiro.ShiroUser;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.sys.user.dao.MenuDao;
-import site.xiaokui.module.sys.user.dao.UserDao;
 import site.xiaokui.module.sys.user.entity.SysUser;
 import site.xiaokui.module.sys.user.service.ServiceFactory;
 import site.xiaokui.module.sys.user.service.UserService;
@@ -35,7 +34,7 @@ public class ShiroService {
     }
 
     /**
-     * 根据用户名或邮箱获取登录用户
+     * 根据用户名或邮箱或手机获取登录用户
      * @param loginName 用户名或邮箱
      * @return 用户信息
      */
@@ -43,6 +42,9 @@ public class ShiroService {
         SysUser user = userService.getUserByName(loginName);
         if (user == null) {
             user = userService.getUserByEmail(loginName);
+        }
+        if (user == null) {
+            user = userService.getUserByPhone(loginName);
         }
         return user;
     }
@@ -62,12 +64,19 @@ public class ShiroService {
      * @param user 系统用户
      * @return 封装的ShiroUser
      */
-    public ShiroUser shiroUser(SysUser user) {
+    public ShiroUser wrapUser(SysUser user) {
         ShiroUser shiroUser = new ShiroUser();
         shiroUser.setUserId(user.getId());
         shiroUser.setUsername(user.getName());
+        shiroUser.setEmail(user.getEmail());
+        shiroUser.setPhone(user.getPhone());
+        // 如果用户没有指定博客空间，默认为用户id
+        if (StringUtil.isEmpty(user.getBlogSpace())) {
+            shiroUser.setBlogSpace(String.valueOf(user.getId()));
+        } else {
+            shiroUser.setBlogSpace(user.getBlogSpace());
+        }
         shiroUser.setAvatar(user.getAvatar());
-        shiroUser.setBlogSpace(user.getBlogSpace());
         shiroUser.setSelfDescription(user.getSelfDescription());
         shiroUser.setLastLoginTime(user.getLastLoginTime());
         shiroUser.setLastLoginIp(user.getLastLoginIp());

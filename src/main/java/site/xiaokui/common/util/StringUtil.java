@@ -1,4 +1,4 @@
-package site.xiaokui.common.util.hk;
+package site.xiaokui.common.util;
 
 import cn.hutool.core.util.StrUtil;
 
@@ -38,7 +38,6 @@ public class StringUtil extends StrUtil {
         return num > 0;
     }
 
-
     /**
      * 是否包含空字符串及小于等于0的数字
      */
@@ -61,5 +60,18 @@ public class StringUtil extends StrUtil {
             }
         }
         return false;
+    }
+
+    /**
+     * 在两个字符串之间加入一个英文逗号（形如"aa".addDot("bb")为"aa,bb"）
+     * 如果两者之间有一个为null，则直接返回另一个字符串
+     */
+    public static String addDot(String str1, String str2) {
+        if (str1 != null && str2 != null) {
+            return str1 + "," +str2;
+        } else if (str1 != null || str2 != null) {
+            return str1 != null ? str1 : str2;
+        }
+        return null;
     }
 }

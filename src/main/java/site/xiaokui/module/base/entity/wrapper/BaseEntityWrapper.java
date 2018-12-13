@@ -9,8 +9,6 @@ import java.util.List;
 /**
  * JSON是封装依赖于HuTool，原因是它的API简单上手，虽然性能没有fastjson那么好
  * 将实体转化为json对象，实现对于特定属性的添加处理(自动剔除null值)
- *
- * TODO 代码结构可以继续优化
  * @author HK
  * @date 2018-06-09 20:22
  */
@@ -63,7 +61,6 @@ public abstract class BaseEntityWrapper<T> {
 
     /**
      * 由子类重写，包装实体列表
-     *
      * @param t 需要包装实体
      */
     protected abstract void wrap(T t);

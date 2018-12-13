@@ -2,9 +2,6 @@ package site.xiaokui.module.sys.user.controller;
 
 import com.google.code.kaptcha.Constants;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.LockedAccountException;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -18,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import site.xiaokui.common.exception.InvalidKaptchaException;
 import site.xiaokui.common.exception.TooMuchPasswordRetryException;
 import site.xiaokui.common.util.KaptchaUtil;
-import site.xiaokui.common.util.hk.StringUtil;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.controller.BaseController;
 import site.xiaokui.module.base.entity.ResultEntity;
 import site.xiaokui.module.sys.user.entity.SysUser;
@@ -45,11 +42,10 @@ public class LoginController extends BaseController {
     public ResultEntity register() {
         String username = this.getParameter("username");
         String email = this.getParameter("email");
-        String password = this.getParameter("password");
+        String password = this.getParameter("password").trim();
         if (StringUtil.hasEmpty(username, email, password)) {
             return ResultEntity.paramError();
         }
-        username = username.trim();
         email = email.trim();
         password = password.trim();
         if (!checkUsernamePass(username)) {
@@ -71,7 +67,7 @@ public class LoginController extends BaseController {
     /**
      * 点击登录执行的动作
      */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @PostMapping("/login")
     public ResultEntity login() {
         String username = this.getParameter("loginName");
         String password = this.getParameter("password");
@@ -80,23 +76,23 @@ public class LoginController extends BaseController {
         // 自我感觉有点不厚道^_^,但是做人是要坚持原则的，果断改为debug
         log.debug("登录信息[username:{},password:{},remember:{}]", username, password, remember);
 
+        // 允许为空格
         if (StringUtil.hasEmpty(username, password, remember)) {
             return ResultEntity.paramError();
         }
-        username = username.trim();
         password = password.trim();
         //验证码是否开启
         if (KaptchaUtil.getKaptchaOnOff()) {
-            String kaptcha = super.getParameter("kaptcha").trim();
-            String code = (String) super.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
+            String kaptcha = this.getParameter("kaptcha").trim();
+            String code = (String) this.getSession().getAttribute(Constants.KAPTCHA_SESSION_KEY);
             if (StringUtil.isEmpty(kaptcha) || !kaptcha.equalsIgnoreCase(code)) {
-                throw new InvalidKaptchaException();
+                return ResultEntity.error("验证码错误");
             }
         }
 
-        Subject currentUser = super.getSubject();
-        UsernamePasswordToken token = new UsernamePasswordToken(username, password.toCharArray(), super.getIP());
-        if (REMEMBER_FLAT.equals(remember)) {
+        Subject currentUser = this.getSubject();
+        UsernamePasswordToken token = new UsernamePasswordToken(username, password.toCharArray(), this.getIP());
+        if (REMEMBER_FLAG.equals(remember)) {
             token.setRememberMe(true);
         } else {
             token.setRememberMe(false);

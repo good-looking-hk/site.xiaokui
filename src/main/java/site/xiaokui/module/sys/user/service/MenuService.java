@@ -69,6 +69,36 @@ public class MenuService extends BaseService<SysMenu> {
         return resolveMenuList(menuList);
     }
 
+    public boolean deleteMenu(Integer menuId) {
+        return deleteMenu(menuId, false);
+    }
+
+    /**
+     * 删除菜单
+     * @param menuId 菜单id
+     * @param focus 是否强制删除（包括其子菜单）
+     * @return 是否成功
+     */
+    public boolean deleteMenu(Integer menuId, boolean focus) {
+        SysMenu sysMenu = this.getById(menuId);
+        // 如果是普通页面菜单，直接删除
+        if (MenuTypeEnum.THIRD.getCode() == sysMenu.getType()) {
+            return this.deleteById(menuId);
+        }
+        // 如果是有子菜单，是否强制删除
+        if (focus) {
+            SysMenu temp = new SysMenu();
+            temp.setParentId(menuId);
+            List<SysMenu> list = this.match(temp);
+            if (list != null) {
+                for (SysMenu s : list) {
+                    this.deleteById(s);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 
     private static List<SysMenu> resolveMenuList(List<SysMenu> menuList) {
         Collections.sort(menuList);

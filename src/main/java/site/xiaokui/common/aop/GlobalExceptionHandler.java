@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import site.xiaokui.module.base.entity.ResultEntity;
 
 /**
+ * 全局控制器异常拦截器，优先级越高值越低
  * @author HK
  * @date 2018-05-31 01:37
  */
@@ -25,6 +26,9 @@ public class GlobalExceptionHandler {
         return ResultEntity.paramError(e.getMessage());
     }
 
+    /**
+     * 空指针异常
+     */
     @ExceptionHandler(NullPointerException.class)
     @ResponseBody
     public ResultEntity npe(NullPointerException e) {
@@ -41,12 +45,21 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * get或post方法不匹配
+     * get或post方法不匹配、方法参数不匹配
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseBody
     public ResultEntity notSupportedMethod() {
         return new ResultEntity(405, "不支持的请求格式");
+    }
+
+    /**
+     * 拦截未知的运行时异常
+     */
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseBody
+    public ResultEntity notFount(RuntimeException e) {
+        return ResultEntity.error(e.getMessage() + " cause by " + e.getCause());
     }
 
 //    /**
@@ -120,16 +133,5 @@ public class GlobalExceptionHandler {
 //        return new ErrorTip(BizExceptionEnum.NO_PERMITION.getCode(), BizExceptionEnum.NO_PERMITION.getMessage());
 //    }
 //
-//    /**
-//     * 拦截未知的运行时异常
-//     */
-//    @ExceptionHandler(RuntimeException.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    @ResponseBody
-//    public ErrorTip notFount(RuntimeException e) {
-//        LogManager.me().executeLog(LogTaskFactory.exceptionLog(ShiroKit.getUser().getId(), e));
-//        getRequest().setAttribute("tip", "服务器未知运行时异常");
-//        log.error("运行时异常:", e);
-//        return new ErrorTip(BizExceptionEnum.SERVER_ERROR.getCode(), BizExceptionEnum.SERVER_ERROR.getMessage());
-//    }
+
 }

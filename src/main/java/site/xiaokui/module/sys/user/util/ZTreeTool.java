@@ -18,7 +18,6 @@ public class ZTreeTool {
      * 父类的静态方法可以被子类继承，但是不能重写(留作纪念)
      */
     public static List<ZTreeNode> toZTreeNodeList(List<? extends BaseEntity> list) {
-        Collections.sort(list);
         List<ZTreeNode> nodes = new LinkedList<>();
         ZTreeNode root = ZTreeNode.createRoot();
         nodes.add(root);

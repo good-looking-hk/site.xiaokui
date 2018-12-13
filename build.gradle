@@ -57,6 +57,10 @@ dependencies {
 //    compile 'org.ehcache:ehcache:3.5.2'错误依赖，留作提醒
     compile 'org.apache.shiro:shiro-ehcache:1.4.0'
     compile 'net.sf.ehcache:ehcache:2.10.5'
+    compile 'redis.clients:jedis:2.9.0'
+    compile 'io.protostuff:protostuff-runtime:1.6.0'
+    compile 'io.protostuff:protostuff-core:1.6.0'
+
     compile('org.projectlombok:lombok')
     compile 'org.jsoup:jsoup:1.11.3'
     compile 'com.alibaba:fastjson:1.2.46'
@@ -64,13 +68,12 @@ dependencies {
     compile 'io.springfox:springfox-swagger2:2.9.0'
     compile 'io.springfox:springfox-swagger-ui:2.9.0'
 
-
-
 //    runtime('org.springframework.boot:spring-boot-devtools')
     runtime('mysql:mysql-connector-java')
 //    runtime 'mysql:mysql-connector-java:6.0.6'
-//    compile 'mysql:mysql-connector-java:8.0.9-rc'
+    compile 'mysql:mysql-connector-java:8.0.9-rc'
 
 //    compileOnly('org.projectlombok:lombok')
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+//    testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile('org.springframework.boot:spring-boot-starter-test')
 }

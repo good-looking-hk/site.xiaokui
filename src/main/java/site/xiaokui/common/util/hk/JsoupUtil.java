@@ -1,13 +1,8 @@
 package site.xiaokui.common.util.hk;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import site.xiaokui.common.util.StringUtil;
 
 import java.io.*;
-
-import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
 
 /**
  * @author HK

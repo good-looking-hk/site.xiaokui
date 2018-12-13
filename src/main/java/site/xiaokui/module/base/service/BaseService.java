@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
-import site.xiaokui.common.util.hk.StringUtil;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.entity.BaseEntity;
 
 import java.lang.reflect.ParameterizedType;
@@ -24,7 +24,8 @@ public class BaseService<T extends BaseEntity> {
     /**
      * 需要子类注入，否则不能正常使用
      */
-    @Getter@Setter
+    @Getter
+    @Setter
     @Autowired
     protected SQLManager sqlManager;
 

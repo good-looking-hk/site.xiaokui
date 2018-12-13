@@ -1,6 +1,7 @@
 package site.xiaokui.module.sys.blog.entity;
 
 import lombok.Data;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.sys.user.entity.SysUser;
 
 import java.util.List;
@@ -27,7 +28,12 @@ public class BlogUser {
     public BlogUser(SysUser user) {
         this.name = user.getName();
         this.avatar = user.getAvatar();
-        this.blogSpace = user.getBlogSpace();
+        // 判断用户是否自定义博客空间名称
+        if (StringUtil.isEmpty(user.getBlogSpace())) {
+            this.setBlogSpace(String.valueOf(user.getId()));
+        } else {
+            this.blogSpace = user.getBlogSpace();
+        }
         this.selfDescription = user.getSelfDescription();
     }
 
