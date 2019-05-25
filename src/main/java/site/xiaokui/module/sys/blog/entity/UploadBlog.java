@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -19,4 +20,5 @@ public class UploadBlog {
     private Integer orderNum;
     private Date createTime;
     private String errorInfo;
+    private File uploadFile;
 }

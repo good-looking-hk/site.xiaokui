@@ -8,23 +8,21 @@
         </fieldset>
         <blockquote class="layui-elem-quote layui-quote-nm">
             <p>我们假设您认真阅读了帮助文档，了解细节上的一些约定，这里再次说明一下需要注意的地方：</p>
-            <p>1.对于所传的HTML文件，里面的格式必须要符合xxx</p>
-            <p>2.xxxx</p>
+            <p>1.对于所传的HTML文件，里面的格式必须要符合xxx.html</p>
+            <p>2.上传完后，必须点击确认保存，才算完成操作</p>
         </blockquote>
-
         <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
             <legend>上传博客HTML文件</legend>
         </fieldset>
-
         <div class="layui-upload">
-            <button type="button" class="layui-btn layui-btn-normal" id="testList">选择多文件</button>
+            <button type="button" class="layui-btn layui-btn-normal" id="testList">多文件选择</button>
             <div class="layui-upload-list">
                 <table class="layui-table">
                     <thead>
                     <tr>
                         <th>文件名</th>
                         <th>大小</th>
-                        <th>目录：排序：标题：创建时间</th>
+                        <th>目录：标题：排序：创建时间</th>
                         <th>状态</th>
                         <th>操作</th>
                     </tr>
@@ -32,8 +30,10 @@
                     <tbody id="demoList"></tbody>
                 </table>
             </div>
-            <button type="button" class="layui-btn" id="testListAction">开始上传</button>
-            <button class="layui-btn" id="saveAll" \@click="save">确认保存</button>
+            <div class="layui-row">
+                <button type="button" class="layui-btn" id="testListAction">开始上传</button>
+                <button class="layui-btn" id="saveAll" \@click="save">确认保存</button>
+            </div>
         </div>
     </div>
 </div>

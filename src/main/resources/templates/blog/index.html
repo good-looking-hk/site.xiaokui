@@ -1,12 +1,10 @@
 @include("/blog/_header.html"){}
-<div class="layui-main" style="padding: 20px 60px;margin-top: 26px;">
-    <!--<h3>博客列表</h3>-->
-    @var count = 0;
+<div class="layui-main" style="padding: 15px 60px;margin-top: 26px;">
+    <center>本页共 ${user.pro + user.pub} 篇，分为 ${user.dirCount} 个系列展示</center>
     @if (isNotEmpty(user.blogList)) {
     @for (list in user.blogList) {
     <ul class="list-group">
         @for (blog in list) {
-        @count++;
         <li class="list-group-item">
             <span class="badge">${blog.createTime, "yyyy-MM-dd"}</span>
             <a target="_blank" href="${ctxPath + blog.blogPath}">${blog.dir}：${blog.title}</a>
@@ -18,11 +16,66 @@
     <center style="margin: 60px;"><h3>空空如也</h3></center>
     @}
 </div>
-<center>共 ${count} 篇</center>
-
+<div class="right-nav">
+    <p>最多访问</p>
+    <ul>
+    @if (isNotEmpty(most)) {
+    @for (r in most) {
+        <li>
+            <a  target="_blank" href="${ctxPath + r.blogPath}" class="layui-col-xs10 p1">${rLP.index}.${r.dir}:${r.title}</a>
+            <span class="layui-badge layui-bg-gray" style="margin-left:5px">${r.viewCount}次</span>
+        </li>
+    @}
+    @}
+        <!--<li>-->
+            <!--<a href="/blog">测试测试测试测试测试测试测试测试测试</a>-->
+            <!--<span class="layui-badge layui-bg-gray" style="margin-left:5px">999999999999次</span>-->
+        <!--</li>-->
+    </ul>
+</div>
+<div class="right-nav right-nav1">
+    <p>最新发布</p>
+    <ul>
+    @if (isNotEmpty(recent)) {
+    @for (r in recent) {
+        <li>
+            <a target="_blank" href="${ctxPath + r.blogPath}" class="layui-col-xs10 p1">${rLP.index}.${r.dir}：${r.title}</a>
+            <span class="layui-badge layui-bg-gray" style="margin-left:5px">${r.createTime, "MM-dd"}</span>
+        </li>
+    @}
+    @}
+    </ul>
+</div>
+<div class="right-nav" style="left:5%;padding-bottom:2px;">
+    <p style="text-align: left">实时推荐</p>
+    <p class="layui-text" style="text-align:left">
+        目前我是这样想的：综合博客的创建日期、修改日期以及阅读量，为读者提供推荐，大致算法如下：以之前9个月作为一个分界点，前面的全部排除，后面的根据日期差，给定分值1。再根据创建日期和修改日期给定分值2。两者相加， 即为该篇博客的推荐值，系统根据这个值进行排行。最后就是后台开个定时任务，每过一个小时更新排行榜。
+    </p>
+    <p class="layui-text" style="text-align:left">
+        理想状态是这样的：能综合博客本身（自身属性，如访问量、作者知名度等） + 读者本身（系统记录，如历史浏览、偏好内容等）进行精确推荐。
+    </p>
+    <p class="layui-text" style="text-align:left">有待开发/完善</p>
+    <p class="layui-text" style="text-align:left">
+        小贴士：对于谷歌浏览器（推荐使用），打开开发者工具（F12），右击刷新按钮，点击"清空缓存，并硬性重新加载"（或直接按Ctrl + Shift + R），即可清除浏览器对静态资源的缓存。
+    </p>
+</div>
+<div id="aplayer"></div>
+<center>公开博客 ${user.pub} 篇，受保护博客 ${user.pro} 篇，<a href="/blog/" target="_blank">小葵博客</a>版权所有</center>
 <script src="${ctxPath}/jquery/jquery.min.js"></script>
 <script src="${ctxPath}/layui/layui.js"></script>
 <script>
+    layui.use(['element', 'layer'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        //获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
+        var layid = location.hash.replace(/^#layout=/, '');
+        // alert(layid);
+
+    })
+    var value = "${key!}";
+    if (typeof value === 'string' && value !== '') {
+        $('#key').val(value);
+    }
     function search() {
         var url = "/blog/${user.blogSpace}/search?key=";
         var key = $("#key").val().trim();
@@ -30,16 +83,12 @@
             window.open(url + key);
         }
     }
-
     $(document).on('keydown', function (event) {
         if (event.keyCode === 13) {
             search();
         }
     });
-    layui.use(['element', 'layer'], function () {
-        var element = layui.element;
-        var layer = layui.layer;
-    })
 </script>
-</body>
-</html>
+<script src="${ctxPath}/aplayer/APlayer.min.js"></script>
+<script src="${ctxPath}/aplayer/myAplayer.js"></script>
+@include("/blog/_footer.html"){}

@@ -4,13 +4,10 @@ import cn.hutool.core.date.DatePattern;
 import org.springframework.web.multipart.MultipartFile;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.common.util.TimeUtil;
-import site.xiaokui.module.sys.blog.entity.BlogStatusEnum;
-import site.xiaokui.module.sys.blog.entity.SysBlog;
-import site.xiaokui.module.sys.blog.entity.UploadBlog;
+import site.xiaokui.module.sys.blog.BlogConstants;
+import site.xiaokui.module.sys.blog.entity.*;
 
 import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static site.xiaokui.module.sys.blog.BlogConstants.HTML_SUFFIX;
@@ -25,7 +22,60 @@ public class BlogUtil {
     private static final String BLOG_PREFIX = PREFIX + "/";
 
     /**
+     * 存储用户自定义界面菜单
+     */
+    private static final Map<Integer, List<UserLink>> USER_MAP = new HashMap<>();
+
+    private static final String[] MUSIC_LIST;
+
+    static {
+        File dir = new File(BlogConstants.MUSIC_PATH);
+        if (!dir.exists() || !dir.isDirectory()) {
+            throw new RuntimeException("非法的音乐路径：" + BlogConstants.MUSIC_PATH + "！ 请检查！");
+        }
+        String[] temp = dir.list();
+        if (temp == null) {
+            MUSIC_LIST = new String[0];
+        } else {
+            MUSIC_LIST = temp;
+//            MUSIC_LIST = new String[temp.length];
+//            for (int i = 0; i < temp.length; i++) {
+////                MUSIC_LIST[i] = temp[i].substring(2);
+//            }
+        }
+    }
+
+    public static String[] getMusicList() {
+        return MUSIC_LIST;
+    }
+
+    public static void toMap(List<UserLink> list) {
+        if (list != null && list.size() > 0) {
+            for (UserLink u : list) {
+                putInUserMap(u);
+            }
+        }
+    }
+
+    public static List<UserLink> getUserMap(Integer id) {
+        return USER_MAP.get(id);
+    }
+
+    public static void putInUserMap(UserLink m) {
+        List<UserLink> list = USER_MAP.get(m.getUserId());
+        if (list == null) {
+            list = new ArrayList<>();
+            list.add(m);
+            USER_MAP.put(m.getUserId(), list);
+        } else {
+            list.add(m);
+        }
+    }
+
+    /**
      * 获取博客实体对象的对应的访问url路径
+     *
+     * @param blogSpace 如果blogSpace为null，则可替换为对应的userId
      */
     public static String getBlogPath(String blogDir, String blogName, String blogSpace) {
         if (StringUtil.isEmpty(blogName) || StringUtil.isEmpty(blogSpace)) {
@@ -60,40 +110,8 @@ public class BlogUtil {
      * 对博客实体按目录划分成多个子List，由前段模板渲染显示
      * 排序操作也可在数据库进行，在数据量大时可以做比较选择
      */
-    public static List<List<SysBlog>> resolveBlogList(List<SysBlog> blogList, String blogSpace) {
-        List<List<SysBlog>> list = null;
-        if (blogList != null && blogList.size() != 0) {
-            // 自定义比较器
-            blogList.sort(new SysBlog.BlogComparator());
-            String newDir = blogList.get(0).getDir();
-            list = new LinkedList<>();
-            List<SysBlog> temp = new LinkedList<>();
-            Iterator<SysBlog> it = blogList.iterator();
-
-            // 分解list成多个子list
-            while (it.hasNext()) {
-                SysBlog blog = it.next();
-                // 如果设置是不公开的话，那么移除
-                if (blog.getStatus() != BlogStatusEnum.PUBLIC.getCode()) {
-                    it.remove();
-                    continue;
-                }
-                blog.setBlogPath(getBlogPath(blog.getDir(), blog.getName(), blogSpace));
-                // 如果与上一个是属于同目录，则添加进临时list
-                if (blog.getDir().equals(newDir)) {
-                    temp.add(blog);
-                } else {
-                    // 切换到下一个目录，把临时list加入根list然后清空，重新加入新的blog，重复
-                    newDir = blog.getDir();
-                    list.add(temp);
-                    temp = new LinkedList<>();
-                    temp.add(blog);
-                }
-            }
-            // 添加最后一个临时list
-            list.add(temp);
-        }
-        return list;
+    public static BlogDetailList resolveBlogList(List<SysBlog> blogList, String blogSpace) {
+        return new BlogDetailList(blogList, blogSpace);
     }
 
     /**
@@ -112,7 +130,7 @@ public class BlogUtil {
             reader = new BufferedReader(inputFileReader);
             targetFile = FileUtil.createTempFile(userId, blog.getName() + HTML_SUFFIX);
             if (targetFile == null) {
-                throw new RuntimeException("创建文件失败，" + fullName);
+                throw new RuntimeException("创建文件失败：" + fullName);
             }
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(targetFile), "UTF-8");
             writer = new BufferedWriter(outputStreamWriter);
@@ -128,7 +146,9 @@ public class BlogUtil {
                     writer.write(str);
                 }
             }
+            writer.flush();
             isSuccess = true;
+            blog.setUploadFile(targetFile);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -142,7 +162,10 @@ public class BlogUtil {
     }
 
     /**
-     * 例如 Spring源码：bean的加载-6-20180808.html，解析格式为 目录：标题-序号-日期.后缀
+     * 对于名字的解析是很严格的，下面例子都是过关的
+     * 1.Spring源码：bean的加载-6-20180808.html
+     * 2.Spring源码：bean的加载-6.html
+     * 完整的解析格式为 目录：标题-序号-日期.后缀
      *
      * @param fullName html文件全名
      * @return 解析后上传博客对象
@@ -232,6 +255,10 @@ public class BlogUtil {
         System.out.println(resolveFileName(fullName));
         fullName = "Spring源码：bean的加载-6-20181122.html";
         System.out.println(resolveFileName(fullName));
+        for (String s : MUSIC_LIST) {
+            System.out.println(s);
+        }
+        System.out.println("123".substring(2));
     }
 }
 

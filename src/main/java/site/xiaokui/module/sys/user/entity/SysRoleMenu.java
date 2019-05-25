@@ -3,6 +3,7 @@ package site.xiaokui.module.sys.user.entity;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author HK
@@ -16,4 +17,6 @@ public class SysRoleMenu implements Serializable {
     private Integer roleId;
 
     private Integer menuId;
+
+    private Date createTime;
 }

@@ -18,6 +18,7 @@ public class ShowMeCodeLineUtil {
     private static int javaCommentLine = 0;
 
     public static void main(String[] hk) {
+
         String basePath = "/home/hk/IdeaWorkSpace/newxiaokui/src/main/java";
         showMeCodeLine(basePath);
     }

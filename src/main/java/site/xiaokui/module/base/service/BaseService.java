@@ -3,12 +3,14 @@ package site.xiaokui.module.base.service;
 import lombok.Getter;
 import lombok.Setter;
 import org.beetl.sql.core.SQLManager;
+import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.entity.BaseEntity;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -86,7 +88,7 @@ public class BaseService<T extends BaseEntity> {
      * @return 影响行数
      */
     public boolean deleteById(Integer id) {
-        Class<T> cls = this.getCurrentEntityClass();
+        Class<T> cls = getCurrentEntityClass();
         return sqlManager.deleteById(cls, id) == 1;
     }
 
@@ -118,7 +120,7 @@ public class BaseService<T extends BaseEntity> {
      * @return 返回模糊查找的匹配结果
      */
     public List<T> termQuery(Map<String, Object> params) {
-        Class<T> cls = this.getCurrentEntityClass();
+        Class<T> cls = getCurrentEntityClass();
         Query<T> query = sqlManager.query(cls);
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             query.andLike(entry.getKey(), String.valueOf(entry.getValue()));
@@ -132,7 +134,7 @@ public class BaseService<T extends BaseEntity> {
      * @return Query对象
      */
     public Query<T> createQuery() {
-        Class<T> cls = this.getCurrentEntityClass();
+        Class<T> cls = getCurrentEntityClass();
         return sqlManager.query(cls);
     }
 
@@ -153,7 +155,7 @@ public class BaseService<T extends BaseEntity> {
      * @return 返回模糊查找的匹配结果
      */
     public List<T> fuzzyQuery(Map<String, Object> params) {
-        Class<T> cls = this.getCurrentEntityClass();
+        Class<T> cls = getCurrentEntityClass();
         Query<T> query = sqlManager.query(cls);
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             query.andLike(entry.getKey(), "%" + String.valueOf(entry.getValue()) + "%");
@@ -168,8 +170,12 @@ public class BaseService<T extends BaseEntity> {
      * @return 没有则返回null
      */
     public T getById(Integer id) {
-        Class<T> cls = this.getCurrentEntityClass();
+        Class<T> cls = getCurrentEntityClass();
         return sqlManager.single(cls, id);
+    }
+
+    public List<T> inIds(String column, Collection<?> c) {
+        return query(createQuery().andIn(column, c));
     }
 
     /**
@@ -193,12 +199,12 @@ public class BaseService<T extends BaseEntity> {
     }
 
     public <K> List<K> matchOneColumn(Class<K> cls, String column) {
-        String sql = this.getSelectSql(column) + this.getFromSql();
+        String sql = getSelectSql(column) + getFromSql();
         return sqlManager.execute(sql, cls, null);
     }
 
     public T preEntity(int id) {
-        Query<T> query = this.createQuery();
+        Query<T> query = createQuery();
         List<T> list = query.andLess("id", id).limit(1, 1).select();
         if (list == null || list.size() == 0) {
             return null;
@@ -207,7 +213,7 @@ public class BaseService<T extends BaseEntity> {
     }
 
     public T nextEntity(int id) {
-        Query<T> query = this.createQuery();
+        Query<T> query = createQuery();
         List<T> list = query.andGreat("id", id).limit(1, 1).select();
         if (list == null || list.size() == 0) {
             return null;
@@ -220,7 +226,7 @@ public class BaseService<T extends BaseEntity> {
     }
 
     public List<T> bottom(int n) {
-        Query<T> query = this.createQuery();
+        Query<T> query = createQuery();
         return query.desc("id").limit(1, n).select();
     }
 
@@ -237,7 +243,7 @@ public class BaseService<T extends BaseEntity> {
      * select * from `sys_user` limit 1 , 4(mysql中默认可以从0开始)
      */
     public List<T> all(int start, int size) {
-        Class<T> cls = this.getCurrentEntityClass();
+        Class<T> cls = getCurrentEntityClass();
         return sqlManager.all(cls, start, size);
     }
 
@@ -246,7 +252,7 @@ public class BaseService<T extends BaseEntity> {
     }
 
     private String getFromSql() {
-        String tableName = StringUtil.toUnderlineCase(this.getClass().getSimpleName());
+        String tableName = StringUtil.toUnderlineCase(getClass().getSimpleName());
         return " FROM " + tableName + " ";
     }
 
@@ -256,7 +262,7 @@ public class BaseService<T extends BaseEntity> {
      * @return 所有数据
      */
     public List<T> all() {
-        Class<T> cls = this.getCurrentEntityClass();
+        Class<T> cls = getCurrentEntityClass();
         return sqlManager.all(cls);
     }
 
@@ -272,12 +278,19 @@ public class BaseService<T extends BaseEntity> {
     }
 
     /**
+     * 最好传入args，预防sql注入
+     */
+    public int executeDelSql(String sql, Object... args) {
+        return sqlManager.executeUpdate(new SQLReady(sql, args));
+    }
+
+    /**
      * 获取当前注入泛型T的类型
      *
      * @return 具体类型
      */
     @SuppressWarnings("unchecked")
-    protected Class<T> getCurrentEntityClass() {
+    private Class<T> getCurrentEntityClass() {
         return (Class<T>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 }

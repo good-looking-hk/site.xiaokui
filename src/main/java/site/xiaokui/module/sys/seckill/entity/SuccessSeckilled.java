@@ -12,6 +12,7 @@ import java.util.Date;
 public class SuccessSeckilled {
 
     private Integer id;
+
     /**
      * 秒杀产品id
      */
@@ -26,9 +27,4 @@ public class SuccessSeckilled {
      * 秒杀成功时间
      */
     private Date seckillTime;
-
-    /**
-     * 创建时间，timestamp类型，由数据库自动更新，代码层不需要干涉
-     */
-    private Date createTime;
 }

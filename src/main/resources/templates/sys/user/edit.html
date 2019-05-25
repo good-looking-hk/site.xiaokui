@@ -10,13 +10,8 @@
 
         @inputs1 = [{title:"角色ID",id:"roleId",placeholder:"(选填，默认为普通用户)",readonly:"true"},
         @{title:"角色名称",id:"roleName",placeholder:"(自动填充，角色名称)",readonly:"true"}];
-        @buttons1 = [{name:"选填",method:"openRoleTree()"}];
+        @buttons1 = [{name:"选填",method:"openRoleTree(event)"}];
         <#input_button type="form" inputs="${inputs1}" buttons="${buttons1}"/>
-
-        @inputs2 = [{title:"部门ID",id:"deptId",placeholder:"(选填，默认不分配)",readonly:"true"},
-        @{title:"部门名称",id:"deptName",placeholder:"(自动填充，部门名称)",readonly:"true"}];
-        @buttons2 = [{name:"选填",method:"openDeptTree()"}];
-        <#input_button type="form" inputs="${inputs2}" buttons="${buttons2}"/>
 
         <div class="layui-form-item">
             <div class="layui-input-block">
@@ -26,7 +21,6 @@
         </div>
     </form>
     <script>
-        //Demo
         layui.use('form', function () {
             var form = layui.form;
             //监听提交
@@ -40,14 +34,17 @@
             form.val('setValue', {
                 name: "${user.name}",
                 email: "${user.email}",
-                sex: "${user.sex}",
+                sex: "${user.ssex}",
                 password: "${user.password}",
                 roleId: "${user.roleId}",
                 roleName: "${roleName}",
-                deptId: "${user.deptId}",
-                deptName: "${deptName}",
-            })
+            });
+            $(".layui-select-title input").val("${user.ssex}");
         });
+        function openRoleTree(e) {
+            e.preventDefault();
+            HK.initInputSelectZtree("roleId", "roleName", "/sys/role/tree");
+        }
     </script>
 </div>
 @}

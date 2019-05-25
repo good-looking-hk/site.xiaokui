@@ -12,10 +12,9 @@ import java.util.Comparator;
  * @date 2018-06-24 21:24
  * 注意，这里的{@code name}为html文件名称，一般来说，不允许改变
  * title为博客标题，最初情况下，title与name同值，用户可以改变title但是不可以改变name
- * </p>
  * 另外就是createTime是博客最初写的时间，而modifiedTime是博客上传的时间，其中createTime是允许主动改变的，
  * 而modifiedTime是被动改变的
- * 对于博客的排序，参见 {@link BlogComparator}
+ * 对于博客的排序，参见 {@link DirComparator}
  */
 @ToString(callSuper = true)
 @Getter@Setter
@@ -59,12 +58,27 @@ public class SysBlog extends ParentEntity {
 
     private transient String nextBlogTitle;
 
+    /**
+     * 总访问量
+     */
+    private Integer viewCount;
+
+    /**
+     * 昨天访问量
+     */
+    private Integer yesterday;
+
+    /**
+     * 今天访问量
+     */
+    private transient Integer today;
+
     /// 留作纪念
 
     /**
-     * SysBlog的排序需要调用此比较器进行比较
+     * 根据目录排序
      */
-    public static class BlogComparator implements Comparator<SysBlog> {
+    public static class DirComparator implements Comparator<SysBlog> {
         @Override
         public int compare(SysBlog o1, SysBlog o) {
             if (!o1.dir.equals(o.getDir())) {
@@ -75,6 +89,20 @@ public class SysBlog extends ParentEntity {
             }
             // 后面上传的排在前面
             return o1.id.compareTo(o.getId()) * -1;
+        }
+    }
+
+    /**
+     * 根据时间排序
+     */
+    public static class DateComparator implements Comparator<SysBlog> {
+        @Override
+        public int compare(SysBlog o1, SysBlog o2) {
+            int r = o1.createTime.compareTo(o2.createTime);
+            if (r != 0) {
+                return r;
+            }
+            return o1.id.compareTo(o2.id);
         }
     }
 }

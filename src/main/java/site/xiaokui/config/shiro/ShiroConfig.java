@@ -151,14 +151,16 @@ public class ShiroConfig {
 
         // 特定请求的过滤
         filterMap.put("/kaptcha", ANYBODY);
-        filterMap.put("/druid/**", ANYBODY);
         filterMap.put("/", ANYBODY);
         filterMap.put("/index", ANYBODY);
         filterMap.put("/login", ANYBODY);
         filterMap.put("/register", ANYBODY);
         filterMap.put("/sys/login", ANYBODY);
         filterMap.put("/sys/register", ANYBODY);
+        // 放行博客访问链接
         filterMap.put("/blog/**", ANYBODY);
+        // 放行模拟秒杀链接
+        filterMap.put("/sys/seckill/**", ANYBODY);
 
         // 其余都需要验证
         filterMap.put("/user", REMEMBER_ME);

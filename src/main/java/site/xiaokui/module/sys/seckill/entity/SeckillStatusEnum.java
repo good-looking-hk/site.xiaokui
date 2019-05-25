@@ -11,7 +11,7 @@ public enum SeckillStatusEnum {
     /**
      * 秒杀状态
      */
-    END(0,"秒杀结束"), SUCCESS(1,"秒杀成功"), REPEAT_KILL(-1,"重复秒杀"), INNER_ERROR(-2,"服务器内部异常");
+    END(0,"秒杀结束"), SUCCESS(1,"秒杀成功"), REPEAT_KILLED(-1,"重复秒杀,已存在秒杀记录"), INNER_ERROR(-2,"服务器内部异常");
 
     @Getter
     private int code;

@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import site.xiaokui.common.aop.annotation.Log;
 import site.xiaokui.module.base.controller.BaseController;
-import site.xiaokui.module.sys.seckill.dto.Execution;
+import site.xiaokui.module.sys.seckill.dto.SeckillResult;
 import site.xiaokui.module.sys.seckill.dto.Exposer;
 import site.xiaokui.module.sys.seckill.entity.SeckillProduct;
 import site.xiaokui.module.sys.seckill.service.SeckillService;
@@ -16,6 +16,7 @@ import java.util.List;
 import static site.xiaokui.module.sys.seckill.SeckillConstants.SECKILL_PREFIX;
 
 /**
+ * 模拟秒杀
  * @author HK
  * @date 2018-10-03 19:33
  */
@@ -47,9 +48,9 @@ public class SeckillController extends BaseController {
     }
 
     @Log
-    @GetMapping("/{id}/detail")
-    public String detail(@PathVariable("id") Integer id, Model model) {
-        if (id == null) {
+    @GetMapping("/{pid}/detail")
+    public String detail(@PathVariable("pid") Integer id, Model model) {
+        if (id == null || id < 0 || id > 3) {
             return REDIRECT + PREFIX + INDEX;
         }
         SeckillProduct product = seckillService.getById(id);
@@ -60,6 +61,9 @@ public class SeckillController extends BaseController {
         return PREFIX + "/detail";
     }
 
+    /**
+     * 以服务器时间为准
+     */
     @Log
     @GetMapping("/time/now")
     @ResponseBody
@@ -71,10 +75,10 @@ public class SeckillController extends BaseController {
      * 加密秒杀连接
      */
     @Log
-    @PostMapping("/{id}/expose")
+    @PostMapping("/{pid}/expose")
     @ResponseBody
-    public Exposer expose(@PathVariable("id") Integer id) {
-        return seckillService.exportSecKillUrl(id);
+    public Exposer expose(@PathVariable("pid") Integer pid) {
+        return seckillService.exportSecKillUrl(pid);
     }
 
     /**
@@ -83,7 +87,7 @@ public class SeckillController extends BaseController {
     @Log
     @PostMapping("/{id}/{md5}/execute")
     @ResponseBody
-    public Execution executeSeckill(@PathVariable("id") Integer id, @PathVariable("md5") String md5) {
-        return seckillService.executeSeckillProcedure(id, md5, getUser().getPhone());
+    public SeckillResult executeSeckill(@PathVariable("pid") Integer pid, @PathVariable("md5") String md5, String phone) {
+        return seckillService.executeSeckillProcedure(pid, md5, phone);
     }
 }

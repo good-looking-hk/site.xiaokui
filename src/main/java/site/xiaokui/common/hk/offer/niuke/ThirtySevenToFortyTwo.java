@@ -1,7 +1,5 @@
 package site.xiaokui.common.hk.offer.niuke;
 
-import io.swagger.models.auth.In;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

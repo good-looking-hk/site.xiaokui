@@ -142,7 +142,6 @@
                                     <p class="selfDescription" href="#">个性签名：${user.selfDescription}</p>
                                     <p class="selfDescription" href="#">博客空间：${user.blogSpace}</p>
                                     <p class="selfDescription" href="#">当前角色：${user.roleName}</p>
-                                    <p class="selfDescription" href="#">所属部门：${user.deptName}</p>
                                 </div>
                             </li>
                             <!-- Menu Footer-->
@@ -207,7 +206,7 @@
                             <ul class="treeview-menu">
                                 @for(son in top.list){
                                     <li>
-                                        <a href="${son.url}">
+                                        <a href="#${son.url}">
                                             @if(isEmpty(son.icon)){
                                                 <i class="fa fa-circle-o"></i><span>${son.name}</span>
                                             @} else {

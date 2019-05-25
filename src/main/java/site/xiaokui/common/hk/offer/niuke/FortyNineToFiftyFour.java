@@ -16,7 +16,7 @@ public class FortyNineToFiftyFour {
                 return 0;
             }
             if (str.length() == 1) {
-                return isNumber(str.charAt(0)) ? str.charAt(0) - (int)'0' : 0;
+                return isNumber(str.charAt(0)) ? str.charAt(0) - (int) '0' : 0;
             }
             int symbol = 1;
             if (str.charAt(0) == '-') {
@@ -55,7 +55,7 @@ public class FortyNineToFiftyFour {
      * 也不知道每个数字重复几次。请找出数组中任意一个重复的数字。 例如，如果输入长度为7的数组{2,3,1,0,2,5,3}，那么对应的输出是第一个重复的数字2。
      */
     static class Fifty {
-        public boolean duplicate(int numbers[],int length,int [] duplication) {
+        public boolean duplicate(int numbers[], int length, int[] duplication) {
             int[] map = new int[length];
             for (int i = 0; i < length; i++) {
                 map[numbers[i]]++;
@@ -77,16 +77,16 @@ public class FortyNineToFiftyFour {
         public int[] multiply(int[] A) {
             int length = A.length;
             int[] B = new int[length];
-            if(length != 0 ){
+            if (length != 0) {
                 B[0] = 1;
                 //计算下三角连乘
-                for(int i = 1; i < length; i++){
-                    B[i] = B[i-1] * A[i-1];
+                for (int i = 1; i < length; i++) {
+                    B[i] = B[i - 1] * A[i - 1];
                 }
                 int temp = 1;
                 //计算上三角
-                for(int j = length-2; j >= 0; j--){
-                    temp *= A[j+1];
+                for (int j = length - 2; j >= 0; j--) {
+                    temp *= A[j + 1];
                     B[j] *= temp;
                 }
             }
@@ -98,7 +98,7 @@ public class FortyNineToFiftyFour {
      * 请实现一个函数用来匹配包括'.'和'*'的正则表达式。模式中的字符'.'表示任意一个字符，
      * 而'*'表示它前面的字符可以出现任意次（包含0次）。 在本题中，匹配是指字符串的所有字符匹配整个模式。
      * 例如，字符串"aaa"与模式"a.a"和"ab*ac*a"匹配，但是与"aa.a"和"ab*a"均不匹配
-     * "" ".*","a" "a.","a" "ab*", "aa" "a*"
+     * "" ".*","a" "a.","a" "ab*", "aa" "a*", "aaa" "a*a"
      */
     static class FiftyTwo {
         public boolean match(char[] str, char[] pattern) {
@@ -141,8 +141,18 @@ public class FortyNineToFiftyFour {
                     }
                     if (i + 2 != pattern.length) {
                         if (str[index] == pattern[i + 2]) {
+                            if (str[index] != pattern[i]) {
+                                i++;
+                                continue;
+                            }
                             while (str[index] == pattern[i]) {
                                 if (index == str.length - 1) {
+                                    i++;
+                                    while (++i != pattern.length) {
+                                        if (pattern[i] != str[index]) {
+                                            return false;
+                                        }
+                                    }
                                     return true;
                                 }
                                 index++;
@@ -169,6 +179,84 @@ public class FortyNineToFiftyFour {
                 return false;
             }
             return true;
+        }
+
+
+        public boolean match1(char[] str, char[] pattern) {
+            if (str == null || pattern == null) {
+                return false;
+            }
+            int strIndex = 0;
+            int patternIndex = 0;
+            return matchCore(str, strIndex, pattern, patternIndex);
+        }
+
+        public boolean matchCore(char[] str, int strIndex, char[] pattern, int patternIndex) {
+            //有效性检验：str到尾，pattern到尾，匹配成功
+            if (strIndex == str.length && patternIndex == pattern.length) {
+                return true;
+            }
+            //pattern先到尾，匹配失败
+            if (strIndex != str.length && patternIndex == pattern.length) {
+                return false;
+            }
+            //模式第2个是*，且字符串第1个跟模式第1个匹配,分3种匹配模式；如不匹配，模式后移2位
+            if (patternIndex + 1 < pattern.length && pattern[patternIndex + 1] == '*') {
+                if ((strIndex != str.length && pattern[patternIndex] == str[strIndex]) || (pattern[patternIndex] == '.' && strIndex != str.length)) {
+                    return matchCore(str, strIndex, pattern, patternIndex + 2)//模式后移2，视为x*匹配0个字符
+                            || matchCore(str, strIndex + 1, pattern, patternIndex + 2)//视为模式匹配1个字符
+                            || matchCore(str, strIndex + 1, pattern, patternIndex);//*匹配1个，再匹配str中的下一个
+                } else {
+                    return matchCore(str, strIndex, pattern, patternIndex + 2);
+                }
+            }
+            //模式第2个不是*，且字符串第1个跟模式第1个匹配，则都后移1位，否则直接返回false
+            if ((strIndex != str.length && pattern[patternIndex] == str[strIndex]) || (pattern[patternIndex] == '.' && strIndex != str.length)) {
+                return matchCore(str, strIndex + 1, pattern, patternIndex + 1);
+            }
+            return false;
+        }
+    }
+
+    /**
+     * 请实现一个函数用来判断字符串是否表示数值（包括整数和小数）。例如，字符串"+100","5e2","-123","3.1416"和"-1E-16"都表示数值。
+     * 但是"12e","1a3.14","1.2.3","+-5"和"12e+4.3"都不是。
+     */
+    static class FiftyThree {
+        public boolean isNumeric(char[] str) {
+            String s = String.valueOf(str);
+            try {
+                Double.parseDouble(s);
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+    }
+
+    static class FiftyFour {
+        //Insert one char from stringstream
+        int [] book=new int[256];
+        StringBuffer s=new StringBuffer();
+        public void Insert(char ch)
+        {
+            s.append(ch);
+            if(book[ch]==0){
+                book[ch]=1;
+            }else{
+                book[ch]+=1;
+            }
+        }
+        //return the first appearence once char in current stringstream
+        public char FirstAppearingOnce()
+        {
+            char [] str=s.toString().toCharArray();
+            for(char ch:str){
+                if(book[ch]==1){
+                    return ch;
+                }
+            }
+            return '#';
         }
     }
 

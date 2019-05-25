@@ -1,7 +1,5 @@
 package site.xiaokui.common.hk.offer.niuke;
 
-import io.swagger.models.auth.In;
-import org.junit.Assert;
 
 import java.util.ArrayList;
 import java.util.Deque;
@@ -121,34 +119,34 @@ public class OneToSix {
 
         private static void test() {
             boolean result = new One().Find(5, One.array);
-            Assert.assertFalse(result);
+//            Assert.assertFalse(result);
             result = new One().Find(10, One.array);
-            Assert.assertTrue(result);
+//            Assert.assertTrue(result);
             result = new One().Find(55, One.array);
-            Assert.assertFalse(result);
+//            Assert.assertFalse(result);
             result = new One().Find(80, One.array);
-            Assert.assertTrue(result);
+//            Assert.assertTrue(result);
             result = new One().Find(90, One.array);
-            Assert.assertTrue(result);
+//            Assert.assertTrue(result);
             result = new One().Find(100, One.array);
-            Assert.assertFalse(result);
+//            Assert.assertFalse(result);
             result = new One().Find(102, One.niuke1);
-            Assert.assertTrue(result);
+//            Assert.assertTrue(result);
 
-            result = new One().Find1(5, One.array);
-            Assert.assertFalse(result);
-            result = new One().Find1(10, One.array);
-            Assert.assertTrue(result);
-            result = new One().Find1(55, One.array);
-            Assert.assertFalse(result);
-            result = new One().Find1(80, One.array);
-            Assert.assertTrue(result);
-            result = new One().Find1(90, One.array);
-            Assert.assertTrue(result);
-            result = new One().Find1(100, One.array);
-            Assert.assertFalse(result);
-            result = new One().Find1(102, One.niuke1);
-            Assert.assertTrue(result);
+//            result = new One().Find1(5, One.array);
+//            Assert.assertFalse(result);
+//            result = new One().Find1(10, One.array);
+//            Assert.assertTrue(result);
+//            result = new One().Find1(55, One.array);
+//            Assert.assertFalse(result);
+//            result = new One().Find1(80, One.array);
+//            Assert.assertTrue(result);
+//            result = new One().Find1(90, One.array);
+//            Assert.assertTrue(result);
+//            result = new One().Find1(100, One.array);
+//            Assert.assertFalse(result);
+//            result = new One().Find1(102, One.niuke1);
+//            Assert.assertTrue(result);
         }
     }
 
@@ -197,8 +195,8 @@ public class OneToSix {
 
         private static void test() {
             Two two = new Two();
-            Assert.assertEquals(str.replaceAll(" ", "%20"), two.replaceSpace(new StringBuffer(str)));
-            Assert.assertEquals(str.replaceAll(" ", "%20"), two.replaceSpace1(new StringBuffer(str)));
+//            Assert.assertEquals(str.replaceAll(" ", "%20"), two.replaceSpace(new StringBuffer(str)));
+//            Assert.assertEquals(str.replaceAll(" ", "%20"), two.replaceSpace1(new StringBuffer(str)));
         }
     }
 
@@ -406,7 +404,7 @@ public class OneToSix {
 
         private static void test() {
             int min = new Six().minNumberInRotateArray(new int[]{3, 3, 4, 5, 1, 2});
-            Assert.assertEquals(min, 1);
+//            Assert.assertEquals(min, 1);
         }
     }
 

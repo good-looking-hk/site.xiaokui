@@ -11,7 +11,7 @@ public enum BlogStatusEnum {
     /**
      *
      */
-    PRIVATE(0, "私有"), PUBLIC(1, "公开"), PROTECTED(2, "受保护");
+    PUBLIC(1, "公开"), PROTECTED(2, "受保护，密码访问");
 
     @Getter
     int code;

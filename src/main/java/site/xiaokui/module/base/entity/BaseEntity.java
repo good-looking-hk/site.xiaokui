@@ -1,5 +1,6 @@
 package site.xiaokui.module.base.entity;
 
+import cn.hutool.core.date.DateUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -32,6 +33,16 @@ public class BaseEntity implements ToZTreeNode, Serializable {
      * 但个人而言，还是习惯用datetime，自己完全控制在代码层，不依赖于数据库
      */
     protected Date modifiedTime;
+
+    /**
+     * String拼接的底层实现也是依赖StringBuilder
+     */
+    public String toSimpleString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(this.getClass().getSimpleName()).append('[').append("id=").append(id).append(",name=");
+        sb.append(name).append(",createTime=").append(DateUtil.formatDate(createTime) + "]");
+        return sb.toString();
+    }
 
     @Override
     public ZTreeNode toZTreeNode() {

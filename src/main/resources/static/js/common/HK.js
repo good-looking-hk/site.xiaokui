@@ -4,14 +4,27 @@
  * 在layer使用open方法时，0（信息框，默认），1（页面层），2（iframe层），3（加载层），4（tips层）
  * javascript中以下值会被转换为false:false、undefined、null、0、-0、NaN、空字符串
  */
+// ajax为异步请求模式
 $.ajaxSettings.async = false;
 var HK = {
     ctxPath: "",
+    userData: {},
     data: {},
     /**
      * 内置封装的treeTable实例
      */
     tableInstance: null,
+    addCtx: function (ctx) {
+        if (!this.isEmpty(ctx)) {
+            this.ctxPath = ctx;
+        }
+    },
+    putUserData(key, value) {
+        this.userData[key] = value;
+    },
+    getUserData(key) {
+        return this.userData[key];
+    },
     isEmpty: function (o) {
         return o == null || o === undefined || o === '';
     },
@@ -22,6 +35,14 @@ var HK = {
         } else {
             location.href = url;
         }
+    },
+    getGetParam: function(paramName) {
+        var paramValue = "", isFound = !1;
+        if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
+            arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
+            while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
+        }
+        return paramValue == "" && (paramValue = null), paramValue
     },
     newPage: function(url) {
         var el = document.createElement("a");
@@ -61,11 +82,6 @@ var HK = {
             var second = nowtime.getSeconds() < 10 ? '0' + nowtime.getSeconds() : nowtime.getSeconds();
             document.getElementById(id).innerText = year + "年" + month + "月" + date + "日 " + hour + ":" + minute + ":" + second;
         }, 1000);
-    },
-    addCtx: function (ctx) {
-        if (this.ctxPath === "" && !this.isEmpty(ctx)) {
-            this.ctxPath = ctx;
-        }
     },
     setData: function (key, value) {
         if (typeof key === "object") {
@@ -276,6 +292,12 @@ var HK = {
             columns: columns,		//列数组
             toolbar: "#" + tableId + "Toolbar"//顶部工具条
         });
+        // 绑定enter
+        $(document).on('keydown', function (event) {
+            if (event.keyCode === 13) {
+                $("#search").click();
+            }
+        });
         return this.tableInstance;
     },
     getSelectedItemId: function () {
@@ -289,8 +311,12 @@ var HK = {
         }
     },
     refreshTable: function (params) {
-        if (this.tableInstance != null) {
-            this.tableInstance.bootstrapTreeTable('refresh', params);
+        for (var i in params) {
+            if (!this.isEmpty(params[i])) {
+                if (this.tableInstance != null) {
+                    this.tableInstance.bootstrapTreeTable('refresh', params);
+                }
+            }
         }
     },
     exec: function (method, baseUrl, baseName, deleteId) {
@@ -315,7 +341,7 @@ var HK = {
                 });
             }
         } else if(method === "refresh") {
-            HK.refreshTable();
+            HK.refreshTable({1:1});
         } else {
             if (typeof method === 'function') {
                 method();

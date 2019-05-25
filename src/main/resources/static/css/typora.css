@@ -1654,3 +1654,7 @@ table tr:nth-child(2n), thead {
 #write > p:first-child {
     margin-top: 15px;
 }
+
+blockquote p {
+    font-size: 15px;
+}

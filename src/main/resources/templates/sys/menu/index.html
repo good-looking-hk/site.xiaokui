@@ -9,7 +9,7 @@
     <div class="layui-row box-content">
         @inputs = [{title:"菜单名称",id:"name",placeholder:"匹配菜单名称"}, {title:"菜单编号",id:"code",placeholder:"匹配菜单编号"},
         @{title:"url地址",id:"url",placeholder:"匹配url地址"}];
-        @buttons1 = [{name:"搜索",icon:"fa fa-search",method:"search()"}, {name:"重置",icon:"fa fa-trash",method:"reset()"}];
+        @buttons1 = [{id:"search",name:"搜索",icon:"fa fa-search",method:"search()"}, {name:"重置",icon:"fa fa-trash",method:"reset()"}];
         <#input_button inputs="${inputs}" buttons="${buttons1}"/>
 
         @var buttons2 = [{ name:"add" }, {name:"edit"}, {name:"remove"}, {name:"refresh"}];

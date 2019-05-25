@@ -10,7 +10,7 @@ import site.xiaokui.module.sys.user.entity.ZTreeNode;
  * @author HK
  * @date 2018-10-03 17:13
  */
-@ToString
+@ToString(callSuper = true)
 @Getter
 @Setter
 public class ParentEntity extends BaseEntity implements Comparable<ParentEntity> {

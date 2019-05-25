@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * 重写FileUtil，使之更加简单而强大
+ * 重写FileUtil，使之更加简单规范而强大
  * @author HK
  * @date 2018-06-26 16:05
  */
@@ -22,20 +22,29 @@ public class FileUtil {
         File file = new File(UPLOAD_PATH);
         if (!file.exists()) {
             if (!file.mkdirs()) {
-                throw new RuntimeException("非法的上传路径：" + UPLOAD_PATH);
+                throw new RuntimeException("非法的上传路径：" + UPLOAD_PATH + "！ 请检查！");
             }
         }
     }
 
-    public static String getUserDir(Integer userId) {
+    /**
+     * 获取用户目录的File构造字符串
+     */
+    private static String getUserDir(Integer userId) {
         return UPLOAD_PATH + userId;
     }
 
-    public static String getTempDir(Integer userId) {
+    /**
+     * 获取用户临时目录的File字符串
+     */
+    private static String getTempDir(Integer userId) {
         return getUserDir(userId) + TEMP_DIR;
     }
 
-    public static String getTempFile(Integer userId, String fullName) {
+    /**
+     * 获取用户临时目录文件的File字符串
+     */
+    private static String getTempFile(Integer userId, String fullName) {
         return getTempDir(userId) + fullName;
     }
 
@@ -61,6 +70,7 @@ public class FileUtil {
                 return null;
             }
         } catch (IOException e) {
+            // 可能是权限不足
             e.printStackTrace();
         }
         return file;
@@ -79,6 +89,9 @@ public class FileUtil {
         return locateFile(userId, "", fullName);
     }
 
+    /**
+     * 定位目标文件，这里只能依靠exist判断
+     */
     public static File locateFile(Integer userId, String dir, String fullName) {
         String path = getUserDir(userId) + SLASH + dir + SLASH + fullName;
         File file = new File(path);

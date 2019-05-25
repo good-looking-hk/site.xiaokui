@@ -51,6 +51,7 @@ var vm = new Vue({
                 $(this).parent().addClass("active");
                 loadPage(url);
                 return false;
+                // return true;
             });
         },
         updateUsername: function () {

@@ -1,9 +1,11 @@
 package site.xiaokui.module.sys.user.entity.wrapper;
 
+import cn.hutool.core.date.DateUtil;
 import site.xiaokui.module.base.entity.wrapper.BaseEntityWrapper;
 import site.xiaokui.module.sys.user.entity.SysRole;
 import site.xiaokui.module.sys.user.service.ServiceFactory;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,6 +25,11 @@ public class SysRoleWrapper extends BaseEntityWrapper<SysRole> {
     @Override
     protected void wrap() {
         this.put("parentName", ServiceFactory.me().getRoleName(this.getInt("parentId")));
+        Object date = this.get("createTime");
+        if (date instanceof Long) {
+            Date temp = new Date((Long)date);
+            this.put("createTime", DateUtil.format(temp, "yyyy-MM-dd HH:mm:ss"));
+        }
     }
 
     @Override

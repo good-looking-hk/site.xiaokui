@@ -14,11 +14,13 @@ import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.entity.ResultEntity;
 import site.xiaokui.module.sys.user.entity.SysMenu;
 import site.xiaokui.module.sys.user.entity.SysRole;
+import site.xiaokui.module.sys.user.entity.SysUser;
 import site.xiaokui.module.sys.user.entity.ZTreeNode;
 import site.xiaokui.module.sys.user.entity.wrapper.SysRoleWrapper;
 import site.xiaokui.module.sys.user.service.MenuService;
 import site.xiaokui.module.sys.user.service.RoleService;
 import site.xiaokui.module.sys.user.service.ServiceFactory;
+import site.xiaokui.module.sys.user.service.UserService;
 import site.xiaokui.module.sys.user.util.ZTreeTool;
 
 import java.util.Date;
@@ -37,6 +39,9 @@ public class RoleController extends AbstractController {
      * ROLE_PREFIX字段默认为 /sys/role
      */
     private static final String ROLE_PREFIX = UserConstants.ROLE_PREFIX;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private RoleService roleService;
@@ -123,6 +128,10 @@ public class RoleController extends AbstractController {
         String roleName = RoleTypeEnum.valueOf(id);
         if (roleName != null) {
             return ResultEntity.error("不能删除系统内置用户");
+        }
+        boolean isInUse = userService.roleIdIsInUse(id);
+        if (isInUse) {
+            return this.error("该角色下用户不为空");
         }
         boolean success = roleService.deleteById(id);
         return returnResult(success);

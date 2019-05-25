@@ -3,20 +3,16 @@
 	<form class="layui-form" lay-filter="setValue">
 		<#input title="用户名称" id="name" placeholder="例如 一般般帅"/>
         <#input title="邮箱" id="email" placeholder="用于找回密码" required="email"/>
+
+		@inputs1 = [{title:"角色ID",id:"roleId",placeholder:"(选填，默认为普通用户)",readonly:"true"},
+		@{title:"角色名称",id:"roleName",placeholder:"(自动填充，角色名称)",readonly:"true"}];
+		@buttons1 = [{id:"temp",name:"选填",method:"openRoleTree(event)"}];
+		<#input_button type="form" inputs="${inputs1}" buttons="${buttons1}"/>
+
         @values = ["男","女","保密"];
         <#select title="性别" id="sex" values="${values}"/>
         <#input title="密码" id="password" placeholder="设置用户密码" extra="lay-verify='password'"/>
         <#input title="确认密码" id="repeat" placeholder="确认密码" extra="lay-verify='password'"/>
-
-        @inputs1 = [{title:"角色ID",id:"roleId",placeholder:"(选填，默认为普通用户)",readonly:"true"},
-		@{title:"角色名称",id:"roleName",placeholder:"(自动填充，角色名称)",readonly:"true"}];
-		@buttons1 = [{name:"选填",method:"openRoleTree()"}];
-		<#input_button type="form" inputs="${inputs1}" buttons="${buttons1}"/>
-
-        @inputs2 = [{title:"部门ID",id:"deptId",placeholder:"(选填，默认不分配)",readonly:"true"},
-        @{title:"部门名称",id:"deptName",placeholder:"(自动填充，部门名称)",readonly:"true"}];
-        @buttons2 = [{name:"选填",method:"openDeptTree()"}];
-        <#input_button type="form" inputs="${inputs2}" buttons="${buttons2}"/>
 
 		<div class="layui-form-item">
 			<div class="layui-input-block">
@@ -26,7 +22,6 @@
 		</div>
 	</form>
 	<script>
-        //Demo
         layui.use('form', function () {
             var form = layui.form;
             form.verify({
@@ -45,11 +40,9 @@
                 return false;
             });
         });
-        function openRoleTree() {
+        function openRoleTree(e) {
+            e.preventDefault();
             HK.initInputSelectZtree("roleId", "roleName", "/sys/role/tree");
-        }
-        function openDeptTree() {
-            HK.initInputSelectZtree("roleId", "deptName", "/sys/dept/tree");
         }
 	</script>
 </div>

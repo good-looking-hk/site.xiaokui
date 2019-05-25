@@ -32,10 +32,4 @@ public class ServiceFactory {
     public String getRoleName(Integer id) {
         return roleService.getName(id);
     }
-
-    @Cacheable(value = ROLE_MENU_DEPT_CACHE)
-    public String getDeptName(Integer id) {
-        return deptService.getName(id);
-    }
-
 }

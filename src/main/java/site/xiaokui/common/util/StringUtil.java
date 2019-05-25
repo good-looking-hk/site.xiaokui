@@ -2,6 +2,7 @@ package site.xiaokui.common.util;
 
 import cn.hutool.core.util.StrUtil;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,6 +12,14 @@ import java.util.Map;
  * @date 2018-05-24 20:14
  */
 public class StringUtil extends StrUtil {
+
+    public static void pring(List<?> list) {
+        if (list != null) {
+            for (Object o : list) {
+                System.out.println(o.toString());
+            }
+        }
+    }
 
     public static void print(Object... objects) {
         for (Object o : objects) {

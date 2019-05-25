@@ -16,15 +16,16 @@ public class BlogConstants {
      */
     public static final String BLOG_PREFIX = "/sys" + PREFIX;
 
-    /**
-     * 上床临时文件对应的PostMapping值
-     */
-    public static final String TEMP = "/temp";
 
     /**
      * 上传博客目录，注意，此项对应的是linux下的/xiaokui/upload文件夹，请确保有相应的访问权限
      */
     public static final String UPLOAD_PATH = "/xiaokui/upload/";
+
+    /**
+     * july的纯音乐
+     */
+    public static final String MUSIC_PATH = "/xiaokui/musics/music/july";
 
     public static final String BLOG_START_FLAG = "blog:";
 
@@ -40,6 +41,6 @@ public class BlogConstants {
     /**
      * 字节为单位，默认8M
      */
-    public static final long MAX_UPLOAD_FILE = 1024 * 1024 * 8;
+    public static final long MAX_UPLOAD_FILE = 1024 * 1024 * 6;
 
 }

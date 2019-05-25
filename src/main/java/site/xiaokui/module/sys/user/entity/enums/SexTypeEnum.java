@@ -14,7 +14,7 @@ public enum SexTypeEnum {
     MALE(1, "男"), FEMALE(2, "女"), UNKNOWN(3, "保密");
 
     @Getter@Setter
-    int code;
+    Integer code;
 
     @Getter@Setter
     String msg;
@@ -31,6 +31,18 @@ public enum SexTypeEnum {
         for (SexTypeEnum m : SexTypeEnum.values()) {
             if (m.getMsg().equals(msg)) {
                 return m.getCode();
+            }
+        }
+        return null;
+    }
+
+    public static String valueOf(Integer code) {
+        if (code == null) {
+            return null;
+        }
+        for (SexTypeEnum m : SexTypeEnum.values()) {
+            if (m.getCode().equals(code)) {
+                return m.getMsg();
             }
         }
         return null;

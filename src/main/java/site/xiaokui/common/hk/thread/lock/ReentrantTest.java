@@ -1,7 +1,5 @@
 package site.xiaokui.common.hk.thread.lock;
 
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,13 +16,11 @@ public class ReentrantTest {
     private static Lock fairLock = new ReetrantLock2(true);
     private static Lock unfairLock = new ReetrantLock2(false);
 
-    @Test
     public void fair() {
         System.out.println("公平锁测试");
         testLock(fairLock);
     }
 
-    @Test
     public void unfair() {
         System.out.println("非公平锁测试");
         testLock(unfairLock);

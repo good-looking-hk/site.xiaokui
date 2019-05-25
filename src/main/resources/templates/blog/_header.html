@@ -7,12 +7,13 @@
     <link href="${ctxPath}/layui/css/layui.css" rel="stylesheet"/>
     <link href="${ctxPath}/css/blog.css" rel="stylesheet"/>
     <link href="${ctxPath}/css/typora.css" rel="stylesheet"/>
+    <link href="${ctxPath}/aplayer/APlayer.min.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="header-nav">
     <div class="layui-main">
         <ul class="layui-nav fly-nav" id="nav-log" >
-            <a href="/login" onclick="play()">
+            <a href="/login">
                 <img class="img-circle" alt="用户头像" height="54" title="${user.selfDescription!'该用户的什么都没留下'}"
                      width="54" src="${ctxPath + user.avatar!'/img/rabbit.gif'}"/>
                 ${user.name}
@@ -22,7 +23,7 @@
             <div class="layui-row layui-form-pane">
                 <div class="layui-col-md8">
                     <div class="layui-input-block" style="padding-top:1px;">
-                        <input type="text" name="key" id="key" autocomplete="off" placeholder="快速搜索"
+                        <input type="text" name="key" id="key" autocomplete="off" placeholder="快速搜索 如2019/Java"
                                class="layui-input">
                     </div>
                 </div>
@@ -34,10 +35,24 @@
             </div>
         </div>
         <ul class="layui-nav fly-nav" id="nav-title">
-            <li class="layui-nav-item"><a href="${ctxPath}/blog/${user.blogSpace}" target="_blank">博客</a></li>
-            <li class="layui-nav-item"><a href="${ctxPath}/manage#/sys/blog" target="_blank">管理</a></li>
-            <li class="layui-nav-item"><a href="${ctxPath}/blog/version" target="_blank">版本</a></li>
-            <li class="layui-nav-item"><a href="${ctxPath}/blog/${user.blogSpace}/about" target="_blank">关于</a></li>
+            <li class="layui-nav-item"><a href="${ctxPath}/blog">首页</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">博客</a>
+                <dl class="layui-nav-child" id="nav-l">
+                    <dd><a href="${ctxPath}/blog/${user.blogSpace}">默认布局</a></dd>
+                    <dd><a href="${ctxPath}/blog/${user.blogSpace}?layout=time">日期布局</a></dd>
+                    <dd><a href="${ctxPath}/blog/${user.blogSpace}?layout=dir">目录布局</a></dd>
+                </dl>
+            </li>
+            @if (isNotEmpty(userLink)) {
+            @for (u in userLink) {
+                @if (u.dot!false) {
+            <li class="layui-nav-item" style="margin-left:8px;"><a href="${ctxPath}/blog/${user.blogSpace}/user?name=${u.name}" target="_blank">${u.title}<span class="layui-badge-dot"></span></a></li>
+                @} else {
+            <li class="layui-nav-item"><a href="${ctxPath}/blog/${user.blogSpace}/user?name=${u.name}" target="_blank">${u.title}</a></li>
+            @}
+            @}
+            @}
         </ul>
     </div>
 </div>

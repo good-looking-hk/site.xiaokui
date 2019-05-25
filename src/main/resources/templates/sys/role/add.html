@@ -5,7 +5,7 @@
 
         @inputs = [{title:"上级角色ID",id:"parentId",placeholder:"(自动填充)",readonly:"true",required:"required"},
         @{title:"上级角色名称",id:"parentName",placeholder:"(自动填充)",readonly:"true", required:"required"}];
-        @buttons1 = [{name:"请选择",method:"openRoleTree()"}];
+        @buttons1 = [{name:"请选择",method:"openRoleTree(event)"}];
         <#input_button type="form" inputs="${inputs}" buttons="${buttons1}"/>
 
         <#input title="角色描述" id="description" placeholder="例如 管理员可以为所欲为，而其他的..."/>
@@ -20,7 +20,6 @@
         </div>
     </form>
     <script>
-        //Demo
         layui.use('form', function () {
             var form = layui.form;
             //监听提交
@@ -29,9 +28,9 @@
                 return false;
             });
         });
-        function openRoleTree() {
+        function openRoleTree(e) {
+            e.preventDefault();
             HK.initInputSelectZtree("parentId", "parentName", "/sys/role/tree");
-            return;
         }
     </script>
 </div>

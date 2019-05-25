@@ -4,7 +4,7 @@
     number(自动判断): 元素个数，一个输入框算一个，所有按钮算一个，程序根据这个进行布局分配，不能小于2，其中内置的x，y分别代表一个输入框的百分布局（满布局为12），
 x代表所有按钮所在布局(当number值过大时，页面可能会出现出现溢出，这里建议值number为2,3,4,5，尽量不要达到12份饱和，我设置了外边距，你可以自行修改源码)
     inputs：input的集合，input对象有三个属性，分别为title，id（隐含name），placeholder、required
-    buttons: button的集合，button对象有三个属性，分别为name，icon和method
+    buttons: button的集合，button对象有4个属性，分别为id，name，icon和method
 @*/
 @var number = inputs.~size + 1;
 @var x,y;
@@ -47,10 +47,10 @@ x代表所有按钮所在布局(当number值过大时，页面可能会出现出
     <div class="layui-col-md${y}"">
         @for (button in buttons) {
             @if (isNotEmpty(button.disabled)) {
-                <button class="layui-btn layui-btn-disabled" disabled="${button.disabled} onclick="${button.method}">${button.name}</button>
+                <button id="${button.id!}" class="layui-btn layui-btn-disabled" disabled="${button.disabled} onclick="${button.method}">${button.name}</button>
                 @continue;
             @} else {
-                <button class="layui-btn" onclick="${button.method}">
+                <button id="${button.id!}" class="layui-btn" onclick="${button.method}">
                 @if (isNotEmpty(button.icon)) {
                     <i class="${button.icon}"></i>&nbsp;${button.name}
                 @} else {

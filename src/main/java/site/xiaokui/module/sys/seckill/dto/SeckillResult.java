@@ -10,7 +10,7 @@ import site.xiaokui.module.sys.seckill.entity.SuccessSeckilled;
  * @date 2018-10-03 22:41
  */
 @Data
-public class Execution {
+public class SeckillResult {
 
     /**
      * 秒杀商品id
@@ -32,14 +32,14 @@ public class Execution {
      */
     private SuccessSeckilled successSeckilled;
 
-    public Execution(Integer id, SeckillStatusEnum status, SuccessSeckilled successSeckilled) {
+    public SeckillResult(Integer id, SeckillStatusEnum status, SuccessSeckilled successSeckilled) {
         this.id = id;
         this.status = status.getCode();
         this.statusInfo = status.getValue();
         this.successSeckilled = successSeckilled;
     }
 
-    public Execution(Integer id,SeckillStatusEnum status) {
+    public SeckillResult(Integer id, SeckillStatusEnum status) {
         this.id = id;
         this.status = status.getCode();
         this.statusInfo = status.getValue();

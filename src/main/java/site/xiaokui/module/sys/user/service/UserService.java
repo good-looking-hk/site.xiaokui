@@ -48,4 +48,11 @@ public class UserService extends BaseService<SysUser> {
         user.setPassword(ShiroKit.getInstance().md5(newPassword, user.getSalt()));
         return updateByIdIgnoreNull(user);
     }
+
+    public boolean roleIdIsInUse(Integer roleId) {
+        SysUser user = new SysUser();
+        user.setRoleId(roleId);
+        user = matchOne(user);
+        return user != null;
+    }
 }

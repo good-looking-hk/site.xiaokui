@@ -83,7 +83,6 @@ public class ShiroService {
         shiroUser.setCreateTime(user.getCreateTime());
         shiroUser.setRoleId(user.getRoleId());
         shiroUser.setRoleName(ServiceFactory.me().getRoleName(user.getRoleId()));
-        shiroUser.setDeptName(ServiceFactory.me().getDeptName(user.getDeptId()));
         return shiroUser;
     }
 }

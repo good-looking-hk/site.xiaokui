@@ -3,6 +3,7 @@ package site.xiaokui.module.sys.seckill.dto;
 import lombok.Data;
 
 /**
+ * 秒杀暴露对象
  * @author HK
  * @date 2018-10-03 22:28
  */

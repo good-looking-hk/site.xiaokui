@@ -40,7 +40,6 @@ public class UserController extends AbstractController {
      * USER_PREFIX字段默认为 /sys/user
      */
     private static final String USER_PREFIX = UserConstants.USER_PREFIX;
-    private final RoleTypeEnum superAdmin = RoleTypeEnum.SUPER_ADMIN;
 
     @Override
     protected String setPrefix() {
@@ -49,9 +48,6 @@ public class UserController extends AbstractController {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private DeptService deptService;
 
     @Autowired
     private RoleService roleService;
@@ -71,9 +67,12 @@ public class UserController extends AbstractController {
             return wrapper.toJson();
         }
         Query<SysUser> userQuery = userService.createQuery();
-        userQuery.andLike("name", "%" + key + "%").andLike("email", "%" + key + "%").andBetween(
-                "create_time", beginTime, endTime);
-
+        if (StringUtil.isNotEmpty(key)) {
+            userQuery.andLike("name", "%" + key + "%").orLike("email", "%" + key + "%");
+        }
+        if (StringUtil.isNotEmpty(beginTime) && StringUtil.isNotEmpty(endTime)) {
+            userQuery.andBetween("create_time", beginTime, endTime);
+        }
         List<SysUser> list = userService.query(userQuery);
         SysUserWrapper wrapper = new SysUserWrapper(list);
         return wrapper.toJson();
@@ -83,9 +82,7 @@ public class UserController extends AbstractController {
     @PostMapping(ADD)
     @ResponseBody
     public ResultEntity add(String name, String email, String sex, String password, String repeat,
-                            @RequestParam(required = false) String roleName, @RequestParam(required = false) Integer roleId,
-                            @RequestParam(required = false) String deptName, @RequestParam(required = false) Integer deptId) {
-        StringUtil.print(name, email, sex, password, repeat, roleName, roleId, deptId, deptName);
+                            @RequestParam(required = false) String roleName, @RequestParam(required = false) Integer roleId) {
         if (StringUtil.hasEmpty(name, email, sex, password, repeat)) {
             return ResultEntity.paramError();
         }
@@ -112,16 +109,9 @@ public class UserController extends AbstractController {
         if (roleId != null && StringUtil.isNotEmpty(roleName)) {
             SysRole sysRole = roleService.getById(roleId);
             if (sysRole != null && sysRole.getName().equals(roleName)) {
-                user.setRoleId(deptId);
+                user.setRoleId(roleId);
             }
         }
-        if (deptId != null && StringUtil.isNotEmpty(deptName)) {
-            SysDept sysDept = deptService.getById(deptId);
-            if (sysDept != null && sysDept.getName().equals(deptName)) {
-                user.setDeptId(deptId);
-            }
-        }
-
         boolean success = userService.insertIgnoreNull(user);
         return returnResult(success, "添加用户失败");
     }
@@ -157,9 +147,9 @@ public class UserController extends AbstractController {
         if (user == null) {
             return ERROR;
         }
+        user.setSsex(SexTypeEnum.valueOf(user.getSex()));
         model.addAttribute("user", user);
         model.addAttribute("roleName", ServiceFactory.me().getRoleName(user.getRoleId()));
-        model.addAttribute("deptName", ServiceFactory.me().getDeptName(user.getDeptId()));
         return TO_EDIT;
     }
 
@@ -167,8 +157,7 @@ public class UserController extends AbstractController {
     @PostMapping(EDIT)
     @ResponseBody
     public ResultEntity edit(Integer id, String name, String email, String sex, String password,
-                             Integer roleId, @RequestParam(required = false) String roleName,
-                             Integer deptId, @RequestParam(required = false) String deptName) {
+                             Integer roleId, @RequestParam(required = false) String roleName) {
         if (StringUtil.hasEmptyStrOrLessThanEqualsZeroNumber(id, name, email, sex, password)) {
             return this.paramError(id, name, email, sex, password);
         }
@@ -186,17 +175,6 @@ public class UserController extends AbstractController {
                 return this.paramError(roleId, roleName);
             }
         }
-        if (deptId != null) {
-            SysDept dept = deptService.getById(deptId);
-            if (dept == null) {
-                return this.paramError(deptId);
-            }
-            if (deptName != null) {
-                if (!dept.getName().equals(deptName)) {
-                    return this.paramError(deptId, deptName);
-                }
-            }
-        }
 
         SysUser user = new SysUser();
         user.setId(id);
@@ -206,12 +184,10 @@ public class UserController extends AbstractController {
         user.setSalt(SHIRO.fastSalt());
         user.setPassword(SHIRO.md5(password, user.getSalt()));
         user.setRoleId(roleId);
-        user.setDeptId(deptId);
 
         //更新用户信息，忽略为的null的更新值
         boolean success = userService.updateByIdIgnoreNull(user);
         return returnResult(success, "修改用户信息失败");
-
     }
 
     @RequiresPermissions(USER_PREFIX + RESET_PASSWORD)

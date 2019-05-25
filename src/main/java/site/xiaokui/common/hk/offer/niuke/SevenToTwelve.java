@@ -1,7 +1,5 @@
 package site.xiaokui.common.hk.offer.niuke;
 
-import org.junit.Assert;
-
 /**
  * @author HK
  * @date 2018-11-07 06:49
@@ -136,9 +134,9 @@ public class SevenToTwelve {
 
         private static void test() {
             int c = new Eleven().NumberOf11(100);
-            Assert.assertEquals(3, c);
+//            Assert.assertEquals(3, c);
 //            c = new Eleven().NumberOf1(-100);
-            Assert.assertEquals(3, c);
+//            Assert.assertEquals(3, c);
             System.out.println(Integer.toBinaryString(100));
             System.out.println(Integer.toBinaryString(-100));
         }

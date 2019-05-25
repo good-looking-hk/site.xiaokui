@@ -3,6 +3,7 @@ package site.xiaokui.module.sys.user.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.service.BaseService;
 import site.xiaokui.module.sys.user.entity.enums.MenuStatusEnum;
 import site.xiaokui.module.base.enums.MenuTypeEnum;
@@ -11,10 +12,7 @@ import site.xiaokui.module.sys.user.dao.RoleMenuDao;
 import site.xiaokui.module.sys.user.entity.SysMenu;
 import site.xiaokui.module.sys.user.entity.SysRoleMenu;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author HK
@@ -35,6 +33,7 @@ public class MenuService extends BaseService<SysMenu> {
         SysRoleMenu sysRoleMenu = new SysRoleMenu();
         sysRoleMenu.setMenuId(menu.getId());
         sysRoleMenu.setRoleId(roleId);
+        sysRoleMenu.setCreateTime(new Date());
         roleMenuDao.insert(sysRoleMenu);
         return result;
     }
@@ -66,6 +65,7 @@ public class MenuService extends BaseService<SysMenu> {
      */
     public List<SysMenu> getUserMenu(Integer roleId) {
         List<SysMenu> menuList = menuDao.listMenuByRoleId(roleId);
+        StringUtil.pring(menuList);
         return resolveMenuList(menuList);
     }
 
@@ -81,7 +81,7 @@ public class MenuService extends BaseService<SysMenu> {
      */
     public boolean deleteMenu(Integer menuId, boolean focus) {
         SysMenu sysMenu = this.getById(menuId);
-        // 如果是普通页面菜单，直接删除
+        // 如果是普通页面菜单(最低级)，直接删除
         if (MenuTypeEnum.THIRD.getCode() == sysMenu.getType()) {
             return this.deleteById(menuId);
         }
@@ -96,43 +96,52 @@ public class MenuService extends BaseService<SysMenu> {
                 }
             }
             return true;
+        } else {
+            SysMenu temp = new SysMenu();
+            temp.setParentId(menuId);
+            List<SysMenu> list = this.match(temp);
+            if (list == null || list.size() == 0) {
+                this.deleteById(menuId);
+                return true;
+            }
         }
         return false;
     }
 
     private static List<SysMenu> resolveMenuList(List<SysMenu> menuList) {
+        // 调用自定义排序方法，排序字段依次为parentId > orderNum > id
         Collections.sort(menuList);
         Iterator<SysMenu> it = menuList.iterator();
         while (it.hasNext()) {
             SysMenu temp = it.next();
-            //如果是页面菜单，直接移除
+            // 如果是页面菜单，直接移除
             if (temp.getType() == MenuTypeEnum.THIRD.getCode()) {
                 it.remove();
                 continue;
             }
             if (temp.getType() == MenuTypeEnum.FIRST.getCode()) {
-                //如果是一级菜单，即包含子菜单
+                // 如果是一级菜单，即包含子菜单
                 if (temp.getList() == null) {
-                    temp.setList(new LinkedList<>());
+                    temp.setList(new ArrayList<>());
                 }
             }
             if (temp.getType() == MenuTypeEnum.SECOND.getCode()) {
-                //如果是二级菜单，则把其添加至对应的一级父菜单的子菜单列表中
+                // 如果是二级菜单，则把其添加至对应的一级父菜单的子菜单列表中
                 SysMenu menu = new SysMenu();
                 menu.setName(temp.getName());
                 menu.setType(temp.getType());
                 menu.setIcon(temp.getIcon());
                 menu.setUrl(temp.getUrl());
                 Integer parentMenuId = temp.getParentId();
-                //添加至父菜单中
+                // 添加至父菜单中
                 SysMenu parent = findMenuByParentId(menuList, parentMenuId);
                 if (parent != null) {
                     if (parent.getList() == null) {
-                        parent.setList(new LinkedList<>());
+                        parent.setList(new ArrayList<>());
                     }
                     parent.getList().add(menu);
                 }
-                //移除原有菜单项
+                // 移除原有菜单项
                 it.remove();
             }
         }

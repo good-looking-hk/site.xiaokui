@@ -1,0 +1,9 @@
+# 暂时是通过每个子模块下的根常量值来配置，具体见相应的模块
+# 部分引用这里的值，有待优化
+xiaokui:
+  base-path: /xiaokui
+  static-adminlte-path: ${base-path}/libs
+  # 如果修改了这个目录，请务必修改FileUtil下的 UPLOAD_PATH 值
+  blog-upload-path: ${base-path}/upload
+  # 音乐保存目录
+  blog-music-path: ${base-path}/musics

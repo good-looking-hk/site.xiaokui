@@ -1,0 +1,78 @@
+@layout("/beetl/box_container.html"){
+<div class="layui-row">
+    @var tableId = "Blog";
+    @var baseName = "博客";
+    @var baseUrl = "/sys/blog/";
+    @var blogSpace = shiro.getUser().blogSpace;
+    <div class="layui-row box-title">
+        <h5>访问明细</h5>
+    </div>
+    <div class="layui-row box-content">
+        @inputs = [{title:"博客标题",id:"name",placeholder:"匹配博客标题"},{title:"所在目录",id:"dir", placeholder:"匹配所在目录"}, {title:"开始时间",id:"beginTime",placeholder:"创建开始时间"},
+        @{title:"结束时间",id:"endTime",placeholder:"创建结束时间"}];
+        @buttons1 = [{id:"search",name:"搜索",icon:"fa fa-search",method:"search()"}, {name:"重置",icon:"fa fa-trash",method:"reset()"}];
+        <#input_button inputs="${inputs}" buttons="${buttons1}"/>
+
+        @var buttons2 = [{name:"查看", method:"show"},{name:"edit"}, {name:"remove"}, {name:"refresh"}];
+        <#button tableId="${tableId}" buttons="${buttons2}" baseUrl="${baseUrl}"/>
+        <table id="${tableId}" data-mobile-responsive="true" data-click-to-select="true"></table>
+        <script>
+            layui.use('laydate', function(){
+                var laydate = layui.laydate;
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#beginTime' //指定元素
+                });
+                laydate.render({
+                    elem: '#endTime' //指定元素
+                });
+            });
+            var ${tableId} = {
+                exec: function (method) {
+                    HK.exec(method, "${baseUrl}", "${baseName}");
+                },
+                columns: function () {
+                    var columns = [
+                        {field: 'selectItem', radio: true},
+                        {title: '博客ID', field: 'id', visible: false, align: 'center', valign: 'middle'},
+                        {title: '博客标题', field: 'name', align: 'center', valign: 'middle', sortable: true},
+                        {title: '博客目录', field: 'dir', align: 'center', valign: 'middle', sortable: true},
+                        {title: '访问量', field: 'viewCount', align: 'center', valign: 'middle', sortable: true},
+                        {title: '排序', field: 'orderNum', align: 'center', valign: 'middle', sortable: true},
+                        {title: '创建时间', field: 'createTime', align: 'center', valign: 'middle', sortable: true},
+                        {title: '上次修改时间', field: 'modifiedTime', align: 'center', valign: 'middle', sortable: true},
+                        {title: '状态', field: 'status', align: 'center', valign: 'middle', sortable: true,
+                            formatter: function (value, row, index) {
+                                if (row.status === 0) return '<span class="layui-btn layui-btn-disabled layui-btn-xs">私有</span>';
+                                if (row.status === 1) return '<span class="layui-btn layui-btn-primary layui-btn-xs">公开</span>';
+                                if (row.status === 2) return '<span class="layui-btn layui-btn-warm layui-btn-xs">申请访问</span>';
+                            }
+                        }];
+                    return columns;
+                }
+            };
+            $(function () {
+                HK.initTreeTable("${tableId}", "${baseUrl}" + "list", ${tableId}.columns());
+            });
+            function show() {
+                var id = HK.getSelectedItemId();
+                if (id != null) {
+                    HK.newPage("/blog/${blogSpace}/" + id);
+                }
+            }
+            function search() {
+                HK.clearData();
+                @for (input in inputs) {
+                    HK.setData("${input.id}");
+                @}
+                HK.refreshTable(HK.getData());
+            }
+            function reset() {
+            @for (input in inputs) {
+                    $("#${input.id}").val("");
+                @}
+            }
+        </script>
+    </div>
+</div>
+@}

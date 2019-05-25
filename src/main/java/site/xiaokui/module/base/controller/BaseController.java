@@ -63,6 +63,9 @@ public class BaseController implements ConstantController{
     }
 
     protected Integer getUserId() {
+        if (getUser() == null) {
+            return null;
+        }
         return SHIRO.getUser().getUserId();
     }
 
@@ -89,7 +92,6 @@ public class BaseController implements ConstantController{
         user.setStatus(UserStatusEnum.OK.getCode());
         user.setSex(SexTypeEnum.UNKNOWN.getCode());
         user.setRoleId(RoleTypeEnum.USER.getCode());
-        user.setDeptId(DeptTypeEnum.NONE.getCode());
         return user;
     }
 

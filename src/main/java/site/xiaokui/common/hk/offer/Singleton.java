@@ -1,7 +1,7 @@
-package site.xiaokui.common.hk.offer.one_five;
+package site.xiaokui.common.hk.offer;
 
 /**
- * 剑指Offer面试题2：实现Singleton模式
+ * 实现Singleton模式
  * 对于这个题目，只要对多线程知识有稍微深一点的了解，做起来其实很简单
  * @author HK
  * @date 2018-08-04 16:12
@@ -25,7 +25,7 @@ public class Singleton {
     }
 
     /**
-     * 一种稍稍高级一点的单例，按需加载，线程安全
+     * 一种稍稍高级一点的单例-使用内部类，按需加载，线程安全
      */
     static class Singleton2 {
         private static class Singleton3 {

@@ -1,7 +1,5 @@
 package site.xiaokui.common.hk.offer.niuke;
 
-import io.swagger.models.auth.In;
-
 import java.util.*;
 import java.util.concurrent.DelayQueue;
 
@@ -85,51 +83,44 @@ public class NineteenToTwentyFour {
      * 定义栈的数据结构，请在该类型中实现一个能够得到栈中所含最小元素的min函数（时间复杂度应为O（1））。
      */
     static class Twenty {
-        int[] arr = new int[10];
-        int size;
-        int minIndex;
-        int beforeIndex;
+        ArrayList<Integer> list1 = new ArrayList<>();
+        ArrayList<Integer> list2 = new ArrayList<>();
 
         public void push(int node) {
-            arr[size] = node;
-            if (node < arr[minIndex]) {
-                beforeIndex = minIndex;
-                minIndex = size;
-            }
-            size++;
-            if (size >= arr.length) {
-                int[] temp = new int[size * 2];
-                for (int i = 0; i < size; i++) {
-                    temp[i] = arr[i];
+            list1.add(node);
+            if (list2.size() == 0) {
+                list2.add(node);
+            } else {
+                int min = min();
+                if (min > node) {
+                    list2.add(node);
+                } else {
+                    list2.add(min);
                 }
-                arr = temp;
             }
         }
 
         public void pop() {
-            arr[--size] = 0;
-            if (size == minIndex) {
-                minIndex = beforeIndex;
+            if (list1.size() != 0) {
+                list1.remove(list1.size() - 1);
+                list2.remove(list2.size() - 1);
             }
         }
 
         public int top() {
-            return arr[size - 1];
+            if (list1.size() != 0) {
+                return list1.get(list1.size() - 1);
+            } else {
+                throw new RuntimeException("空栈");
+            }
         }
 
         public int min() {
-            return arr[minIndex];
-        }
-
-        private static void test() {
-            Twenty stack = new Twenty();
-            stack.push(1);
-            stack.push(2);
-            stack.push(3);
-            stack.push(4);
-            stack.push(-1);
-            stack.pop();
-            System.out.println(stack.min());
+            if (list2.size() != 0) {
+                return list2.get(list2.size() - 1);
+            } else {
+                throw new RuntimeException("空栈");
+            }
         }
     }
 

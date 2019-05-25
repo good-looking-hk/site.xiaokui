@@ -38,7 +38,7 @@ layui.use(['form', 'layer', 'upload'], function () {
         url: HK.ctxPath + '/sys/blog/temp',
         accept: 'file',
         exts: 'html',
-        size: 8 * 1024,
+        size: 4 * 1024,
         multiple: true,
         auto: false,
         bindAction: '#testListAction',
@@ -64,7 +64,7 @@ layui.use(['form', 'layer', 'upload'], function () {
                     if (isEmpty(tds.eq(2).text())) {
                         obj.upload(index, file);
                     } else {
-                        var blogName = tds.eq(2).text().split(' : ')[2];
+                        var blogName = tds.eq(2).text().split(' : ')[1];
                         if (!isEmpty(blogName)) {
                             var url = "/blog/" + blogSpace + "/preview?blogName=" + blogName;
                             open_link(url);
@@ -90,7 +90,7 @@ layui.use(['form', 'layer', 'upload'], function () {
                     , tds = tr.children();
                 //如果没有已上传的记录
                 if (isEmpty(tds.eq(2).text())) {
-                    tds.eq(2).html('<span>' + green(blog.dir) + ' : ' + (isEmpty(blog.orderNum) ? '未指定' : green(blog.orderNum)) + ' : ' + green(blog.name) + ' : ' + green(blog.createTime) +'</span>');
+                    tds.eq(2).html('<span>' + green(blog.dir) + ' : '  + green(blog.name) + ' : ' + (isEmpty(blog.orderNum) ? '未指定' : green(blog.orderNum)) + ' : ' + green(blog.createTime) +'</span>');
                     tds.eq(3).html('<span style="color: #5FB878;">上传成功</span>');
                     tr.find('.blog-preview').text('预览');
                 }
@@ -109,6 +109,34 @@ layui.use(['form', 'layer', 'upload'], function () {
             return delete this.files[index];
         }
     });
+
+    // var filename= '';
+    // // 单文件自动上传执行
+    // var uploadInst = upload.render({
+    //     elem: '#about', //绑定元素
+    //     url: HK.ctxPath + '/sys/blog/user/',
+    //     accept: 'file',
+    //     data: {
+    //       name:  function(){
+    //           return $('#about1').val();
+    //       }
+    //     },
+    //     exts: 'html',
+    //     size: 2 * 1024,
+    //     multiple: false,
+    //     auto: true,
+    //     done: function(res){
+    //         if (res.code === 200) {
+    //             HK.ok(res.msg);
+    //         } else {
+    //             HK.error(res.msg);
+    //         }
+    //     }
+    //     ,error: function(){
+    //         //请求异常回调
+    //         HK.error("上传接口异常");
+    //     }
+    // });
 });
 
 var vm = new Vue({
@@ -138,11 +166,11 @@ var vm = new Vue({
                 }
                 var data = {
                     dir: blogInfo[0],
-                    orderNum: parseInt(blogInfo[1]),
-                    name: blogInfo[2],
+                    name: blogInfo[1],
+                    orderNum: parseInt(blogInfo[2]),
                     createTime: blogInfo[3]
                 };
-                HK.toString(data);
+                // HK.toString(data);
                 // return;
                 var temp = $(this);
                 $.post(HK.ctxPath + '/sys/blog/add', data, function (response) {
@@ -155,7 +183,7 @@ var vm = new Vue({
                         temp.find('.blog-show').off('click').on('click', function () {
                             var info = temp.find('td').eq(2).text().split(' : ');
                             var dir = info[0];
-                            var blogName = info[2];
+                            var blogName = info[1];
                             if (!isEmpty(blogName)) {
                                 var url = HK.ctxPath + "/blog/" + blogSpace + '/' + dir + '/' + blogName;
                                 open_link(url);

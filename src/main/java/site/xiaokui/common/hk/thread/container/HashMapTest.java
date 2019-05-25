@@ -1,7 +1,5 @@
 package site.xiaokui.common.hk.thread.container;
 
-import io.swagger.models.auth.In;
-
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;

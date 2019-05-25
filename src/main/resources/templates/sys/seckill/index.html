@@ -31,6 +31,7 @@
                     <th>开始时间</th>
                     <th>结束时间</th>
                     <th>创建时间</th>
+                    <th>状态</th>
                     <th>详情页</th>
                 </tr>
                 </thead>
@@ -42,6 +43,13 @@
                         <td class="bold">${p.startTime, "yyyy-MM-dd HH:mm:ss"}</td>
                         <td class="bold">${p.endTime, "yyyy-MM-dd HH:mm:ss"}</td>
                         <td>${p.createTime, "yyyy-MM-dd HH:mm:ss"}</td>
+                        @if (p.startTime > date()) {
+                        <td>未开始</td>
+                        @} else if (p.endTime < date()) {
+                        <td>已结束</td>
+                        @} else {
+                        <td>正在抢购</td>
+                        @}
                         <td><a class="btn btn-info" href="${ctxPath}/sys/seckill/${p.id}/detail" target="_blank">详情</a></td>
                     </tr>
                 @}
@@ -53,6 +61,12 @@
         </div>
     </div>
     <button class="btn btn-default" style="margin:0 auto;width: 200px;" onclick="reset()">重置数据</button>
+</div>
+<div class="container">
+    <h4>对于秒杀系统设计的一些思考</h4>
+    <div class="panel panel-default">
+        <p>1.首先是前端页面，</p>
+    </div>
 </div>
 <script src="${ctxPath}/jquery/jquery.min.js"></script>
 <script src="${ctxPath}/bootstrap/js/bootstrap.min.js"></script>

@@ -1,5 +1,6 @@
-package site.xiaokui.common.aop;
+package site.xiaokui.config.spring;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -8,11 +9,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import site.xiaokui.module.base.entity.ResultEntity;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.Map;
+
 /**
  * 全局控制器异常拦截器，优先级越高值越低
+ * 结果可返回一个对象（@ResponseBody），会转化成相应的字符串，亦可返回一个字符串，返回相应的界面，并携带信息
  * @author HK
  * @date 2018-05-31 01:37
  */
+@Slf4j
 @ControllerAdvice
 @Order(-1)
 public class GlobalExceptionHandler {
@@ -32,6 +39,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NullPointerException.class)
     @ResponseBody
     public ResultEntity npe(NullPointerException e) {
+        e.printStackTrace();
         return ResultEntity.error("空指针异常:" + e.getMessage());
     }
 
@@ -58,7 +66,15 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     @ResponseBody
-    public ResultEntity notFount(RuntimeException e) {
+    public ResultEntity notFount(RuntimeException e, HttpServletRequest request) {
+        if (log.isDebugEnabled()) {
+            log.debug("url[{}]访问出错", request.getRequestURI());
+            Map<String, String[]> map =  request.getParameterMap();
+            for (Map.Entry<String, String[]> m : map.entrySet()) {
+                log.debug(m.getKey() + ":" + Arrays.toString(m.getValue()));
+            }
+            e.printStackTrace();
+        }
         return ResultEntity.error(e.getMessage() + " cause by " + e.getCause());
     }
 
@@ -96,42 +112,5 @@ public class GlobalExceptionHandler {
 //        model.addAttribute("tips", "账号被冻结");
 //        return "/login.html";
 //    }
-//
-//    /**
-//     * 账号密码错误异常
-//     */
-//    @ExceptionHandler(CredentialsException.class)
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    public String credentials(CredentialsException e, Model model) {
-//        String username = getRequest().getParameter("username");
-//        LogManager.me().executeLog(LogTaskFactory.loginLog(username, "账号密码错误", getIp()));
-//        model.addAttribute("tips", "账号密码错误");
-//        return "/login.html";
-//    }
-//
-//    /**
-//     * 验证码错误异常
-//     */
-//    @ExceptionHandler(InvalidKaptchaException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public String credentials(InvalidKaptchaException e, Model model) {
-//        String username = getRequest().getParameter("username");
-//        LogManager.me().executeLog(LogTaskFactory.loginLog(username, "验证码错误", getIp()));
-//        model.addAttribute("tips", "验证码错误");
-//        return "/login.html";
-//    }
-//
-//    /**
-//     * 无权访问该资源异常
-//     */
-//    @ExceptionHandler(UndeclaredThrowableException.class)
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    @ResponseBody
-//    public ErrorTip credentials(UndeclaredThrowableException e) {
-//        getRequest().setAttribute("tip", "权限异常");
-//        log.error("权限异常!", e);
-//        return new ErrorTip(BizExceptionEnum.NO_PERMITION.getCode(), BizExceptionEnum.NO_PERMITION.getMessage());
-//    }
-//
 
 }

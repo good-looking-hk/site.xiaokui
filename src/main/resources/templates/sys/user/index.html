@@ -9,7 +9,7 @@
     <div class="layui-row box-content">
         @inputs = [{title:"用户名称",id:"key",placeholder:"用户名称或邮箱地址"}, {title:"开始时间",id:"beginTime",placeholder:"注册开始时间"},
         @{title:"结束时间",id:"endTime",placeholder:"注册结束时间"}];
-        @buttons1 = [{name:"搜索",icon:"fa fa-search",method:"search()"}, {name:"重置",icon:"fa fa-trash",method:"reset()"}];
+        @buttons1 = [{id:"search",name:"搜索",icon:"fa fa-search",method:"search()"}, {name:"重置",icon:"fa fa-trash",method:"reset()"}];
         <#input_button inputs="${inputs}" buttons="${buttons1}"/>
 
         @var buttons2 = [{name:"add" }, {name:"edit"}, {name:"remove"}, {name:"refresh"}, {name:"分配角色", method:"setRole"},
@@ -39,7 +39,6 @@
                         {title: '邮箱', field: 'email', align: 'center', valign: 'middle', sortable: true},
                         {title: '博客空间', field: 'blogSpace', align: 'center', valign: 'middle', sortable: true},
                         {title: '角色', field: 'roleName', align: 'center', valign: 'middle', sortable: true},
-                        {title: '部门', field: 'deptName', align: 'center', valign: 'middle', sortable: true},
                         {title: '创建时间', field: 'createTime', align: 'center', valign: 'middle', sortable: true},
                         {title: '性别', field: 'sex', align: 'center', valign: 'middle', sortable: true,
                             formatter: function (value, item, index) {

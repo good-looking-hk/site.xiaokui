@@ -1,6 +1,7 @@
 package site.xiaokui.module.sys.blog.controller;
 
 import cn.hutool.core.date.DateUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,23 +17,26 @@ import site.xiaokui.module.sys.blog.BlogConstants;
 import site.xiaokui.module.sys.blog.entity.BlogStatusEnum;
 import site.xiaokui.module.sys.blog.entity.SysBlog;
 import site.xiaokui.module.sys.blog.entity.UploadBlog;
+import site.xiaokui.module.sys.blog.entity.UserLink;
 import site.xiaokui.module.sys.blog.service.BlogService;
+import site.xiaokui.module.sys.blog.service.UserMapService;
+import site.xiaokui.module.sys.blog.util.BlogUtil;
 
+import java.io.File;
 import java.util.Date;
+import java.util.List;
+import java.util.function.Predicate;
 
-import static site.xiaokui.module.sys.blog.BlogConstants.HTML_SUFFIX;
-import static site.xiaokui.module.sys.blog.BlogConstants.MAX_UPLOAD_FILE;
-import static site.xiaokui.module.sys.blog.BlogConstants.TEMP;
-
+import static site.xiaokui.module.sys.blog.BlogConstants.*;
 
 /**
  * @author HK
  * @date 2018-06-24 21:33
  */
+@Slf4j
 @Controller
 @RequestMapping(BlogConstants.BLOG_PREFIX)
 public class BlogController extends AbstractController {
-
     /**
      * 默认为 /sys/blog
      */
@@ -40,6 +44,9 @@ public class BlogController extends AbstractController {
 
     @Autowired
     private BlogService blogService;
+
+    @Autowired
+    private UserMapService userMapService;
 
     @Override
     protected String setPrefix() {
@@ -49,18 +56,23 @@ public class BlogController extends AbstractController {
     @RequiresPermissions(BLOG_PREFIX)
     @PostMapping(LIST)
     @ResponseBody
-    public Object list(@RequestParam(required = false) String name, @RequestParam(required = false) String dir,
-                       @RequestParam(required = false) String beginTime,
-                       @RequestParam(required = false) String endTime) {
+    public List<SysBlog> list(@RequestParam(required = false) String name, @RequestParam(required = false) String dir,
+                        @RequestParam(required = false) String beginTime,
+                        @RequestParam(required = false) String endTime) {
         if (StringUtil.isAllEmpty(name, dir, beginTime, endTime)) {
-            return blogService.all();
+            SysBlog blog = new SysBlog();
+            blog.setUserId(this.getUserId());
+            List<SysBlog> l = blogService.match(blog);
+            System.out.println(l.get(0));
+            return l;
         }
         Query<SysBlog> query = blogService.createQuery();
+        query.andEq("user_id", this.getUserId());
         if (this.isNotEmptry(name)) {
             query.andLike("title", "%" + name + "%");
         }
         if (this.isNotEmptry(dir)) {
-            query.andLike("dir", "%" + name + "%");
+            query.andLike("dir", "%" + dir + "%");
         }
         if (this.isNotEmptry(beginTime) && this.isNotEmptry(endTime)) {
             query.andBetween("create_time", beginTime, endTime);
@@ -69,7 +81,7 @@ public class BlogController extends AbstractController {
     }
 
     @RequiresPermissions(BLOG_PREFIX + ADD)
-    @PostMapping(TEMP)
+    @PostMapping("/temp")
     @ResponseBody
     public ResultEntity temp(MultipartFile file) {
         if (file == null || file.isEmpty() || file.getSize() > MAX_UPLOAD_FILE) {
@@ -151,5 +163,45 @@ public class BlogController extends AbstractController {
     public ResultEntity remove(Integer id) {
         boolean success = blogService.deleteById(id);
         return returnResult(success);
+    }
+
+    @GetMapping("/detail")
+    public String detail() {
+        return PREFIX + "/detail";
+    }
+
+    /**
+     * 用户自定义扩展界面接口--后续有待完善
+     * html文件名形如：关于-20171022.html
+     */
+    @RequiresPermissions(BLOG_PREFIX + ADD)
+    @PostMapping("/user")
+    @ResponseBody
+    public ResultEntity user(MultipartFile file, String name) {
+        if (file == null || file.isEmpty() || file.getSize() > MAX_UPLOAD_FILE) {
+            return this.error("文件为空或过大");
+        }
+        String fileName = file.getOriginalFilename();
+        if (this.isEmpty(name) || this.isEmpty(fileName)) {
+            return this.error("必须自定义name");
+        }
+        int index = fileName.indexOf('-');
+        if (index < 0) {
+            return this.error("格式形如:关于-20171022.html");
+        }
+        File about = BlogUtil.resolveUploadFile(file, this.getUserId()).getUploadFile();
+        if (about == null || !about.exists()) {
+            return this.error("文件上传失败");
+        }
+        // 移动到用户根目录下
+        boolean result = about.renameTo(new File(about.getParentFile().getParent() + "/" +  name + ".html"));
+        if (result) {
+            String title = fileName.substring(0, index);
+            UserLink u = new UserLink(null, this.getUserId(), title, name);
+            BlogUtil.putInUserMap(u);
+            userMapService.insertIgnoreNull(u);
+            log.info("用户{}存储了自定义key[name={},title={}]", this.getUserId(), name, title);
+        }
+        return this.returnResult(result, "更新失败",  "更新成功");
     }
 }

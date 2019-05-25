@@ -23,6 +23,8 @@ public class BlogUser {
 
     private SysBlog blog;
 
+    private int pri, pro, pub, dirCount;
+
     private List<List<SysBlog>> blogList;
 
     public BlogUser(SysUser user) {

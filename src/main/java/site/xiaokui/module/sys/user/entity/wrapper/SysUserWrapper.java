@@ -29,7 +29,6 @@ public class SysUserWrapper extends BaseEntityWrapper<SysUser> {
     @Override
     protected void wrap() {
         this.put("roleName", ServiceFactory.me().getRoleName(this.getInt("roleId")));
-        this.put("deptName", ServiceFactory.me().getDeptName(this.getInt("deptId")));
         Object date = this.get("createTime");
         if (date instanceof Long) {
             Date temp = new Date((Long)date);

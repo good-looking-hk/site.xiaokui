@@ -8,11 +8,13 @@
         </div>
         <div class="panel-body">
             @printFile("blog:" + user.blog.filePath + ".html");
+            @if(isNotEmpty(user.blog.createTime)) {
             <blockquote>
                 <small>
-                    Created by ${user.name} on ${user.blog.createTime, "yyyy-MM-dd"} and updated on ${user.blog.modifiedTime, "yyyy-MM-dd"}
+                    Pageviews ${user.blog.viewCount!"1"} and Created by ${user.name} on ${user.blog.createTime, "yyyy-MM-dd"} and updated on ${user.blog.modifiedTime, "yyyy-MM-dd"}
                 </small>
             </blockquote>
+            @}
         </div>
     </div>
 </div>
@@ -39,5 +41,4 @@
         var element = layui.element;
     });
 </script>
-</body>
-</html>
+@include("/blog/_footer.html"){}

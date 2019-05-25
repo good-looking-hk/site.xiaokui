@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.controller.BaseController;
 import site.xiaokui.module.sys.user.UserConstants;
 import site.xiaokui.module.sys.user.entity.SysMenu;
@@ -31,7 +32,7 @@ public class IndexController extends BaseController {
 
     @GetMapping({"/", "/index"})
     public String index() {
-        return "/index";
+        return FORWARD  + "/blog";
     }
 
     /**
