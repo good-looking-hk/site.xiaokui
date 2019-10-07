@@ -1,0 +1,136 @@
+# 该属性置为true的时候，核心Logger（包含嵌入式容器、hibernate、spring）会输出更多内容，但是你自己应用的日志并不会输出为DEBUG级别
+debug: false
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  profiles:
+    active: local
+  mvc:
+    view:
+       prefix: /
+    pathmatch:
+      use-suffix-pattern: true #忽略小数点后缀，如/test.tss仍然是匹配/test
+  http:
+    converters:
+      preferred-json-mapper: fastjson
+    encoding:
+      charset: utf-8
+  aop:
+    proxy-target-class: true #false为启用jdk默认动态代理,true为cglib动态代理
+#  rabbitmq:
+#    host: 127.0.0.1
+#    port: 5672
+#    username: guest
+#    password: guest
+
+beetl:
+  delimiter-statement-start: \@   #开始结束标签(yaml不允许@开头)
+  delimiter-statement-end: null
+  resource-tagroot: beetl/tags   #自定义标签文件Root目录和后缀
+  resource-tagsuffix: tag
+  resource-auto-check: false #是否检测文件变化,开发用true合适，但线上要改为false
+
+beetlsql:
+  basePackage: site.xiaokui.module.sys
+
+---
+spring:
+  profiles: local
+  resources:
+    # file:${xiaokui.staticLibsPath},
+    static-locations: classpath:/static/,http://www.xiaokui.site
+  datasource:
+#    type: com.alibaba.druid.pool.DruidDataSource
+    type: com.zaxxer.hikari.HikariDataSource
+# 注意这里的GMT+8，用于解决数据库时差8问题，一开始我还以为是fastjson的问题
+    url: jdbc:mysql://localhost:3306/newxiaokui?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=true
+    username: root
+    password: 199710
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: localhost
+    port: 6379
+    password:
+#  devtools:
+#    restart:
+#      enabled: false #是否开启开发者工具（true/false）
+#      additional-paths: src/main/java
+#      exclude: static/**,/**
+#  jackson:
+#    date-format: yyyy-MM-dd HH:mm:ss
+#    time-zone: GMT+8
+beetl-beetlsql.dev: true #是否是开发环境，默认为true
+
+#配置文件里面的设置，会覆盖logback里面的
+#logging:
+#  level:
+#    root: info
+#    site.xiaokui: debug
+#  file: local.log
+
+logging:
+  level.root: info
+  level.site.xiaokui: debug
+  path: logs/
+  file: local.log
+
+xiaokui:
+  basePath: /xiaokui/
+  # 静态资源路径
+  staticLibsPath: ${xiaokui.basePath}/lib/
+  # 博客上传路径
+  blogUploadPath: ${xiaokui.basePath}/upload/
+  # 音乐保存目录
+  blogMusicPath: ${xiaokui.basePath}/music/
+  # 头像上传目录
+  avatarUploadPath: ${xiaokui.basePath}/avatar/
+---
+spring:
+  profiles: online
+  resources:
+#    static-locations: classpath:/static/,file:${xiaokui.basePath}/
+  datasource:
+#    type: com.alibaba.druid.pool.DruidDataSource
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://120.79.20.49:3306/newxiaokui?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=false
+    # url: jdbc:mysql://localhost:3306/newxiaokui?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC&useSSL=false
+    username: root
+    password: 1238127943Hk!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: 120.79.20.49
+    port: 6379
+    password: 1238127943Hk~
+beetl-beetlsql.dev: false #是否是开发环境，默认为true
+
+logging:
+  level.root: info
+  level.site.xiaokui: info
+  path: logs/
+  file: online.log
+
+xiaokui:
+  basePath: /xiaokui/xiaokui/
+  # 静态资源路径
+  staticLibsPath: ${xiaokui.basePath}/lib/
+  # 博客上传路径
+  blogUploadPath: ${xiaokui.basePath}/upload/
+  # 音乐保存目录
+  blogMusicPath: ${xiaokui.basePath}/musics/
+  # 头像上传目录
+  avatarUploadPath: ${xiaokui.basePath}/avatar/
+#logging:
+#  level:
+#    root: info
+#    site.xiaokui: info
+#  file: logs/online.log #使用默认配置时，path和file只能选一个（如果同时有，那么只有file生效）
+#  file.max-size: 6MB
+#  file.max-history: 30
+#  pattern:
+#    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{32}- %msg%n"
+#    level: "%5p"
+#    file: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{32}- %msg%n"

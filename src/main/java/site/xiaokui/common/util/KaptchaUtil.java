@@ -1,6 +1,7 @@
 package site.xiaokui.common.util;
 
 import site.xiaokui.config.property.GunsProperties;
+import site.xiaokui.module.base.SpringContextHolder;
 
 /**
  * 验证码工具类

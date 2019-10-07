@@ -109,21 +109,19 @@
     <springProfile name="local">
         <root>
             <appender-ref ref="CONSOLE"/>
-            <!--<appender-ref ref="MY_FILE"/>-->
         </root>
-        <!--<logger name="site.xiaokui">-->
-            <!--<appender-ref ref="CONSOLE"/>-->
-            <!--<appender-ref ref="MY_FILE"/>-->
-        <!--</logger>-->
     </springProfile>
     <springProfile name="online">
         <root>
-            <!--<appender-ref ref="CONSOLE"/>-->
             <appender-ref ref="MY_FILE"/>
         </root>
         <logger name="site.xiaokui">
-            <!--<appender-ref ref="CONSOLE"/>-->
             <appender-ref ref="MY_FILE"/>
         </logger>
+    </springProfile>
+    <springProfile name="win">
+        <root>
+            <appender-ref ref="CONSOLE"/>
+        </root>
     </springProfile>
 </configuration>

@@ -167,9 +167,12 @@ var vm = new Vue({
                 var data = {
                     dir: blogInfo[0],
                     name: blogInfo[1],
-                    orderNum: parseInt(blogInfo[2]),
                     createTime: blogInfo[3]
                 };
+                if (blogInfo[2] && blogInfo[2] !== '未指定') {
+                    data.orderNum = parseInt(blogInfo[2]);
+                }
+
                 // HK.toString(data);
                 // return;
                 var temp = $(this);

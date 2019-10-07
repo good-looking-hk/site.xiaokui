@@ -65,7 +65,6 @@ public class MenuService extends BaseService<SysMenu> {
      */
     public List<SysMenu> getUserMenu(Integer roleId) {
         List<SysMenu> menuList = menuDao.listMenuByRoleId(roleId);
-        StringUtil.pring(menuList);
         return resolveMenuList(menuList);
     }
 

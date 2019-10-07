@@ -1,5 +1,5 @@
 var list = [];
-$.get("/blog/music/july", function (res) {
+$.post("/music/july", function (res) {
     console.log(res);
     for (var i in res) {
         var o = new Object();
@@ -12,12 +12,12 @@ $.get("/blog/music/july", function (res) {
     var ap = new APlayer({
         container: document.getElementById('aplayer'),
         fixed: true,
-        autoplay: true,// false
+        autoplay: false,// false
         // theme: '#FADFA3',
         theme: '#00FF00',
         loop: 'one', //'all', 'one', 'none'
         order: 'list',// list/random
-        preload: 'auto',//auto/none
+        preload: 'none',//auto/none
         volume: 0.4,
         mutex: true,
         listFolded: false,

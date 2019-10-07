@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     @ResponseBody
-    public ResultEntity notFount(RuntimeException e, HttpServletRequest request) {
+    public ResultEntity notFound(RuntimeException e, HttpServletRequest request) {
         if (log.isDebugEnabled()) {
             log.debug("url[{}]访问出错", request.getRequestURI());
             Map<String, String[]> map =  request.getParameterMap();
@@ -77,40 +77,5 @@ public class GlobalExceptionHandler {
         }
         return ResultEntity.error(e.getMessage() + " cause by " + e.getCause());
     }
-
-//    /**
-//     * 拦截业务异常
-//     */
-//    @ExceptionHandler(GunsException.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    @ResponseBody
-//    public ErrorTip notFount(GunsException e) {
-//        LogManager.me().executeLog(LogTaskFactory.exceptionLog(ShiroKit.getUser().getId(), e));
-//        getRequest().setAttribute("tip", e.getMessage());
-//        log.error("业务异常:", e);
-//        return new ErrorTip(e.getCode(), e.getMessage());
-//    }
-//
-//    /**
-//     * 用户未登录异常
-//     */
-//    @ExceptionHandler(AuthenticationException.class)
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    public String unAuth(AuthenticationException e) {
-//        log.error("用户未登陆：", e);
-//        return "/login.html";
-//    }
-//
-//    /**
-//     * 账号被冻结异常
-//     */
-//    @ExceptionHandler(DisabledAccountException.class)
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    public String accountLocked(DisabledAccountException e, Model model) {
-//        String username = getRequest().getParameter("username");
-//        LogManager.me().executeLog(LogTaskFactory.loginLog(username, "账号被冻结", getIp()));
-//        model.addAttribute("tips", "账号被冻结");
-//        return "/login.html";
-//    }
 
 }

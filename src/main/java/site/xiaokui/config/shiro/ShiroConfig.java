@@ -35,8 +35,7 @@ import java.util.Map;
 import static org.apache.shiro.session.mgt.AbstractSessionManager.DEFAULT_GLOBAL_SESSION_TIMEOUT;
 import static org.apache.shiro.session.mgt.AbstractValidatingSessionManager.DEFAULT_SESSION_VALIDATION_INTERVAL;
 import static site.xiaokui.config.shiro.ShiroConstants.SHIRO_ACTIVE_SESSION_CACHE_NAME;
-import static site.xiaokui.module.base.BaseConstants.PROFILE_LOCAL;
-import static site.xiaokui.module.base.BaseConstants.PROFILE_ONLINE;
+import static site.xiaokui.module.base.BaseConstants.*;
 
 /**
  * 配置shiro
@@ -133,6 +132,7 @@ public class ShiroConfig {
         Map<String, String> filterMap = new LinkedHashMap<>();
 
         // 静态资源的过滤
+        filterMap.put("/lib/**", ANYBODY);
         filterMap.put("/plugins/**", ANYBODY);
         filterMap.put("/font-awesome/**", ANYBODY);
         filterMap.put("/bootstrap/**", ANYBODY);
@@ -169,7 +169,7 @@ public class ShiroConfig {
         if (PROFILE_LOCAL.equals(profile)) {
             // 本地免登录
             filterMap.put("/**", StringUtil.addDot(onlineSessionFilter.getFilterName(), REMEMBER_ME));
-        } else if (PROFILE_ONLINE.equals(profile)) {
+        } else if (PROFILE_ONLINE.equals(profile) || PROFILE_WIN.equals(profile)) {
             // 线上需要登录
             filterMap.put("/**", StringUtil.addDot(onlineSessionFilter.getFilterName(), LOGIN_USER));
         } else {

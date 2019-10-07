@@ -1,10 +1,13 @@
 package site.xiaokui.module.sys.blog.util;
 
 import cn.hutool.core.date.DatePattern;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.common.util.TimeUtil;
-import site.xiaokui.module.sys.blog.BlogConstants;
+import site.xiaokui.module.base.SpringContextHolder;
 import site.xiaokui.module.sys.blog.entity.*;
 
 import java.io.*;
@@ -17,59 +20,18 @@ import static site.xiaokui.module.sys.blog.BlogConstants.PREFIX;
  * @author HK
  * @date 2018-06-25 00:01
  */
+@Slf4j
 public class BlogUtil {
 
     private static final String BLOG_PREFIX = PREFIX + "/";
 
     /**
-     * 存储用户自定义界面菜单
+     * 博客缓存
      */
-    private static final Map<Integer, List<UserLink>> USER_MAP = new HashMap<>();
+    private static final Map<String, BlogDetailList> BLOG_CACHE = new HashMap<>(4);
 
-    private static final String[] MUSIC_LIST;
-
-    static {
-        File dir = new File(BlogConstants.MUSIC_PATH);
-        if (!dir.exists() || !dir.isDirectory()) {
-            throw new RuntimeException("非法的音乐路径：" + BlogConstants.MUSIC_PATH + "！ 请检查！");
-        }
-        String[] temp = dir.list();
-        if (temp == null) {
-            MUSIC_LIST = new String[0];
-        } else {
-            MUSIC_LIST = temp;
-//            MUSIC_LIST = new String[temp.length];
-//            for (int i = 0; i < temp.length; i++) {
-////                MUSIC_LIST[i] = temp[i].substring(2);
-//            }
-        }
-    }
-
-    public static String[] getMusicList() {
-        return MUSIC_LIST;
-    }
-
-    public static void toMap(List<UserLink> list) {
-        if (list != null && list.size() > 0) {
-            for (UserLink u : list) {
-                putInUserMap(u);
-            }
-        }
-    }
-
-    public static List<UserLink> getUserMap(Integer id) {
-        return USER_MAP.get(id);
-    }
-
-    public static void putInUserMap(UserLink m) {
-        List<UserLink> list = USER_MAP.get(m.getUserId());
-        if (list == null) {
-            list = new ArrayList<>();
-            list.add(m);
-            USER_MAP.put(m.getUserId(), list);
-        } else {
-            list.add(m);
-        }
+    public static void clearBlogCache() {
+        BLOG_CACHE.clear();
     }
 
     /**
@@ -109,9 +71,16 @@ public class BlogUtil {
     /**
      * 对博客实体按目录划分成多个子List，由前段模板渲染显示
      * 排序操作也可在数据库进行，在数据量大时可以做比较选择
+     * 需要注意清空map缓存
      */
-    public static BlogDetailList resolveBlogList(List<SysBlog> blogList, String blogSpace) {
-        return new BlogDetailList(blogList, blogSpace);
+    public static BlogDetailList resolveBlogList(List<SysBlog> blogList, String blogSpace, boolean cache) {
+        BlogDetailList list = BLOG_CACHE.get(blogSpace);
+        if (list == null || !cache) {
+            list = new BlogDetailList(blogList, blogSpace);
+            BLOG_CACHE.put(blogSpace, list);
+        }
+        log.info("blogSpace:{}从缓存获取数据", blogSpace);
+        return list;
     }
 
     /**
@@ -128,7 +97,8 @@ public class BlogUtil {
             /// 留作测试用的InputStreamReader inputFileReader = new InputStreamReader(new FileInputStream(upload), "UTF-8");
             InputStreamReader inputFileReader = new InputStreamReader(upload.getInputStream(), "UTF-8");
             reader = new BufferedReader(inputFileReader);
-            targetFile = FileUtil.createTempFile(userId, blog.getName() + HTML_SUFFIX);
+            // 调用Spring
+            targetFile = BlogFileHelper.getInstance().createTempFile(userId, blog.getName() + HTML_SUFFIX);
             if (targetFile == null) {
                 throw new RuntimeException("创建文件失败：" + fullName);
             }
@@ -149,6 +119,7 @@ public class BlogUtil {
             writer.flush();
             isSuccess = true;
             blog.setUploadFile(targetFile);
+            log.info("上传目标文件地址为：" + targetFile);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -164,10 +135,12 @@ public class BlogUtil {
     /**
      * 对于名字的解析是很严格的，下面例子都是过关的
      * 1.Spring源码：bean的加载-6-20180808.html
-     * 2.Spring源码：bean的加载-6.html
+     * 2.Spring源码：bean的加载-20180808-6.html
+     * 3.Spring源码：bean的加载-6.html
+     * 4.Spring源码：bean的加载-20180808.html
      * 完整的解析格式为 目录：标题-序号-日期.后缀
      *
-     * @param fullName html文件全名
+     * @param fullName html文件全名 智能解析
      * @return 解析后上传博客对象
      */
     private static UploadBlog resolveFileName(String fullName) {
@@ -180,7 +153,7 @@ public class BlogUtil {
         int index = fullName.lastIndexOf(".");
         fullName = fullName.substring(0, index);
 
-        // 取出目录，建议使用中文分号
+        // 取出目录，建议使用中文分号,英文分号也行
         index = fullName.contains("：") ? fullName.indexOf("：") : fullName.indexOf(":");
         if (index < 0) {
             blog.setErrorInfo("您可能没有包含中文分号（：）");
@@ -192,39 +165,25 @@ public class BlogUtil {
         fullName = fullName.substring(index + 1);
         index = fullName.lastIndexOf("-");
         if (index < 0) {
-            blog.setErrorInfo("您没有为博客指定序号");
+            blog.setErrorInfo("您没有为博客指定序号或日期");
             return blog;
         }
-
-        // 取出日期或序号
-        String str = fullName.substring(index + 1);
-        // 默认日期格式为yyyyMMdd
-        if (str.length() == 8 && str.startsWith("20")) {
-            Date date = TimeUtil.parse(str, DatePattern.PURE_DATE_PATTERN);
-            blog.setCreateTime(date);
-            // 去掉日期
-            fullName = fullName.substring(0, index);
-            index = fullName.lastIndexOf("-");
-            if (index < 0) {
-                blog.setErrorInfo("博客必须指定序号");
-                return blog;
-            }
-            str = fullName.substring(index + 1);
+        setDateAndOrderNum(fullName, index, blog);
+        if (blog.getErrorInfo() != null) {
+            return blog;
         }
-        // 规定最大序号不超过99
-        if (str.length() < 3) {
-            int orderNumb;
-            try {
-                orderNumb = Integer.valueOf(str);
-            } catch (NumberFormatException e) {
-                blog.setErrorInfo("非法排序数字：" + str);
-                return blog;
-            }
-            blog.setOrderNum(orderNumb);
-        }
-
-        // 取出标题
+        // 去掉尾部日期或序号或者是取出标题
         fullName = fullName.substring(0, index);
+        index = fullName.lastIndexOf("-");
+        if (index > 0) {
+            setDateAndOrderNum(fullName, index, blog);
+            if (blog.getErrorInfo() != null) {
+                return blog;
+            }
+            // 取出标题
+            fullName = fullName.substring(0, index);
+        }
+
         if (fullName.length() == 0) {
             blog.setErrorInfo("博客标题不能为空");
             return blog;
@@ -234,6 +193,35 @@ public class BlogUtil {
             blog.setCreateTime(new Date());
         }
         return blog;
+    }
+
+    /**
+     * 取出日期或序号
+     */
+    private static void setDateAndOrderNum(String fullName, int index, UploadBlog blog) {
+        // 取出日期或序号
+        String str = fullName.substring(index + 1);
+        // 默认日期格式为yyyyMMdd
+        if (str.length() == 8 && str.startsWith("20")) {
+            Date date;
+            try {
+                date = TimeUtil.parse(str, DatePattern.PURE_DATE_PATTERN);
+            } catch (Exception e) {
+                blog.setErrorInfo("非法日期：" + str);
+                return;
+            }
+            blog.setCreateTime(date);
+        } else if ((str.length() < 3)) {
+            // 规定最大序号不超过99
+            int orderNumb;
+            try {
+                orderNumb = Integer.valueOf(str);
+            } catch (NumberFormatException e) {
+                blog.setErrorInfo("非法排序数字：" + str);
+                return;
+            }
+            blog.setOrderNum(orderNumb);
+        }
     }
 
     private static void closeStream(Reader reader, Writer writer) {
@@ -251,14 +239,14 @@ public class BlogUtil {
     }
 
     public static void main(String[] args) {
-        String fullName = "Spring源码：bean的加载-6.html";
+        String fullName = "Spring源码：bean的加载-6-20180808.html";
         System.out.println(resolveFileName(fullName));
-        fullName = "Spring源码：bean的加载-6-20181122.html";
+        fullName = "Spring源码：bean的加载-20180808-6.html";
         System.out.println(resolveFileName(fullName));
-        for (String s : MUSIC_LIST) {
-            System.out.println(s);
-        }
-        System.out.println("123".substring(2));
+        fullName = "Spring源码：bean的加载-6.html";
+        System.out.println(resolveFileName(fullName));
+        fullName = "Spring源码：bean的加载-20180808.html";
+        System.out.println(resolveFileName(fullName));
     }
 }
 

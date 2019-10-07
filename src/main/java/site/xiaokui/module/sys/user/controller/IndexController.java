@@ -9,10 +9,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.controller.BaseController;
+import site.xiaokui.module.sys.blog.BlogConstants;
+import site.xiaokui.module.sys.blog.util.BlogUtil;
 import site.xiaokui.module.sys.user.UserConstants;
 import site.xiaokui.module.sys.user.entity.SysMenu;
 import site.xiaokui.module.sys.user.service.MenuService;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -32,7 +35,7 @@ public class IndexController extends BaseController {
 
     @GetMapping({"/", "/index"})
     public String index() {
-        return FORWARD  + "/blog";
+        return FORWARD + "/blog";
     }
 
     /**

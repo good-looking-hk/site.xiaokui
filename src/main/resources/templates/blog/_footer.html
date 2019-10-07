@@ -1,5 +1,108 @@
-<div hidden>
-    <script src="https://s13.cnzz.com/z_stat.php?id=1264398488&web_id=1264398488" language="JavaScript"></script>
+<div class="side-tool">
+    <ul>
+        <li data-title="回到顶部" id="toTop">
+            <a class="function-button"><i class="layui-icon layui-icon-up"></i></a></li>
+        <li data-title="回到底部" id="toBottom">
+            <a class="function-button"><i class="layui-icon layui-icon-down"></i></a>
+        </li>
+    </ul>
+</div>
+<script>
+    layui.use(['element', 'layer'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        //获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
+
+    });
+    const value = "${key!}";
+    if (typeof value === 'string' && value !== '') {
+        $('#key').val(value);
+    }
+
+    function search() {
+        var url = "/blog/${user.blogSpace}/search?key=";
+        var key = $("#key").val().trim();
+        if (typeof key === "string" && key.length > 0) {
+            window.open(url + key);
+        }
+    }
+
+    $(document).on('keydown', function (event) {
+        if (event.keyCode === 13) {
+            search();
+        }
+    });
+
+    async function dealClick(key, value) {
+        let layout = HK.getGetParam("layout");
+        let type = HK.getGetParam("type");
+        let passwd = HK.getGetParam('passwd');
+        let url = "${ctxPath}/blog/${user.blogSpace}";
+        if (key === 'layout') {
+            layout = value;
+        }
+        if (key === 'type') {
+            type = value;
+        }
+        console.log(layout + "-" + type);
+        if (type === 'pro') {
+            if (!HK.isEmpty(passwd)) {
+                reUrl(layout, type, url, passwd);
+            } else {
+                layer.prompt({
+                    formType: 0,
+                    title: "请输入访问密码（公司名/三个字）",
+                    success: function (layero, index) {
+                        HK.bindLayerBtn();
+                    },
+                }, function (value, index, elem) {
+                    reUrl(layout, type, url, value);
+                    layer.close(index);
+                });
+            }
+        } else {
+            reUrl(layout, type, url);
+        }
+    }
+
+    function reUrl(layout, type, url, passwd) {
+        console.log(layout + type + passwd + url);
+        if (HK.isNotEmpty(passwd)) {
+            type += "&passwd=" + passwd;
+        }
+        if (!HK.isEmpty(layout) && !HK.isEmpty(type)) {
+            return window.location.href = url + "?layout=" + layout + "&type=" + type;
+        }
+        if (type && (type.startsWith('pro') || type === 'pri')) {
+            if (layout === 'dir' || layout === 'time') {
+                return window.location.href = url + "?type=" + type + "&layout" + layout;
+            }
+            return window.location.href = url + "?type=" + type;
+        }
+        if (layout === 'dir' || layout === 'time') {
+            if (type && (type === 'pri' || type.startsWith('pro'))) {
+                return window.location.href = url + "?layout=" + layout + "&type=" + type;
+            }
+            return window.location.href = url + "?layout=" + layout;
+        }
+        return window.location.href = url;
+    }
+
+    $(function () {
+        if (HK.isPc()) {
+            $('.hid').toggleClass('hid');
+        }
+        $("#toTop").click(function () {
+            $("html,body").finish().animate({"scrollTop": "0px"}, 500);
+        });
+        $("#toBottom").click(function () {
+            $("html,body").finish().animate({"scrollTop": document.documentElement.scrollHeight}, 600);
+        });
+    });
+
+</script>
+<div id="bottom" hidden>
+    <script src="https://s13.cnzz.com/z_stat.php?id=1264398488&web_id=1264398488"></script>
 </div>
 </body>
 </html>

@@ -3,7 +3,7 @@ package site.xiaokui.module.sys.user.service;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
-import site.xiaokui.common.util.SpringContextHolder;
+import site.xiaokui.module.base.SpringContextHolder;
 
 /**
  * @author HK

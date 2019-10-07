@@ -19,7 +19,8 @@ public class ShowMeCodeLineUtil {
 
     public static void main(String[] hk) {
 
-        String basePath = "/home/hk/IdeaWorkSpace/newxiaokui/src/main/java";
+//        String basePath = "/home/hk/IdeaWorkSpace/newxiaokui/src/main/java";
+        String basePath = "D:\\IdeaWorkSpace\\newxiaokui\\src\\main\\java";
         showMeCodeLine(basePath);
     }
 

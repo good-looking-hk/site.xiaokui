@@ -18,9 +18,7 @@ import site.xiaokui.config.spring.TestSpringMVC;
  * 发布方式是上传文件、支持上下篇浏览、此外，我还吸收另外微信队友访问量的统计方式，就是一天一人对于每篇最多贡献4个阅读量，我的
  * 也是，此外他是一个博客平台，你也可以注册账号在上面使用
  * 7.用户-角色-权限就是权限系统那套东西了
- */
-
-/**
+ *
  * 如果你看到这里，说明是有缘人，在此，请允许我郑重向你推荐几个有水平的类
  * {@link TestSpringMVC}里面包含一些对于Spring MVC的理解
  * {@link site.xiaokui.config.shiro.ShiroConfig}里面包含一些对于Shiro的理解

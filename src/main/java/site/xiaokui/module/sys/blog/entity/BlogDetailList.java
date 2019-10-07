@@ -4,103 +4,176 @@ import cn.hutool.core.date.DateUtil;
 import lombok.Getter;
 import site.xiaokui.module.sys.blog.util.BlogUtil;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author HK
  * @date 2018-12-26 22:55
  */
-@Getter
 public class BlogDetailList {
 
-    private int pro, pub, dirCount;
+    private int pri, pro, pub;
 
-    private List<List<SysBlog>> nonProtectedList;
+    @Getter
+    private List<List<SysBlog>> publicList = new ArrayList<>(), protectedList = new LinkedList<>(), privateList = new LinkedList<>();
 
-    private List<SysBlog> protectedList;
+    private List<SysBlog> pubTemp = new ArrayList<>(), proTemp = new LinkedList<>(), priTemp = new LinkedList<>();
 
-    private List<List<SysBlog>> createTimeList;
+    private List[] objects = {pubTemp, proTemp, priTemp};
 
-    private List<Integer> createYears;
+    private int[] count = new int[3];
 
-    private List<String> dirs;
+    private String[] dir = new String[3];
+
+    /**
+     * 用于存储目录排序，也是方便在index1界面展示。泛型为String
+     */
+    private List priDir = new LinkedList<>(), proDir = new LinkedList<>(), pubDir = new ArrayList<>();
+
+    private List[] dirs = {pubDir, proDir, priDir};
+
+    /**
+     * 用于index1的目录、时间遍历
+     */
+    @Getter
+    private List<List<SysBlog>> priCreateTimeList = new LinkedList<>(), proCreateTimeList = new LinkedList<>(), pubCreateTimeList = new ArrayList<>();
+
+    @Getter
+    private List<Integer> priCreateYears = new LinkedList<>(), proCreateYears = new LinkedList<>(), pubCreateYears = new ArrayList<>();
 
     private void resolveDirList(List<SysBlog> blogList, String blogSpace) {
         if (blogList != null && blogList.size() != 0) {
             // 自定义比较器
             blogList.sort(new SysBlog.DirComparator());
-            String newDir = blogList.get(0).getDir();
-            nonProtectedList = new LinkedList<>();
-            protectedList = new LinkedList<>();
-            dirs = new LinkedList<>();
-            dirs.add(newDir);
-            List<SysBlog> temp = new LinkedList<>();
-            Iterator<SysBlog> it = blogList.iterator();
 
+            Iterator<SysBlog> it = blogList.iterator();
             // 分解list成多个子list
             while (it.hasNext()) {
                 SysBlog blog = it.next();
-                if (blog.getStatus() == BlogStatusEnum.PROTECTED.getCode()) {
-                    pro++;
-                    blog.setBlogPath(BlogUtil.getBlogPath(blog.getDir(), blog.getName(), blogSpace));
-                    protectedList.add(blog);
-                } else if (blog.getStatus() == BlogStatusEnum.PUBLIC.getCode()) {
-                    pub++;
-                    blog.setBlogPath(BlogUtil.getBlogPath(blog.getDir(), blog.getName(), blogSpace));
-                    // 如果与上一个是属于同目录，则添加进临时list
-                    if (blog.getDir().equals(newDir)) {
-                        temp.add(blog);
-                    } else {
-                        // 切换到下一个目录，把临时list加入根list然后清空，重新加入新的blog，重复
-                        newDir = blog.getDir();
-                        dirs.add(newDir);
-                        nonProtectedList.add(temp);
-                        dirCount++;
-                        temp = new LinkedList<>();
-                        temp.add(blog);
-                    }
+                blog.setBlogPath(BlogUtil.getBlogPath(blog.getDir(), blog.getName(), blogSpace));
+                if (blog.getStatus() == BlogStatusEnum.PUBLIC.getCode()) {
+                    handlePublic(blog, pubTemp);
+                } else if (blog.getStatus() == BlogStatusEnum.PROTECTED.getCode()) {
+                    handleProtected(blog, proTemp);
+                } else if (blog.getStatus() == BlogStatusEnum.PRIVATE.getCode()) {
+                    handlePrivate(blog, priTemp);
                 }
             }
             // 添加最后一个临时list
-            nonProtectedList.add(temp);
-            dirCount++;
+            if (objects[0].size() != 0) {
+                publicList.add(objects[0]);
+            }
+            if (objects[1].size() != 0) {
+                protectedList.add(objects[1]);
+            }
+            if (objects[2].size() != 0) {
+                privateList.add(objects[2]);
+            }
         }
     }
 
-    private void resolveDateList(List<SysBlog> blogList) {
-        if (blogList != null && blogList.size() != 0) {
+
+    private void handlePublic(SysBlog blog, List<SysBlog> temp) {
+        handleList(0, 0, 0, publicList, blog);
+    }
+
+    private void handleProtected(SysBlog blog, List<SysBlog> temp) {
+        handleList(1, 1, 1, protectedList, blog);
+
+    }
+
+    private void handlePrivate(SysBlog blog, List<SysBlog> temp) {
+        handleList(2, 2, 2, privateList, blog);
+    }
+
+
+    /**
+     * @param countIndex 用于避免Java里面的值引用传递
+     * @param dirIndex   同countIndex
+     */
+    private void handleList(int countIndex, int dirIndex, int tempIndex, List<List<SysBlog>> list, SysBlog blog) {
+        count[countIndex]++;
+        if (dir[dirIndex] == null) {
+            objects[tempIndex].add(blog);
+            dir[dirIndex] = blog.getDir();
+            dirs[dirIndex].add(dir[dirIndex]);
+            return;
+        }
+        if (dir[dirIndex].equals(blog.getDir())) {
+            objects[tempIndex].add(blog);
+        } else {
+            // 切换到下一个目录，把临时list加入根list然后清空，重新加入新的blog，重复
+            dir[dirIndex] = blog.getDir();
+            dirs[dirIndex].add(dir[dirIndex]);
+            list.add((objects[tempIndex]));
+            // temp必须是全局变量，且必须使用new关键字
+            objects[tempIndex] = new ArrayList<>();
+            objects[tempIndex].add(blog);
+        }
+    }
+
+    public void resolveDateList(List<List<SysBlog>> lists, List<Integer> createYears, List<List<SysBlog>> createTimeList) {
+        if (lists != null) {
+            List<SysBlog> blogList = new LinkedList<>();
+            for (List<SysBlog> list : lists) {
+                blogList.addAll(list);
+            }
             // 自定义比较器
             blogList.sort(new SysBlog.DateComparator());
-            int newYear = DateUtil.year(blogList.get(0).getCreateTime());
-            createTimeList = new LinkedList<>();
-            createYears = new LinkedList<>();
-            createYears.add(newYear);
-            List<SysBlog> temp = new LinkedList<>();
-            Iterator<SysBlog> it = blogList.iterator();
+            if (blogList.size() != 0 && blogList.get(0) != null) {
+                int newYear = DateUtil.year(blogList.get(0).getCreateTime());
+                createYears.add(newYear);
+                List<SysBlog> temp = new ArrayList<>();
+                Iterator<SysBlog> it = blogList.iterator();
 
-            // 分解list成多个子list
-            while (it.hasNext()) {
-                SysBlog blog = it.next();
-                int year = DateUtil.year(blog.getCreateTime());
-                if (year == newYear) {
-                    temp.add(blog);
-                } else {
-                    newYear = year;
-                    createYears.add(newYear);
-                    createTimeList.add(temp);
-                    temp = new LinkedList<>();
-                    temp.add(blog);
+                // 分解list成多个子list
+                while (it.hasNext()) {
+                    SysBlog blog = it.next();
+                    int year = DateUtil.year(blog.getCreateTime());
+                    if (year == newYear) {
+                        temp.add(blog);
+                    } else {
+                        newYear = year;
+                        createYears.add(newYear);
+                        createTimeList.add(temp);
+                        temp = new ArrayList<>();
+                        temp.add(blog);
+                    }
                 }
+                // 添加最后一个临时list
+                createTimeList.add(temp);
             }
-            // 添加最后一个临时list
-            createTimeList.add(temp);
         }
     }
 
     public BlogDetailList(List<SysBlog> blogList, String blogSpace) {
         resolveDirList(blogList, blogSpace);
-        resolveDateList(blogList);
+        resolveDateList(publicList, pubCreateYears, pubCreateTimeList);
+        resolveDateList(protectedList, proCreateYears, proCreateTimeList);
+        resolveDateList(privateList, priCreateYears, priCreateTimeList);
+    }
+
+    public int getPub() {
+        return count[0];
+    }
+
+    public int getPro() {
+        return count[1];
+    }
+
+    public int getPri() {
+        return count[2];
+    }
+
+    public List getPriDir() {
+        return dirs[2];
+    }
+
+    public List getProDir() {
+        return dirs[1];
+    }
+
+    public List getPubDir() {
+        return dirs[0];
     }
 }

@@ -24,23 +24,22 @@ public class JsoupUtil {
 //        fileWriter.close();
 //    }
 
-    public static void main(String[] args) throws IOException {
-        File root = new File("/home/hk/NewBlog");
-        File[] dirs = root.listFiles();
-        for (File dir : dirs) {
-            if (dir.listFiles() == null || dir.listFiles().length == 0) {
-                continue;
+    public static void main(String[] args) throws Exception {
+        File root = new File("D:/2019-06-06备份/NewBlog/设计模式");
+        if (!root.exists()) {
+            throw new RuntimeException("文件不存在");
+        }
+        for (File son : root.listFiles()) {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(son));
+            File old = new File("D:/2019-06-06备份/OldBlog/" + son.getName());
+            File parent = new File(old.getParent());
+            if (!parent.exists()) {
+                parent.mkdirs();
             }
-            for (File son : dir.listFiles()) {
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(son));
-                File old = new File("/home/hk/OldBlog/" + dir.getName() + "/" + son.getName());
-                File parent = new File(old.getParent());
-                if (!parent.exists()) {
-                    parent.mkdirs();
-                }
-                BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(old));
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(old));
 
-                String line;
+            String line;
+            try {
                 while ((line = bufferedReader.readLine()) != null) {
                     if (line.contains("<span class=\"hljs-comment line-number\">")) {
                         for (int i = 0; i < 500; i++) {
@@ -51,10 +50,12 @@ public class JsoupUtil {
                         bufferedWriter.write(line);
                     }
                 }
-                bufferedWriter.flush();
-                bufferedWriter.close();
-                bufferedReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            bufferedWriter.flush();
+            bufferedWriter.close();
+            bufferedReader.close();
         }
     }
 

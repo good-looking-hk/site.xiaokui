@@ -1,9 +1,11 @@
 package site.xiaokui.common.aop.annotation;
 
+import site.xiaokui.common.aop.LogType;
+
 import java.lang.annotation.*;
 
 /**
- * 日志注解
+ * 日志注解，只能用于方法层面
  * @author HK
  * @date 2018-10-03 15:41
  */
@@ -12,13 +14,17 @@ import java.lang.annotation.*;
 @Documented
 public @interface  Log {
 
+    String name() default "系统日志";
+
+    LogType type() default LogType.NONE;
+
     /**
      * 输出基本信息，不建议修改
      */
     boolean basic() default true;
 
     /**
-     * 记录耗时
+     * 记录方法耗时
      */
     boolean statisticTime() default true;
 

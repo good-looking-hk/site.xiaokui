@@ -136,7 +136,7 @@ public class BaseController implements ConstantController{
         return StringUtil.isEmpty(str);
     }
 
-    protected boolean isNotEmptry(final String str) {
+    protected boolean isNotEmpty(final String str) {
         return !isEmpty(str);
     }
 }

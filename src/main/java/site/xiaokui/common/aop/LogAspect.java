@@ -7,16 +7,15 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.beetl.sql.core.SQLManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import site.xiaokui.common.aop.annotation.Log;
-import site.xiaokui.config.shiro.ShiroKit;
+import site.xiaokui.module.base.entity.SysLog;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.Date;
 
 /**
  * 日志切面
@@ -30,6 +29,12 @@ public class LogAspect {
 
     private final Class[] aspectClass = {Log.class};
 
+    @Autowired
+    private SQLManager sqlManager;
+
+    /**
+     * 扫描含有@Log注解的方法
+     */
     @Pointcut(value = "@annotation(site.xiaokui.common.aop.annotation.Log)")
     public void cutService() {
     }
@@ -55,6 +60,7 @@ public class LogAspect {
     private Object dealLog(ProceedingJoinPoint point, Method method) throws Throwable{
         Object target = null;
         Log annotation = method.getAnnotation(Log.class);
+        String name = annotation.name();
         boolean basic = annotation.basic();
         boolean statisticTime = annotation.statisticTime();
         boolean writeToDb = annotation.writeToDB();
@@ -70,12 +76,6 @@ public class LogAspect {
             long duration = System.currentTimeMillis() - startTime;
             sb2 = new StringBuilder("耗时" + duration + "ms");
         }
-        if (writeToDb) {
-            // 只针对已登录用户做记录
-            if (ShiroKit.getInstance().getUser() != null) {
-                // TODO
-            }
-        }
         // 两者均不为空，则加个逗号，便于查看
         if (sb1 != null && sb2 != null) {
             sb3 = sb1.append(",").append(sb2);
@@ -85,6 +85,18 @@ public class LogAspect {
         if (sb3 != null) {
             sb3.insert(0, "执行");
             log.info(sb3.toString());
+        }
+        if (writeToDb) {
+            SysLog sysLog = new SysLog();
+            sysLog.setName(name);
+            sysLog.setCreateTime(new Date());
+            if (annotation.type() != LogType.NONE && target != null) {
+                sysLog.setContent(target.toString());
+            }
+            if (sb3 != null) {
+                sysLog.setRemark(sb3.toString());
+            }
+            sqlManager.insert(SysLog.class, sysLog);
         }
         return target;
     }

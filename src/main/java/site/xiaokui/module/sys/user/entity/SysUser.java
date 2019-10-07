@@ -47,4 +47,9 @@ public class SysUser extends BaseEntity {
     private Date lastLoginTime;
 
     private String lastLoginIp;
+
+    /**
+     * 受保护页面密码
+     */
+    private String proPassword;
 }

@@ -10,8 +10,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import site.xiaokui.module.sys.blog.service.BlogService;
-import site.xiaokui.module.sys.blog.service.UserMapService;
-import site.xiaokui.module.sys.blog.util.BlogUtil;
 
 import java.util.Date;
 
@@ -28,31 +26,20 @@ public class ScheduleService implements ApplicationRunner {
     @Autowired
     private BlogService blogService;
 
-    @Autowired
-    private UserMapService userMapService;
-
     /**
      * DefaultApplicationArguments
      */
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        log.info("Spring Boot已完全启动");
-        log.info("预读用户自定义map");
-        BlogUtil.toMap(userMapService.all());
-
-        log.info("启动定时任务监听");
+        log.info("Spring Boot已完全启动，启动定时任务监听");
         try {
             CronUtil.start();
         } catch (UtilException e) {
-            // 已经开始监听，不可再次开始，避免热部署带来的异常问题
+            // 已经开始监听，不可再次开始
             return;
         }
-
-        if (log.isDebugEnabled()) {
-            testTask(blogService.redisTask());
-        } else {
-//            startTaskPerNightZeroClock("REDIS_TASK", blogService.redisTask());
-        }
+//        startTaskPerNightZeroClock("REDIS_TASK", blogService.redisTask());
+        testTask(blogService.redisTask());
     }
 
     /**

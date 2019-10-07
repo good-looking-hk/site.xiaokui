@@ -19,16 +19,46 @@ var HK = {
             this.ctxPath = ctx;
         }
     },
+    bindLayerBtn: function() {
+        $(document).on('keydown', function fn(event) {
+            if (event.keyCode === 13) {
+                $('.layui-layer-btn0').click();
+            } else if (event.keyCode === 27) {
+                $(document).off('keydown');
+                $('.layui-layer-btn1').click();
+            }
+        });
+        // $(document).off('keydown');
+    },
+    isPc: function() {
+        try {
+            if (/Android|webOS|iPhone|iPod|BlackBerry/i.test(navigator.userAgent)) {
+                return false;
+            }
+        } catch(e){}
+        return true;
+    },
     putUserData(key, value) {
         this.userData[key] = value;
     },
     getUserData(key) {
         return this.userData[key];
     },
+    getGetParam(key) {
+        var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)", "i");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) {
+            return unescape(r[2]);
+        }
+        return null;
+    },
     isEmpty: function (o) {
         return o == null || o === undefined || o === '';
     },
-    reLocate: function(url, times) {
+    isNotEmpty: function(o) {
+        return !this.isEmpty(o);
+    },
+    reLocate: function (url, times) {
         url = this.ctxPath + url;
         if (typeof times === "number") {
             setTimeout("location.href = '" + url + "'", times);
@@ -36,15 +66,7 @@ var HK = {
             location.href = url;
         }
     },
-    getGetParam: function(paramName) {
-        var paramValue = "", isFound = !1;
-        if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
-            arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
-            while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
-        }
-        return paramValue == "" && (paramValue = null), paramValue
-    },
-    newPage: function(url) {
+    newPage: function (url) {
         var el = document.createElement("a");
         document.body.appendChild(el);
         el.href = this.ctxPath + url;
@@ -57,19 +79,9 @@ var HK = {
      */
     toString: function (data) {
         layer.msg(JSON.stringify(data), {time: 5000});
-        //
-        // var str = "";
-        // if (typeof data === "object" && data.length === undefined) {
-        //     for (var i in data) {
-        //         str += i + ":" + data[i] + "\n";
-        //     }
-        //     layer.msg(str);
-        // } else {
-        //     layer.msg(JSON.stringify(data));
-        // }
     },
-    showTime: function (id) {
-        if (this.isEmpty(id)) {
+    showTime: function (parentId) {
+        if (this.isEmpty(parentId)) {
             return;
         }
         setInterval(function () {
@@ -80,7 +92,7 @@ var HK = {
             var hour = nowtime.getHours();
             var minute = nowtime.getMinutes() < 10 ? '0' + nowtime.getMinutes() : nowtime.getMinutes();
             var second = nowtime.getSeconds() < 10 ? '0' + nowtime.getSeconds() : nowtime.getSeconds();
-            document.getElementById(id).innerText = year + "年" + month + "月" + date + "日 " + hour + ":" + minute + ":" + second;
+            document.getElementById(parentId).innerText = year + "年" + month + "月" + date + "日 " + hour + ":" + minute + ":" + second;
         }, 1000);
     },
     setData: function (key, value) {
@@ -126,6 +138,14 @@ var HK = {
             layer.close(index);
         });
     },
+    prompt: function(title) {
+        layer.prompt({
+            formType: 0,
+            title: title,
+        }, function(value, index, elem){
+            return value;
+        });
+    },
     open: function (title, url) {
         var index = layer.open({
             type: 2,
@@ -152,10 +172,10 @@ var HK = {
             if (typeof res.code !== "undefined" && res.code !== 200) {
                 return HK.error(res.msg);
             } else if (res.code === 200) {
-                if (typeof  success === "function") {
+                if (typeof success === "function") {
                     return HK.ok(msg) & success(msg);
                 }
-                return HK.ok(msg) ;
+                return HK.ok(msg);
             } else {
                 resData = res;
             }
@@ -184,13 +204,13 @@ var HK = {
         if (typeof selectMany === "boolean" && selectMany) {
             settings.check = {
                 enable: true,
-                chkboxType: { "Y": "p", "N": "s" }
+                chkboxType: {"Y": "p", "N": "s"}
             }
         }
         var ztree = $.fn.zTree.init($("#" + treeId), settings, zNodes);
         return ztree;
     },
-    initSelectZtree: function(url, yes, selectMany) {
+    initSelectZtree: function (url, yes, selectMany) {
         var zTreeObj = null;
         var selectNode = null;
         var id = url.length + "_id";
@@ -237,7 +257,7 @@ var HK = {
     /**
      * 为输入框选择id和value值
      */
-    initInputSelectZtree: function(id, name, url,  yes) {
+    initInputSelectZtree: function (id, name, url, yes) {
         var nameInput = $("#" + name);
         var idInput = $("#" + id);
         var zTreeObj = null;
@@ -279,7 +299,7 @@ var HK = {
             this.error("表实例已存在，不能再次实例化");
             return;
         }
-        this.tableInstance =  $('#' + tableId).bootstrapTreeTable({
+        this.tableInstance = $('#' + tableId).bootstrapTreeTable({
             id: 'id',// 选取记录返回的值
             code: 'id',// 用于设置父子关系
             parentCode: 'parentId',// 用于设置父子关系
@@ -340,8 +360,8 @@ var HK = {
                     // HK.refreshTable();
                 });
             }
-        } else if(method === "refresh") {
-            HK.refreshTable({1:1});
+        } else if (method === "refresh") {
+            HK.refreshTable({1: 1});
         } else {
             if (typeof method === 'function') {
                 method();

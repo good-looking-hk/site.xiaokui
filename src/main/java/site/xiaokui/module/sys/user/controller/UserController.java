@@ -14,13 +14,10 @@ import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.config.shiro.ShiroUser;
 import site.xiaokui.module.base.controller.AbstractController;
 import site.xiaokui.module.base.entity.ResultEntity;
-import site.xiaokui.module.base.enums.RoleTypeEnum;
-import site.xiaokui.module.sys.user.entity.SysDept;
 import site.xiaokui.module.sys.user.entity.SysRole;
 import site.xiaokui.module.sys.user.entity.SysUser;
 import site.xiaokui.module.sys.user.entity.enums.SexTypeEnum;
 import site.xiaokui.module.sys.user.entity.wrapper.SysUserWrapper;
-import site.xiaokui.module.sys.user.service.DeptService;
 import site.xiaokui.module.sys.user.service.RoleService;
 import site.xiaokui.module.sys.user.service.ServiceFactory;
 import site.xiaokui.module.sys.user.service.UserService;
@@ -212,7 +209,7 @@ public class UserController extends AbstractController {
         ShiroUser cache = this.getUser();
         user.setId(this.getUserId());
         SysUser temp;
-        if (this.isNotEmptry(username)) {
+        if (this.isNotEmpty(username)) {
             temp = userService.getUserByName(username);
             if (temp != null) {
                 return ResultEntity.error("该用户名已被使用");
@@ -221,7 +218,7 @@ public class UserController extends AbstractController {
             cache.setUsername(username);
         }
 
-        if (this.isNotEmptry(blogSpace)) {
+        if (this.isNotEmpty(blogSpace)) {
             temp = userService.getUserByBlogSpace(blogSpace);
             if (temp != null) {
                 return ResultEntity.error("该博客空间已被使用");
@@ -230,20 +227,20 @@ public class UserController extends AbstractController {
             cache.setBlogSpace(blogSpace);
         }
 
-        if (this.isNotEmptry(sex)) {
+        if (this.isNotEmpty(sex)) {
             Integer code = SexTypeEnum.codeOf(sex);
             if (code != null) {
                 user.setSex(code);
             }
         }
 
-        if (this.isNotEmptry(selfDescription)) {
+        if (this.isNotEmpty(selfDescription)) {
             user.setSelfDescription(selfDescription);
             cache.setSelfDescription(selfDescription);
         }
 
         // 密码逻辑判断
-        if (this.isNotEmptry(password) && this.isNotEmptry(newPassword)) {
+        if (this.isNotEmpty(password) && this.isNotEmpty(newPassword)) {
             SysUser temp1 = userService.getById(user.getId());
             String oldPassword = SHIRO.md5(password, temp1.getSalt());
             if (oldPassword.equals(temp1.getPassword())) {

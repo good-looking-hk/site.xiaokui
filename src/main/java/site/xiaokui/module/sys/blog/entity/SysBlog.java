@@ -3,6 +3,7 @@ package site.xiaokui.module.sys.blog.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.entity.ParentEntity;
 
 import java.util.Comparator;
@@ -41,6 +42,16 @@ public class SysBlog extends ParentEntity {
     private Integer userId;
 
     /**
+     * 总访问量
+     */
+    private Integer viewCount;
+
+    /**
+     * 昨天访问量
+     */
+    private Integer yesterday;
+
+    /**
      * 不参与序列化的字段，存储博客html文件的内部地址
      */
     private transient String filePath;
@@ -59,16 +70,6 @@ public class SysBlog extends ParentEntity {
     private transient String nextBlogTitle;
 
     /**
-     * 总访问量
-     */
-    private Integer viewCount;
-
-    /**
-     * 昨天访问量
-     */
-    private Integer yesterday;
-
-    /**
      * 今天访问量
      */
     private transient Integer today;
@@ -80,29 +81,35 @@ public class SysBlog extends ParentEntity {
      */
     public static class DirComparator implements Comparator<SysBlog> {
         @Override
-        public int compare(SysBlog o1, SysBlog o) {
-            if (!o1.dir.equals(o.getDir())) {
-                return o1.dir.compareTo(o.getDir());
+        public int compare(SysBlog o1, SysBlog o2) {
+            if (!o1.dir.equals(o2.getDir())) {
+                return o1.dir.compareTo(o2.getDir());
             }
-            if (!o1.orderNum.equals(o.getOrderNum())) {
-                return o1.orderNum.compareTo(o.getOrderNum());
+            // 博客可以不指定序号，而只依靠日期作为排序
+            if (o1.orderNum != null && o2.orderNum != null) {
+                if (!o1.orderNum.equals(o2.getOrderNum())) {
+                    return o1.orderNum.compareTo(o2.getOrderNum());
+                }
+            }
+            if (!o1.createTime.equals(o2.getCreateTime())) {
+                return o1.createTime.compareTo(o2.getCreateTime());
             }
             // 后面上传的排在前面
-            return o1.id.compareTo(o.getId()) * -1;
+            return o1.id.compareTo(o2.getId()) * -1;
         }
     }
 
     /**
-     * 根据时间排序
+     * 根据时间排序，默认从小到大
      */
     public static class DateComparator implements Comparator<SysBlog> {
         @Override
         public int compare(SysBlog o1, SysBlog o2) {
-            int r = o1.createTime.compareTo(o2.createTime);
+            int r = o2.createTime.compareTo(o1.createTime);
             if (r != 0) {
                 return r;
             }
-            return o1.id.compareTo(o2.id);
+            return o2.id.compareTo(o1.id);
         }
     }
 }

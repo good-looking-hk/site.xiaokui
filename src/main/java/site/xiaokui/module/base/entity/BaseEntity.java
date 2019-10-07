@@ -14,9 +14,7 @@ import java.util.Date;
  * @author HK
  * @date 2018-06-10 15:50
  */
-@ToString
-@Getter
-@Setter
+@ToString@Getter@Setter
 public class BaseEntity implements ToZTreeNode, Serializable {
 
     protected Integer id;
@@ -29,8 +27,8 @@ public class BaseEntity implements ToZTreeNode, Serializable {
     protected Date createTime;
 
     /**
-     * 修改时间在数据库中一般用timestamp类型，由数据库自动修改
-     * 但个人而言，还是习惯用datetime，自己完全控制在代码层，不依赖于数据库
+     * 关于修改时间的确定，可以自己在代码层控制，也可以依赖于数据库的时间戳自动更新
+     * 两者都行，建议是依赖于数据库自动更新（建表时需要设置）
      */
     protected Date modifiedTime;
 

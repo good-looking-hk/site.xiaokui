@@ -23,6 +23,8 @@ public class BaseConstants {
 
     public static final String PROFILE_ONLINE = "online";
 
+    public static final String PROFILE_WIN = "win";
+
     // shiro常量
 
     /**
@@ -34,4 +36,10 @@ public class BaseConstants {
 
     public static final String LOGIN_USER = "authc";
 
+
+    // 关于项目的一些规范命名
+
+    public static final String TEMP_DIR = "/$temp/";
+
+    public static final String SLASH = "/";
 }

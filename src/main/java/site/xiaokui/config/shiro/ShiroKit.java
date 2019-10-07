@@ -38,7 +38,7 @@ public class ShiroKit {
     }
 
     /**
-     * shiro密码加密工具类，最终的明文密码是由密码+随机盐进行2次md5得出
+     * shiro密码加密工具类，最终的明文密码是由密码+随机盐进行2次md5得出，长度为32位
      *
      * @param credentials 密码
      * @param saltSource  密码盐

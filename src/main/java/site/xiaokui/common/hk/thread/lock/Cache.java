@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import static javafx.scene.input.KeyCode.R;
-
 /**
  * @author HK
  * @date 2018-10-12 10:07

@@ -5,6 +5,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.beetl.core.resource.*;
 import org.beetl.ext.spring.BeetlGroupUtilConfiguration;
 import org.beetl.ext.spring.BeetlSpringViewResolver;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -12,7 +13,6 @@ import org.springframework.core.env.Environment;
 import javax.sql.DataSource;
 
 import static site.xiaokui.module.sys.blog.BlogConstants.BLOG_START_FLAG;
-import static site.xiaokui.module.sys.blog.BlogConstants.UPLOAD_PATH;
 
 /**
  * @author HK
@@ -32,19 +32,18 @@ public class BeetlConfig {
     }
 
     @Bean(name = "beetlConfig")
-    public BeetlGroupUtilConfiguration getBeetlGroupUtilConfiguration() {
-        BeetlGroupUtilConfiguration beetlGroupUtilConfiguration = new BeetlConfiguration();
+    public BeetlGroupUtilConfiguration getBeetlGroupUtilConfiguration(@Value("${xiaokui.blogUploadPath}") String blogUploadPath) {
+        BeetlGroupUtilConfiguration beetlGroupUtilConfiguration = new BeetlUtilConfig();
         // 获取Spring Boot 的ClassLoader
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader == null) {
             classLoader = BeetlConfig.class.getClassLoader();
         }
         // Spring boot默认的模板路径
-        ClasspathResourceLoader classpathResourceLoader = new ClasspathResourceLoader(classLoader,
-                "templates");
+        ClasspathResourceLoader classpathResourceLoader = new ClasspathResourceLoader(classLoader, "templates");
 
-        // 自定义的模板加载器
-        FileResourceLoader fileResourceLoader = new FileResourceLoader(UPLOAD_PATH);
+        // 自定义的模板加载器，linux环境下默认为/xiaokui/upload/
+        FileResourceLoader fileResourceLoader = new FileResourceLoader(blogUploadPath);
 
         CompositeResourceLoader compositeResourceLoader = new CompositeResourceLoader();
         compositeResourceLoader.addResourceLoader(new StartsWithMatcher(BLOG_START_FLAG), fileResourceLoader);
@@ -58,12 +57,12 @@ public class BeetlConfig {
     }
 
     @Bean(name = "beetlViewResolver")
-    public BeetlSpringViewResolver getBeetlSpringViewResolver() {
+    public BeetlSpringViewResolver getBeetlSpringViewResolver(BeetlGroupUtilConfiguration bc) {
         BeetlSpringViewResolver beetlSpringViewResolver = new BeetlSpringViewResolver();
         beetlSpringViewResolver.setContentType("text/html;charset=UTF-8");
         beetlSpringViewResolver.setSuffix(".html");
         beetlSpringViewResolver.setOrder(0);
-        beetlSpringViewResolver.setConfig(getBeetlGroupUtilConfiguration());
+        beetlSpringViewResolver.setConfig(bc);
         return beetlSpringViewResolver;
     }
 }

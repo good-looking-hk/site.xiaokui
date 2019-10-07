@@ -11,6 +11,7 @@ $(function () {
         $("#blog").addClass("active");
     }
 
+
     var count = 0;
     var content = "";
     $("#content h2").each(function () {

@@ -1,0 +1,48 @@
+# 该属性置为true的时候，核心Logger（包含嵌入式容器、hibernate、spring）会输出更多内容，但是你自己应用的日志并不会输出为DEBUG级别
+debug: false
+
+beetl-beetlsql.dev: true
+beetlsql:
+  dev: true #是否是开发环境，默认为true
+  basePackage: site.xiaokui.module.sys
+  daoSuffix: Dao
+
+# 需要对spring url内部规则进行重写，参见类 StaticResourceConfig
+# 一般由nginx代理，但系统保留静态资源处理的功能
+xiaokui:
+  basePath: /xiaokui/
+  # 静态库资源路径
+  staticLibsPath: ${xiaokui.basePath}/lib/
+  # 博客上传路径
+  blogUploadPath: ${xiaokui.basePath}/upload/
+  # 音乐保存目录
+  blogMusicPath: ${xiaokui.basePath}/music/
+  # 头像上传目录
+  avatarUploadPath: ${xiaokui.basePath}/avatar/
+  # 系统日志目的地
+  logsPath: ${xiaokui.basePath}/logs/
+
+spring:
+  resources:
+    static-locations: classpath:/static/
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    # 注意这里的GMT+8，用于解决数据库时差8问题
+    url: jdbc:mysql://localhost:3306/newxiaokui?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=true
+    username: root
+    password: 199710
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: localhost
+    port: 6379
+    password:
+#  jackson:
+#    date-format: yyyy-MM-dd HH:mm:ss
+#    time-zone: GMT+8
+
+# 需要配合logback-spring.xml
+logging:
+  level.root: info
+  level.site.xiaokui: debug
+  path: ${xiaokui.logsPath}
+  file: local.log

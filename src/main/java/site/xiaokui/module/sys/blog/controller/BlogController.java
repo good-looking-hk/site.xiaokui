@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import site.xiaokui.XiaokuiCache;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.common.util.TimeUtil;
 import site.xiaokui.module.base.controller.AbstractController;
@@ -17,15 +18,12 @@ import site.xiaokui.module.sys.blog.BlogConstants;
 import site.xiaokui.module.sys.blog.entity.BlogStatusEnum;
 import site.xiaokui.module.sys.blog.entity.SysBlog;
 import site.xiaokui.module.sys.blog.entity.UploadBlog;
-import site.xiaokui.module.sys.blog.entity.UserLink;
 import site.xiaokui.module.sys.blog.service.BlogService;
-import site.xiaokui.module.sys.blog.service.UserMapService;
 import site.xiaokui.module.sys.blog.util.BlogUtil;
 
 import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Predicate;
 
 import static site.xiaokui.module.sys.blog.BlogConstants.*;
 
@@ -46,7 +44,7 @@ public class BlogController extends AbstractController {
     private BlogService blogService;
 
     @Autowired
-    private UserMapService userMapService;
+    private XiaokuiCache xiaokuiCache;
 
     @Override
     protected String setPrefix() {
@@ -68,13 +66,13 @@ public class BlogController extends AbstractController {
         }
         Query<SysBlog> query = blogService.createQuery();
         query.andEq("user_id", this.getUserId());
-        if (this.isNotEmptry(name)) {
+        if (this.isNotEmpty(name)) {
             query.andLike("title", "%" + name + "%");
         }
-        if (this.isNotEmptry(dir)) {
+        if (this.isNotEmpty(dir)) {
             query.andLike("dir", "%" + dir + "%");
         }
-        if (this.isNotEmptry(beginTime) && this.isNotEmptry(endTime)) {
+        if (this.isNotEmpty(beginTime) && this.isNotEmpty(endTime)) {
             query.andBetween("create_time", beginTime, endTime);
         }
         return blogService.query(query);
@@ -84,7 +82,7 @@ public class BlogController extends AbstractController {
     @PostMapping("/temp")
     @ResponseBody
     public ResultEntity temp(MultipartFile file) {
-        if (file == null || file.isEmpty() || file.getSize() > MAX_UPLOAD_FILE) {
+        if (file == null || file.isEmpty() || file.getSize() > MAX_BLOG_UPLOAD_FILE) {
             return this.error("文件为空或过大");
         }
         String fileName = file.getOriginalFilename();
@@ -113,9 +111,19 @@ public class BlogController extends AbstractController {
         blog.setDir(dir);
         blog.setCreateTime(TimeUtil.parseDate(createTime));
         blog.setModifiedTime(blog.getCreateTime());
-        blog.setOrderNum(orderNum);
+        if (orderNum == null) {
+            blog.setOrderNum(0);
+        } else {
+            blog.setOrderNum(orderNum);
+        }
         // 默认博客为公开，用户可以进一步修改
-        blog.setStatus(BlogStatusEnum.PUBLIC.getCode());
+        String company = xiaokuiCache.getCompany();
+        if (dir.equals(company)) {
+            blog.setStatus(BlogStatusEnum.PROTECTED.getCode());
+        } else {
+            blog.setStatus(BlogStatusEnum.PUBLIC.getCode());
+        }
+        BlogUtil.clearBlogCache();
         return blogService.saveBlog(blog);
     }
 
@@ -178,7 +186,7 @@ public class BlogController extends AbstractController {
     @PostMapping("/user")
     @ResponseBody
     public ResultEntity user(MultipartFile file, String name) {
-        if (file == null || file.isEmpty() || file.getSize() > MAX_UPLOAD_FILE) {
+        if (file == null || file.isEmpty() || file.getSize() > MAX_BLOG_UPLOAD_FILE) {
             return this.error("文件为空或过大");
         }
         String fileName = file.getOriginalFilename();
@@ -197,9 +205,6 @@ public class BlogController extends AbstractController {
         boolean result = about.renameTo(new File(about.getParentFile().getParent() + "/" +  name + ".html"));
         if (result) {
             String title = fileName.substring(0, index);
-            UserLink u = new UserLink(null, this.getUserId(), title, name);
-            BlogUtil.putInUserMap(u);
-            userMapService.insertIgnoreNull(u);
             log.info("用户{}存储了自定义key[name={},title={}]", this.getUserId(), name, title);
         }
         return this.returnResult(result, "更新失败",  "更新成功");

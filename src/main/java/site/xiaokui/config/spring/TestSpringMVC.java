@@ -23,7 +23,7 @@ import java.io.IOException;
  * 2.关于Session会话会在连接建立的时候创建，然后才会进行请求的处理（如过滤、拦截），其生命周期伴依赖客户端连接及服务端设置
  * 3.拦截是依赖AOP思想的
  * 4.filter初始化-建立session会话-执行过滤器-放行请求-执行请求-完成请求返回结果-释放连接资源
- * 5.如果想使用servelt标准注解，即@Servlet、@WebFilter和@WebListener，那么需要在主类上添加@ServletComponentScan
+ * 5.如果想使用servelt标准注解，如@Servlet、@WebFilter和@WebListener，那么需要在主类上添加@ServletComponentScan
  * 6.使用@Configuration以启用测试
  *
  * @author HK
