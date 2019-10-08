@@ -29,6 +29,13 @@ public class XiaokuiCache implements ApplicationRunner {
         prepareData();
     }
 
+    public void reload() {
+        if (this.cacheMap != null) {
+            this.cacheMap.clear();
+        }
+        prepareData();
+    }
+
     private void prepareData() {
         Query<SysConfig> query = sqlManager.query(SysConfig.class);
         List<SysConfig> list = query.select();
@@ -36,15 +43,9 @@ public class XiaokuiCache implements ApplicationRunner {
             throw new RuntimeException("读取系统配置失败");
         }
         for (SysConfig config : list) {
-            this.cacheMap.put(config.getName(), config.getValue());
+            this.cacheMap.put(config.getKey(), config.getValue());
+            System.out.println(config);
         }
-    }
-
-    public void refreshConfigCache() {
-        if (this.cacheMap != null) {
-            this.cacheMap.clear();
-        }
-        prepareData();
     }
 
     public String getKey(String key) {

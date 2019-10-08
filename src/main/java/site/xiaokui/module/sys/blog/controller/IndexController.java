@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import site.xiaokui.XiaokuiCache;
 import site.xiaokui.config.shiro.ShiroKit;
 import site.xiaokui.module.base.BaseConstants;
 import site.xiaokui.module.base.controller.BaseController;
@@ -52,6 +53,9 @@ public class IndexController extends BaseController {
     @Autowired
     private BlogService blogService;
 
+    @Autowired
+    private XiaokuiCache xiaokuiCache;
+
     /**
      * 默认首页为第一位注册的博客空间
      */
@@ -93,6 +97,7 @@ public class IndexController extends BaseController {
         BlogDetailList details = BlogUtil.resolveBlogList(blogList, blogSpace, false);
         BlogUser blogUser = new BlogUser(user);
 
+        commonConfig(model);
         // 处理layout布局
         if ("time".equals(layout)) {
             if ("pri".equals(type)) {
@@ -212,6 +217,7 @@ public class IndexController extends BaseController {
         BlogUser blogUser = new BlogUser(user);
         blogUser.setBlog(blog);
         model.addAttribute("user", blogUser);
+        commonConfig(model);
         return SHOW_BLOG;
     }
 
@@ -237,6 +243,7 @@ public class IndexController extends BaseController {
         model.addAttribute("user", blogUser);
         model.addAttribute("titles", details.getPubDir());
         model.addAttribute("lists", details.getPublicList());
+        commonConfig(model);
         return BLOG_INDEX + "1";
     }
 
@@ -255,6 +262,7 @@ public class IndexController extends BaseController {
         BlogUser blogUser = new BlogUser(user);
         blogUser.setBlog(blog);
         model.addAttribute("user", blogUser);
+        commonConfig(model);
         return SHOW_BLOG;
     }
 
@@ -264,7 +272,7 @@ public class IndexController extends BaseController {
      * @param name html文件名
      */
     @GetMapping({"/{blogSpace}/user"})
-    public String about(@PathVariable String blogSpace, String name, Model model) {
+    public String user(@PathVariable String blogSpace, String name, Model model) {
         SysUser user = trueUser(blogSpace);
         if (user == null || this.isEmpty(name)) {
             return ERROR;
@@ -279,7 +287,19 @@ public class IndexController extends BaseController {
         BlogUser blogUser = new BlogUser(user);
         blogUser.setBlog(blog);
         model.addAttribute("user", blogUser);
+        commonConfig(model);
         return SHOW_BLOG;
+    }
+
+    private void commonConfig(Model model) {
+        System.out.println(xiaokuiCache.showAbout());
+        System.out.println(xiaokuiCache.showResume());
+        if (xiaokuiCache.showAbout()) {
+            model.addAttribute("about", true);
+        }
+        if (xiaokuiCache.showResume()) {
+            model.addAttribute("resume", true);
+        }
     }
 
     private SysUser trueUser(String blogSpace) {

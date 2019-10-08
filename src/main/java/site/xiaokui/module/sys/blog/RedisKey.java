@@ -19,7 +19,7 @@ public class RedisKey {
     /**
      * 记录博客访问ip后缀，需要匹配删除
      */
-    public static final String HASH_IP_VIEWS_SUFFIX = "blog_view_ip_list";
+    public static final String HASH_IP_VIEWS_SUFFIX = "_blog_view_ip_list";
 
     /**
      * 博客访问次数--所有博客

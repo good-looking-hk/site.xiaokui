@@ -37,14 +37,11 @@
                 </dl>
             </li>
             <li class="layui-nav-item"><a href="javascript:void(0);" onclick="dealClick('type', 'pro');">非公开</a></li>
-            @if (isNotEmpty(userLink)) {
-            @for (u in userLink) {
-                @if (u.dot!false) {
-            <li class="layui-nav-item" style="margin-left:8px;"><a href="${ctxPath}/blog/${user.blogSpace}/user?name=${u.name}" target="_blank">${u.title}<span class="layui-badge-dot"></span></a></li>
-                @} else {
-            <li class="layui-nav-item"><a href="${ctxPath}/blog/${user.blogSpace}/user?name=${u.name}" target="_blank">${u.title}</a></li>
+            @if (isNotEmpty(about)) {
+            <li class="layui-nav-item" style="margin-left:-12px;"><a href="${ctxPath}/blog/${user.blogSpace}/user?name=about" target="_blank">关于</a></li>
             @}
-            @}
+            @if (isNotEmpty(resume)) {
+            <li class="layui-nav-item" style="margin-left:-10px;"><a href="${ctxPath}/blog/${user.blogSpace}/user?name=resume" target="_blank">简历<span class="layui-badge-dot"></span></a></li>
             @}
         </ul>
     </div>

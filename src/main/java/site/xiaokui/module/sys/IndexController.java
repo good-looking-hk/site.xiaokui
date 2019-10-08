@@ -1,29 +1,31 @@
-package site.xiaokui.module.sys.user.controller;
+package site.xiaokui.module.sys;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import site.xiaokui.XiaokuiCache;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.controller.BaseController;
-import site.xiaokui.module.sys.blog.BlogConstants;
-import site.xiaokui.module.sys.blog.util.BlogUtil;
 import site.xiaokui.module.sys.user.UserConstants;
 import site.xiaokui.module.sys.user.entity.SysMenu;
 import site.xiaokui.module.sys.user.service.MenuService;
 
-import java.io.File;
 import java.util.List;
 
 /**
+ * 项目根控制器，匹配 /*
  * @author HK
  * @date 2018-05-23 23:20
  */
 @Controller("INDEX")
 public class IndexController extends BaseController {
+
+    @Autowired
+    private XiaokuiCache xiaokuiCache;
 
     @Autowired
     private MenuService menuService;
@@ -35,7 +37,18 @@ public class IndexController extends BaseController {
 
     @GetMapping({"/", "/index"})
     public String index() {
+        String index = xiaokuiCache.getIndex();
+        if (StringUtil.isNotBlank(index)) {
+            return FORWARD + index;
+        }
         return FORWARD + "/blog";
+    }
+
+    @RequestMapping(value = "/clearCache", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    public String clearCache() {
+        xiaokuiCache.reload();
+        return "重新载入配置成功";
     }
 
     /**
