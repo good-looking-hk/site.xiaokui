@@ -30,7 +30,7 @@ public class Interrupted {
         @Override
         public void run() {
             while (true) {
-                // 会抛出java.lang.InterruptedException: sleep interrupted
+                // 已经中断的不能再次中断，会抛出java.lang.InterruptedException: sleep interrupted
                 ThreadState.SleepUtils.second(10);
             }
         }
