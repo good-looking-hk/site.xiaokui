@@ -1,5 +1,5 @@
 @include("/blog/_header.html"){}
-<div class="layui-main" style="padding: 15px 60px;margin-top: 26px;">
+<div class="layui-main" style="padding: 15px 4%;margin-top: 26px;width:60%;">
     <center>本页共 ${user.pageTotal} 篇，分为 ${user.dirCount} 个系列展示</center>
     @if (isNotEmpty(user.blogList)) {
     @for (list in user.blogList) {
@@ -22,9 +22,9 @@
     <ul>
         @for (r in most) {
         <li>
+            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.viewCount}次</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
                class="layui-col-xs10 p1">${rLP.index}.${r.dir}:${r.title}</a>
-            <span class="layui-badge layui-bg-gray" style="margin-left:5px">${r.viewCount}次</span>
         </li>
         @}
         <!--<li>-->
@@ -35,21 +35,21 @@
 </div>
 @}
 @if (isNotEmpty(recent)) {
-<div class="right-nav right-nav1 hid">
+<div class="right-nav hid" style="top: 460px;">
     <p>最新发布</p>
     <ul>
         @for (r in recent) {
         <li>
+            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.createTime, "MM-dd"}</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
-               class="layui-col-xs10 p1">${rLP.index}.${r.dir}：${r.title}</a>
-            <span class="layui-badge layui-bg-gray" style="margin-left:5px">${r.createTime, "MM-dd"}</span>
+               class="layui-col-xs10 p1">${rLP.index}.${r.dir}:${r.title}</a>
         </li>
         @}
     </ul>
 </div>
 @}
 @if (isNotEmpty(recent) && isNotEmpty(most)) {
-<div class="right-nav hid" style="left:5%;padding-bottom:2px;">
+<div class="right-nav hid" style="left:5%;padding-bottom:2px;" hidden>
     <p style="text-align: left">实时推荐</p>
     <p class="layui-text" style="text-align:left">
         目前我是这样想的：综合博客的创建日期、修改日期以及阅读量，为读者提供推荐，大致算法如下：以之前9个月作为一个分界点，前面的全部排除，后面的根据日期差，给定分值1。再根据创建日期和修改日期给定分值2。两者相加，
@@ -65,7 +65,8 @@
 </div>
 @}
 <div id="aplayer"></div>
-<center>公开博客 ${user.pub} 篇，受保护博客 ${user.pro} 篇，<a href="/blog/" target="_blank">小葵博客</a>版权所有</center>
+<center>公开博客 ${user.pub} 篇，受保护博客 ${user.pro} 篇，All Right Reserved</center>
+<center><a href="http://www.beian.miit.gov.cn">湘ICP备17005816号</a></center>
 <script src="${ctxPath}/lib/jquery/jquery.min.js"></script>
 <script src="${ctxPath}/lib/layui/layui.js"></script>
 <script src="${ctxPath}/js/common/HK.js"></script>

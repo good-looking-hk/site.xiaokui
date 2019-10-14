@@ -2,15 +2,6 @@
  * Created by HK on 2017/07/20.
  */
 $(function () {
-    var url = window.location.href;
-    if (url.indexOf("about") != -1) {
-        $("#about").addClass("active");
-    } else if (url.indexOf("catalogue") != -1) {
-        $("#catalogue").addClass("active");
-    } else if (url.indexOf("blog") != -1) {
-        $("#blog").addClass("active");
-    }
-
 
     var count = 0;
     var content = "";

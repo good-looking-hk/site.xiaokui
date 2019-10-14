@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import redis.clients.jedis.Jedis;
@@ -42,6 +44,12 @@ public class BlogService extends BaseService<SysBlog> {
     @Autowired
     private RedisService redisService;
 
+    @Value("${xiaokui.most-view}")
+    private Integer mostView;
+
+    @Value("${xiaokui.recent-upload}")
+    private Integer recentUpload;
+
     /**
      * 最多访问-实时更新，需要处理数据库与Redis缓存之间的关系
      * @return 返回LinkedHashMap，按照访问量从大到小返回
@@ -51,7 +59,7 @@ public class BlogService extends BaseService<SysBlog> {
         try {
             // 取top10，不能用Double.MAX_VALUE或Double.MIN_VALUE
             Set<Tuple> sets = jedis.zrevrangeByScoreWithScores(userId + RedisKey.KEY_MOST_VIEW_SUFFIX,
-                    "+inf", "-inf", 0, 10);
+                    "+inf", "-inf", 0, mostView);
             Map<String, Double> map;
             if (sets == null || sets.size() == 0) {
                 if (blogs == null || blogs.size() == 0) {
@@ -100,7 +108,7 @@ public class BlogService extends BaseService<SysBlog> {
         // 缓存过期
         if (list == null || list.size() == 0) {
             Query<SysBlog> query = this.createQuery();
-            query.andEq("user_id", userId).andEq("status", "1").desc("create_time").limit(1, 10);
+            query.andEq("user_id", userId).andEq("status", "1").desc("create_time").limit(1, recentUpload);
             List<SysBlog> blogs = this.query(query);
             if (blogs != null && blogs.size() > 0) {
                 // 缓存一天，如果不主动更新，一天后失效

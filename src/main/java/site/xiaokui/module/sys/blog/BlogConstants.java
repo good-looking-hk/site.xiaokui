@@ -6,6 +6,10 @@ package site.xiaokui.module.sys.blog;
  */
 public class BlogConstants {
 
+    public static final String BLOG_TYPE_PRI = "pri", BLOG_TYPE_PRO = "pro", BLOG_TYPE_PUB = "pub";
+
+    public static final String BLOG_LAYOUT_DIR = "dir", BLOG_LAYOUT_TIME = "time";
+
     /**
      * 博客访问目录前缀
      */

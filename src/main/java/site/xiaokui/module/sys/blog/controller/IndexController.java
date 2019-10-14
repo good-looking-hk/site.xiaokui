@@ -98,44 +98,21 @@ public class IndexController extends BaseController {
         BlogUser blogUser = new BlogUser(user);
 
         commonConfig(model);
-        // 处理layout布局
-        if ("time".equals(layout)) {
-            if ("pri".equals(type)) {
-                model.addAttribute("titles", details.getPriCreateYears());
-                model.addAttribute("lists", details.getPriCreateTimeList());
-            } else if ("pro".equals(type) && proCheckPass) {
-                model.addAttribute("titles", details.getProCreateYears());
-                model.addAttribute("lists", details.getProCreateTimeList());
-            } else {
-                model.addAttribute("titles", details.getPubCreateYears());
-                model.addAttribute("lists", details.getPubCreateTimeList());
-            }
-            model.addAttribute("user", blogUser);
-            return BLOG_INDEX + "1";
-        } else if ("dir".equals(layout)) {
-            if ("pri".equals(type)) {
-                model.addAttribute("titles", details.getPriDir());
-                model.addAttribute("lists", details.getPrivateList());
-            } else if ("pro".equals(type) && proCheckPass) {
-                model.addAttribute("titles", details.getProDir());
-                model.addAttribute("lists", details.getProtectedList());
-            } else {
-                model.addAttribute("titles", details.getPubDir());
-                model.addAttribute("lists", details.getPublicList());
-            }
-            model.addAttribute("user", blogUser);
-            return BLOG_INDEX + "1";
+        // 如果指定了layout布局
+        String result = dealLayout(layout, type, model, proCheckPass, details, blogUser);
+        if (result != null) {
+            return result;
         }
 
-        // 再处理type分类
-        if ("pro".equals(type) && proCheckPass) {
+        // 没有指定layout布局
+        if (BlogConstants.BLOG_TYPE_PRO.equals(type) && proCheckPass) {
             List<List<SysBlog>> protectedList = details.getProtectedList();
             blogUser.setBlogList(protectedList);
             blogUser.setPro(details.getPro());
             blogUser.setPub(details.getPub());
             blogUser.setPageTotal(details.getPro());
             blogUser.setDirCount(protectedList.size());
-        } else if ("pri".equals(type)) {
+        } else if (BlogConstants.BLOG_TYPE_PRI.equals(type)) {
             // TODO
             return FORWARD + "/blog/" +  blogSpace;
         } else {
@@ -168,6 +145,53 @@ public class IndexController extends BaseController {
         }
         model.addAttribute("user", blogUser);
         return BLOG_INDEX ;
+    }
+
+    private String dealLayout(String layout, String type, Model model, boolean proCheckPass, BlogDetailList details, BlogUser blogUser) {
+        blogUser.setPub(details.getPub());
+        blogUser.setPro(details.getPro());
+        // 日期布局
+        if (BlogConstants.BLOG_LAYOUT_TIME.equals(layout)) {
+            if (BlogConstants.BLOG_TYPE_PRI.equals(type)) {
+                model.addAttribute("titles", details.getPriCreateYears());
+                model.addAttribute("lists", details.getPriCreateTimeList());
+                blogUser.setPageTotal(details.getPri());
+                blogUser.setDirCount(details.getPriCreateYears().size());
+            } else if (BlogConstants.BLOG_TYPE_PRO.equals(type) && proCheckPass) {
+                model.addAttribute("titles", details.getProCreateYears());
+                model.addAttribute("lists", details.getProCreateTimeList());
+                blogUser.setPageTotal(details.getPro());
+                blogUser.setDirCount(details.getProCreateYears().size());
+            } else {
+                model.addAttribute("titles", details.getPubCreateYears());
+                model.addAttribute("lists", details.getPubCreateTimeList());
+                blogUser.setPageTotal(details.getPub());
+                blogUser.setDirCount(details.getPubCreateYears().size());
+            }
+            model.addAttribute("user", blogUser);
+            return BLOG_INDEX + "1";
+        } else if (BlogConstants.BLOG_LAYOUT_DIR.equals(layout)) {
+            // 目录布局
+            if (BlogConstants.BLOG_TYPE_PRI.equals(type)) {
+                model.addAttribute("titles", details.getPriDir());
+                model.addAttribute("lists", details.getPrivateList());
+                blogUser.setPageTotal(details.getPro());
+                blogUser.setDirCount(details.getPriDir().size());
+            } else if (BlogConstants.BLOG_TYPE_PRO.equals(type) && proCheckPass) {
+                model.addAttribute("titles", details.getProDir());
+                model.addAttribute("lists", details.getProtectedList());
+                blogUser.setPageTotal(details.getPro());
+                blogUser.setDirCount(details.getProDir().size());
+            } else {
+                model.addAttribute("titles", details.getPubDir());
+                model.addAttribute("lists", details.getPublicList());
+                blogUser.setPageTotal(details.getPub());
+                blogUser.setDirCount(details.getPubDir().size());
+            }
+            model.addAttribute("user", blogUser);
+            return BLOG_INDEX + "1";
+        }
+        return null;
     }
 
     /**

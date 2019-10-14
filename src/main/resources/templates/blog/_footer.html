@@ -89,7 +89,7 @@
     }
 
     $(function () {
-        if (HK.isPc()) {
+        if (HK.isPc() && window.innerWidth > 1465) {
             $('.hid').toggleClass('hid');
         }
         $("#toTop").click(function () {
