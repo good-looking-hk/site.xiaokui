@@ -2,9 +2,14 @@ package site.xiaokui.config.spring;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import site.xiaokui.module.base.BaseConstants;
+
+import java.nio.charset.Charset;
+import java.util.List;
 
 /**
  * 留作纪念，不删了
@@ -27,5 +32,15 @@ public class StaticResourceConfig implements WebMvcConfigurer {
             throw new IllegalArgumentException("xiaokui.staticLibsPath参数未设置:" + null);
         }
         registry.addResourceHandler("/lib/**").addResourceLocations("file:" + staticLibsPath);
+    }
+
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        for (HttpMessageConverter converter : converters) {
+            if (converter instanceof StringHttpMessageConverter) {
+                StringHttpMessageConverter messageConverter = (StringHttpMessageConverter) converter;
+                messageConverter.setDefaultCharset(Charset.forName("UTF-8"));
+            }
+        }
     }
 }

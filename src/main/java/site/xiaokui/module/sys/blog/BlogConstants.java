@@ -30,9 +30,11 @@ public class BlogConstants {
 
     public static final String HTML_SUFFIX = ".html";
 
+    public static final String MD_SUFFIX = ".md";
+
     /**
-     * 字节为单位，默认8M
+     * 字节为单位，默认4M
      */
-    public static final long MAX_BLOG_UPLOAD_FILE = 1024 * 1024 * 8;
+    public static final long MAX_BLOG_UPLOAD_FILE = 1024 * 1024 * 4;
 
 }

@@ -1,5 +1,6 @@
 package site.xiaokui.module.sys.blog.controller;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -306,6 +307,8 @@ public class IndexController extends BaseController {
             return ERROR;
         }
         SysBlog blog = new SysBlog();
+        blog.setTitle(name);
+        blog.setCreateTime(DateUtil.date(file.lastModified()));
         blog.setFilePath(user.getId() + "/" + name);
 
         BlogUser blogUser = new BlogUser(user);
@@ -316,8 +319,6 @@ public class IndexController extends BaseController {
     }
 
     private void commonConfig(Model model) {
-        System.out.println(xiaokuiCache.showAbout());
-        System.out.println(xiaokuiCache.showResume());
         if (xiaokuiCache.showAbout()) {
             model.addAttribute("about", true);
         }

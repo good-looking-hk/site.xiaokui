@@ -131,7 +131,8 @@ public class ShiroConfig {
 
         Map<String, String> filterMap = new LinkedHashMap<>();
 
-        // 静态资源的过滤
+        // 静态资源的过滤，采用nginx?
+        // TODO
         filterMap.put("/lib/**", ANYBODY);
         filterMap.put("/plugins/**", ANYBODY);
         filterMap.put("/font-awesome/**", ANYBODY);
@@ -150,7 +151,6 @@ public class ShiroConfig {
         filterMap.put("/favicon.ico", ANYBODY);
 
         // 特定请求的过滤
-        filterMap.put("/kaptcha", ANYBODY);
         filterMap.put("/", ANYBODY);
         filterMap.put("/index", ANYBODY);
         filterMap.put("/login", ANYBODY);

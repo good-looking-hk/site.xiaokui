@@ -1128,28 +1128,28 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
     font-family: "Open Sans";
     font-style: normal;
     font-weight: normal;
-    src: local("Open Sans Regular"), url("./github/400.woff") format("woff");
+    /*src: local("Open Sans Regular"), url("./github/400.woff") format("woff");*/
 }
 
 @font-face {
     font-family: "Open Sans";
     font-style: italic;
     font-weight: normal;
-    src: local("Open Sans Italic"), url("./github/400i.woff") format("woff");
+    /*src: local("Open Sans Italic"), url("./github/400i.woff") format("woff");*/
 }
 
 @font-face {
     font-family: "Open Sans";
     font-style: normal;
     font-weight: bold;
-    src: local("Open Sans Bold"), url("./github/700.woff") format("woff");
+    /*src: local("Open Sans Bold"), url("./github/700.woff") format("woff");*/
 }
 
 @font-face {
     font-family: "Open Sans";
     font-style: italic;
     font-weight: bold;
-    src: local("Open Sans Bold Italic"), url("./github/700i.woff") format("woff");
+    /*src: local("Open Sans Bold Italic"), url("./github/700i.woff") format("woff");*/
 }
 
 html {
@@ -1378,7 +1378,7 @@ table tr th:last-child, table tr td:last-child {
 }
 
 .md-fences, code, tt {
-    border: 1px solid rgb(223, 226, 229);
+    /*border: 1px solid rgb(223, 226, 229);*/
     background-color: rgb(248, 248, 248);
     border-radius: 3px;
     font-family: Consolas, "Liberation Mono", Courier, monospace;

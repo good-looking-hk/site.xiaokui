@@ -1,20 +1,24 @@
 package site.xiaokui.module.sys.blog.util;
 
 import cn.hutool.core.date.DatePattern;
+import com.vladsch.flexmark.ext.tables.TablesExtension;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.common.util.TimeUtil;
+import site.xiaokui.common.util.hk.JsoupUtil;
 import site.xiaokui.module.base.SpringContextHolder;
 import site.xiaokui.module.sys.blog.entity.*;
 
 import java.io.*;
 import java.util.*;
 
-import static site.xiaokui.module.sys.blog.BlogConstants.HTML_SUFFIX;
-import static site.xiaokui.module.sys.blog.BlogConstants.PREFIX;
+import static site.xiaokui.module.sys.blog.BlogConstants.*;
 
 /**
  * @author HK
@@ -25,9 +29,6 @@ public class BlogUtil {
 
     private static final String BLOG_PREFIX = PREFIX + "/";
 
-    /**
-     * 博客缓存
-     */
     private static final Map<String, BlogDetailList> BLOG_CACHE = new HashMap<>(4);
 
     public static void clearBlogCache() {
@@ -88,17 +89,29 @@ public class BlogUtil {
      */
     public static UploadBlog resolveUploadFile(MultipartFile upload, Integer userId) {
         String fullName = upload.getOriginalFilename();
+        // 解析文件名
         UploadBlog blog = resolveFileName(fullName);
+        if (blog.getErrorInfo() != null) {
+            return blog;
+        }
         BufferedReader reader = null;
         BufferedWriter writer = null;
         boolean isSuccess = false;
-        File targetFile = null;
+        File targetFile = null, mdFile = null;
         try {
             /// 留作测试用的InputStreamReader inputFileReader = new InputStreamReader(new FileInputStream(upload), "UTF-8");
             InputStreamReader inputFileReader = new InputStreamReader(upload.getInputStream(), "UTF-8");
             reader = new BufferedReader(inputFileReader);
             // 调用Spring
             targetFile = BlogFileHelper.getInstance().createTempFile(userId, blog.getName() + HTML_SUFFIX);
+
+            mdFile = BlogFileHelper.getInstance().locateFile(userId, "$md", fullName);
+            if (!mdFile.exists()) {
+                mdFile.createNewFile();
+            }
+            // md文件备份
+            BlogFileHelper.getInstance().saveInputStream(upload.getInputStream(), mdFile);
+
             if (targetFile == null) {
                 throw new RuntimeException("创建文件失败：" + fullName);
             }
@@ -106,22 +119,39 @@ public class BlogUtil {
             writer = new BufferedWriter(outputStreamWriter);
             boolean startFlag = false;
 
-            String str;
-            while ((str = reader.readLine()) != null) {
-                if (!startFlag) {
-                    if (str.startsWith("<body")) {
-                        startFlag = true;
+            // 对上传html文件的处理，以后可能会被抛弃
+            if (HTML_SUFFIX.equals(blog.getSuffix())) {
+                String str;
+                while ((str = reader.readLine()) != null) {
+                    if (!startFlag) {
+                        if (str.startsWith("<body")) {
+                            startFlag = true;
+                        }
+                    } else {
+                        writer.write(str);
                     }
-                } else {
-                    writer.write(str);
                 }
+                writer.flush();
+                isSuccess = true;
+                blog.setUploadFile(targetFile);
+            } else if (MD_SUFFIX.equals(blog.getSuffix()) && upload.getSize() < MAX_BLOG_UPLOAD_FILE) {
+                MarkDownParser.ParseData data = MarkDownParser.PARSER.parse(inputFileReader);
+                if (data.getHtmlStr() != null) {
+                    writer.write(data.getHtmlStr());
+                    writer.flush();
+                    isSuccess = true;
+                    // 字数统计，近似值
+                    int charCount = (int) UploadBlog.determineCharCount(data.getTextLength());
+                    blog.setCharacterCount(charCount);
+                }
+            } else if (MD_SUFFIX.equals(blog.getSuffix()) && upload.getSize() >= MAX_BLOG_UPLOAD_FILE) {
+                // 后台开个线程执行，异步返回结果
+                // TODO
             }
-            writer.flush();
-            isSuccess = true;
-            blog.setUploadFile(targetFile);
             log.info("上传目标文件地址为：" + targetFile);
         } catch (IOException e) {
             e.printStackTrace();
+            log.error("文件读取/写入失败，目标文件信息:{}，失败信息:{}, blog信息:{}", targetFile, e.getMessage(), blog);
         } finally {
             closeStream(reader, writer);
             if (!isSuccess && targetFile != null && !targetFile.delete()) {
@@ -143,17 +173,24 @@ public class BlogUtil {
      * @param fullName html文件全名 智能解析
      * @return 解析后上传博客对象
      */
-    private static UploadBlog resolveFileName(String fullName) {
+    public static UploadBlog resolveFileName(String fullName) {
         UploadBlog blog = new UploadBlog();
-        if (StringUtil.isEmpty(fullName) || !fullName.endsWith(HTML_SUFFIX)) {
+        if (StringUtil.isEmpty(fullName)) {
             blog.setErrorInfo("不合法的文件：" + fullName);
             return blog;
         }
-        // 去掉后缀
+        boolean legal = fullName.endsWith(HTML_SUFFIX) || fullName.endsWith(MD_SUFFIX);
+        if (!legal) {
+            blog.setErrorInfo("文件格式只能为html或md:" + fullName);
+            return blog;
+        }
+
         int index = fullName.lastIndexOf(".");
+        // 如.html或.md
+        blog.setSuffix(fullName.substring(index));
         fullName = fullName.substring(0, index);
 
-        // 取出目录，建议使用中文分号,英文分号也行
+        // 取出目录，建议使用中文分号，英文分号也行
         index = fullName.contains("：") ? fullName.indexOf("：") : fullName.indexOf(":");
         if (index < 0) {
             blog.setErrorInfo("您可能没有包含中文分号（：）");
@@ -215,7 +252,7 @@ public class BlogUtil {
             // 规定最大序号不超过99
             int orderNumb;
             try {
-                orderNumb = Integer.valueOf(str);
+                orderNumb = Integer.parseInt(str);
             } catch (NumberFormatException e) {
                 blog.setErrorInfo("非法排序数字：" + str);
                 return;
@@ -247,6 +284,8 @@ public class BlogUtil {
         System.out.println(resolveFileName(fullName));
         fullName = "Spring源码：bean的加载-20180808.html";
         System.out.println(resolveFileName(fullName));
+        int index = fullName.lastIndexOf(".");
+        System.out.println(fullName.substring(index));
     }
 }
 

@@ -21,7 +21,7 @@ public class Sql {
 
     private static final String USER = "root";
 
-    private static final String PASSWORD = "199710!";
+    private static final String PASSWORD = "199710";
 
     private static final SQLManager SQL_MANAGER = initSqlManager();
 

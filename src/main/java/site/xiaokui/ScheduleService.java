@@ -39,7 +39,7 @@ public class ScheduleService implements ApplicationRunner {
             return;
         }
 //        startTaskPerNightZeroClock("REDIS_TASK", blogService.redisTask());
-        testTask(blogService.redisTask());
+//        testTask(blogService.redisTask());
     }
 
     /**

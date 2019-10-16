@@ -44,7 +44,6 @@ public class XiaokuiCache implements ApplicationRunner {
         }
         for (SysConfig config : list) {
             this.cacheMap.put(config.getKey(), config.getValue());
-            System.out.println(config);
         }
     }
 

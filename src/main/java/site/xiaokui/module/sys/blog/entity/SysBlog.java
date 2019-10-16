@@ -16,6 +16,7 @@ import java.util.Comparator;
  * 另外就是createTime是博客最初写的时间，而modifiedTime是博客上传的时间，其中createTime是允许主动改变的，
  * 而modifiedTime是被动改变的
  * 对于博客的排序，参见 {@link DirComparator}
+ * 对于博客字数的统计算法，参见 {@link UploadBlog#characterCount}
  */
 @ToString(callSuper = true)
 @Getter@Setter
@@ -73,6 +74,11 @@ public class SysBlog extends ParentEntity {
      * 今天访问量
      */
     private transient Integer today;
+
+    /**
+     * 字符数量
+     */
+    private Integer characterCount;
 
     /// 留作纪念
 

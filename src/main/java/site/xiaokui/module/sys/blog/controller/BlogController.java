@@ -61,7 +61,6 @@ public class BlogController extends AbstractController {
             SysBlog blog = new SysBlog();
             blog.setUserId(this.getUserId());
             List<SysBlog> l = blogService.match(blog);
-            System.out.println(l.get(0));
             return l;
         }
         Query<SysBlog> query = blogService.createQuery();
@@ -86,9 +85,14 @@ public class BlogController extends AbstractController {
             return this.error("文件为空或过大");
         }
         String fileName = file.getOriginalFilename();
-        if (this.isEmpty(fileName) || !fileName.endsWith(HTML_SUFFIX)) {
-            return this.error("文件格式只能为html");
+        if (this.isEmpty(fileName)) {
+            return this.error("文件名不能为空");
         }
+        boolean legal = fileName.endsWith(HTML_SUFFIX) || fileName.endsWith(MD_SUFFIX);
+        if (!legal) {
+            return this.error("文件格式只能为html或md");
+        }
+
         UploadBlog blog = blogService.saveTemp(file, this.getUserId());
         if (blog.getErrorInfo() != null) {
             return this.error(blog.getErrorInfo());
@@ -100,7 +104,7 @@ public class BlogController extends AbstractController {
     @RequiresPermissions(BLOG_PREFIX + ADD)
     @PostMapping(ADD)
     @ResponseBody
-    public ResultEntity add(String dir, String name, Integer orderNum, String createTime) {
+    public ResultEntity add(String dir, String name, Integer orderNum, String createTime, Integer characterCount) {
         if (StringUtil.hasEmpty(dir, name)) {
             return this.paramError(dir, name);
         }
@@ -110,7 +114,7 @@ public class BlogController extends AbstractController {
         blog.setTitle(name);
         blog.setDir(dir);
         blog.setCreateTime(TimeUtil.parseDate(createTime));
-        blog.setModifiedTime(blog.getCreateTime());
+        blog.setCharacterCount(characterCount);
         if (orderNum == null) {
             blog.setOrderNum(0);
         } else {
@@ -185,27 +189,35 @@ public class BlogController extends AbstractController {
     @RequiresPermissions(BLOG_PREFIX + ADD)
     @PostMapping("/user")
     @ResponseBody
-    public ResultEntity user(MultipartFile file, String name) {
+    public ResultEntity user(MultipartFile file) {
         if (file == null || file.isEmpty() || file.getSize() > MAX_BLOG_UPLOAD_FILE) {
             return this.error("文件为空或过大");
         }
         String fileName = file.getOriginalFilename();
-        if (this.isEmpty(name) || this.isEmpty(fileName)) {
-            return this.error("必须自定义name");
+        if (this.isEmpty(fileName) || !fileName.endsWith(HTML_SUFFIX)) {
+            return this.error("必须是html文件");
         }
         int index = fileName.indexOf('-');
         if (index < 0) {
             return this.error("格式形如:关于-20171022.html");
         }
-        File about = BlogUtil.resolveUploadFile(file, this.getUserId()).getUploadFile();
-        if (about == null || !about.exists()) {
+
+        File upload = BlogUtil.resolveUploadFile(file, this.getUserId()).getUploadFile();
+        if (upload == null || !upload.exists()) {
             return this.error("文件上传失败");
         }
+
         // 移动到用户根目录下
-        boolean result = about.renameTo(new File(about.getParentFile().getParent() + "/" +  name + ".html"));
+        String name = fileName.substring(0, index);
+        if (!"关于".equals(name) && !"简历".equals(name)) {
+            return this.error("不支持的文件名:" + name);
+        }
+        String time = fileName.substring(index + 1, fileName.lastIndexOf("."));
+        File target = new File(upload.getParentFile().getParent() + "/" +  name + ".html");
+        boolean result = upload.renameTo(target);
         if (result) {
-            String title = fileName.substring(0, index);
-            log.info("用户{}存储了自定义key[name={},title={}]", this.getUserId(), name, title);
+            target.setLastModified(DateUtil.parse(time).getTime());
+            log.info("用户{}存储了自定义key[name={},time={}]", this.getUserId(), fileName, time);
         }
         return this.returnResult(result, "更新失败",  "更新成功");
     }

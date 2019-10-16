@@ -38,7 +38,7 @@ body {
 }
 
 #nav-log a:hover {
-    color: green;
+    /*color: green;*/
     text-decoration: none;
 }
 
@@ -106,14 +106,18 @@ ul.list-group {
 }
 
 .list-group li a {
-    font-size: 15px;
+    font-size: 13px;
     display: block;
     cursor: pointer;
     text-decoration: none;
 }
 
+.list-group-item {
+    padding: 9px 12px;
+}
+
 .list-group li a:hover {
-    font-size: 20px;
+    font-size: 15px;
     color: green;
     font-weight: bold;
     -webkit-transition: all .5s;
@@ -226,6 +230,7 @@ ul.list-group {
     height: 50px;
     text-align: center;
     display: block;
+    color: #333;
 }
 
 .side-tool>ul .function-button i, .side-tool>ul .js-submit-button i {

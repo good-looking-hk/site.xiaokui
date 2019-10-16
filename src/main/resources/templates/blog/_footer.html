@@ -11,8 +11,6 @@
     layui.use(['element', 'layer'], function () {
         var element = layui.element;
         var layer = layui.layer;
-        //获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
-
     });
     const value = "${key!}";
     if (typeof value === 'string' && value !== '') {
@@ -44,7 +42,6 @@
         if (key === 'type') {
             type = value;
         }
-        console.log(layout + "-" + type);
         if (type === 'pro') {
             if (!HK.isEmpty(passwd)) {
                 reUrl(layout, type, url, passwd);

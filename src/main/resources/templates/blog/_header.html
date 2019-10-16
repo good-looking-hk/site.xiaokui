@@ -8,6 +8,7 @@
     <link href="${ctxPath}/css/blog.css" rel="stylesheet"/>
     <link href="${ctxPath}/css/typora.css" rel="stylesheet"/>
     <link href="${ctxPath}/aplayer/APlayer.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/rainbow.min.css">
 </head>
 <body>
 <div class="header-nav">
@@ -38,10 +39,10 @@
             </li>
             <li class="layui-nav-item"><a href="javascript:void(0);" onclick="dealClick('type', 'pro');">非公开</a></li>
             @if (isNotEmpty(about)) {
-            <li class="layui-nav-item" style="margin-left:-12px;"><a href="${ctxPath}/blog/${user.blogSpace}/user?name=about" target="_blank">关于</a></li>
+            <li class="layui-nav-item" style="margin-left:-12px;"><a href="${ctxPath}/blog/${user.blogSpace}/user?name=关于" target="_blank">关于</a></li>
             @}
             @if (isNotEmpty(resume)) {
-            <li class="layui-nav-item" style="margin-left:-10px;"><a href="${ctxPath}/blog/${user.blogSpace}/user?name=resume" target="_blank">简历<span class="layui-badge-dot"></span></a></li>
+            <li class="layui-nav-item" style="margin-left:-10px;"><a href="${ctxPath}/blog/${user.blogSpace}/user?name=简历" target="_blank">简历<span class="layui-badge-dot"></span></a></li>
             @}
         </ul>
     </div>

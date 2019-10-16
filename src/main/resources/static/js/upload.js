@@ -37,7 +37,7 @@ layui.use(['form', 'layer', 'upload'], function () {
         elem: '#testList',
         url: HK.ctxPath + '/sys/blog/temp',
         accept: 'file',
-        exts: 'html',
+        exts: 'md',
         size: 4 * 1024,
         multiple: true,
         auto: false,
@@ -90,7 +90,7 @@ layui.use(['form', 'layer', 'upload'], function () {
                     , tds = tr.children();
                 //如果没有已上传的记录
                 if (isEmpty(tds.eq(2).text())) {
-                    tds.eq(2).html('<span>' + green(blog.dir) + ' : '  + green(blog.name) + ' : ' + (isEmpty(blog.orderNum) ? '未指定' : green(blog.orderNum)) + ' : ' + green(blog.createTime) +'</span>');
+                    tds.eq(2).html('<span>' + green(blog.dir) + ' : '  + green(blog.name) + ' : ' + (isEmpty(blog.orderNum) ? '未指定' : green(blog.orderNum)) + ' : ' + green(blog.createTime) + ' : ' + green(blog.characterCount) +'</span>');
                     tds.eq(3).html('<span style="color: #5FB878;">上传成功</span>');
                     tr.find('.blog-preview').text('预览');
                 }
@@ -109,34 +109,6 @@ layui.use(['form', 'layer', 'upload'], function () {
             return delete this.files[index];
         }
     });
-
-    // var filename= '';
-    // // 单文件自动上传执行
-    // var uploadInst = upload.render({
-    //     elem: '#about', //绑定元素
-    //     url: HK.ctxPath + '/sys/blog/user/',
-    //     accept: 'file',
-    //     data: {
-    //       name:  function(){
-    //           return $('#about1').val();
-    //       }
-    //     },
-    //     exts: 'html',
-    //     size: 2 * 1024,
-    //     multiple: false,
-    //     auto: true,
-    //     done: function(res){
-    //         if (res.code === 200) {
-    //             HK.ok(res.msg);
-    //         } else {
-    //             HK.error(res.msg);
-    //         }
-    //     }
-    //     ,error: function(){
-    //         //请求异常回调
-    //         HK.error("上传接口异常");
-    //     }
-    // });
 });
 
 var vm = new Vue({
@@ -160,14 +132,15 @@ var vm = new Vue({
                     return;
                 } else if(!isEmpty($(this).find('td').eq(4).find('.blog-show').text())) {
                     return;
-                } else if (blogInfo.length !== 4) {
+                } else if (blogInfo.length !== 5) {
                     layer.msg('不合法数据');
                     return;
                 }
                 var data = {
                     dir: blogInfo[0],
                     name: blogInfo[1],
-                    createTime: blogInfo[3]
+                    createTime: blogInfo[3],
+                    characterCount: blogInfo[4]
                 };
                 if (blogInfo[2] && blogInfo[2] !== '未指定') {
                     data.orderNum = parseInt(blogInfo[2]);

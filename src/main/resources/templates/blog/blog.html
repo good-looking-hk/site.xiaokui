@@ -7,11 +7,20 @@
             <span class="next-blog"><a href='${ctxPath}${user.blog.nextBlog!"#"}'>下一篇:${user.blog.nextBlogTitle!"本系列完"}</a></span>
         </div>
         <div class="panel-body">
+            @if (isNotEmpty(user.blog.characterCount)) {
+            <p style="font-size: 14px;color: #777777;">字数约 ${user.blog.characterCount} 字, 阅读耗时约 ${parseInt(user.blog.characterCount / 2250)} 分钟</p>
+            @}
             @printFile("blog:" + user.blog.filePath + ".html");
-            @if(isNotEmpty(user.blog.createTime)) {
+            @if(isNotEmpty(user.blog.createTime) && isNotEmpty(user.blog.modifiedTime)) {
             <blockquote>
                 <small>
-                    Pageviews ${user.blog.viewCount!"1"} and Created by ${user.name} on ${user.blog.createTime, "yyyy-MM-dd"} and updated on ${user.blog.modifiedTime, "yyyy-MM-dd"}
+                    Views ${user.blog.viewCount!"1"} times and Created by ${user.name} on ${user.blog.createTime, "yyyy-MM-dd"} and Updated on ${user.blog.modifiedTime, "yyyy-MM-dd"}
+                </small>
+            </blockquote>
+            @} else if (isNotEmpty(user.blog.createTime)) {
+            <blockquote>
+                <small>
+                    Created by ${user.name} on ${user.blog.createTime, dateFormat="yyyy-MM-dd"}
                 </small>
             </blockquote>
             @}
@@ -25,4 +34,6 @@
 <script src="${ctxPath}/lib/layui/layui.js"></script>
 <script src="${ctxPath}/js/common/HK.js"></script>
 <script src="${ctxPath}/js/blog.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 @include("/blog/_footer.html"){}

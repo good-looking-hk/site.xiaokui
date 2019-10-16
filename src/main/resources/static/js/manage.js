@@ -167,9 +167,6 @@ var vm = new Vue({
                 });
             });
         },
-        someTodo: function () {
-            layer.msg("有待开发");
-        },
         logout: function () {
             $.post("/sys/logout", function (response) {
                 location.href = '/login.html';
@@ -194,13 +191,13 @@ function loadPage(url) {
 layui.use(['form', 'layer', 'upload'], function () {
     var form = layui.form, layer = layui.layer, upload = layui.upload;
     var fileName;
-    var uploadInst = upload.render({
+    var uploadImg = upload.render({
         elem: '#uploadImg', //绑定元素
         url: '/sys/user/img', //上传接口
         accept: 'images',
         auto: true,
         multipart: false,
-        size: 128,
+        size: 512,
         before: function (obj) {
             //预读本地文件示例，不支持ie8
             obj.preview(function (index, file, result) {
@@ -212,6 +209,62 @@ layui.use(['form', 'layer', 'upload'], function () {
                 layer.msg("上传成功", {icon: 1});
                 vm.headImg = '/image/headImg/' + fileName;
                 $('.headImg').attr('src', vm.headImg);
+            } else {
+                layer.msg(res.msg, {icon: 2});
+            }
+        },
+        error: function () {
+            layer.msg("本地上传失败", {icon: 2});
+        }
+    });
+    var uploadResume = upload.render({
+        elem: '#uploadResume', //绑定元素
+        url: '/sys/blog/user', //上传接口
+        accept: 'file',
+        exts: 'html',
+        auto: true,
+        multipart: false,
+        size: 512,
+        before: function (obj) {
+            //预读本地文件示例，不支持ie8
+            obj.preview(function (index, file, result) {
+                fileName = file.name;
+                if (!fileName.startsWith("简历")) {
+                    this.error()
+                }
+            });
+        },
+        done: function (res) {
+            if (res.code === 200) {
+                layer.msg("上传成功", {icon: 1});
+            } else {
+                layer.msg(res.msg, {icon: 2});
+            }
+        },
+        error: function () {
+            layer.msg("本地上传失败", {icon: 2});
+        }
+    });
+    var uploadAbout = upload.render({
+        elem: '#uploadAbout', //绑定元素
+        url: '/sys/blog/user', //上传接口
+        accept: 'file',
+        exts: 'html',
+        auto: true,
+        multipart: false,
+        size: 512,
+        before: function (obj) {
+            //预读本地文件示例，不支持ie8
+            obj.preview(function (index, file, result) {
+                fileName = file.name;
+                if (!fileName.startsWith("关于")) {
+                    this.error()
+                }
+            });
+        },
+        done: function (res) {
+            if (res.code === 200) {
+                layer.msg("上传成功", {icon: 1});
             } else {
                 layer.msg(res.msg, {icon: 2});
             }
