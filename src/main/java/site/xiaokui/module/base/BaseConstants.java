@@ -21,7 +21,7 @@ public class BaseConstants {
 
     public static final String PROFILE_LOCAL = "local";
 
-    public static final String PROFILE_ONLINE = "online";
+    public static final String PROFILE_REMOTE = "remote";
 
     public static final String PROFILE_WIN = "win";
 

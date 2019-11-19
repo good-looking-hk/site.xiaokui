@@ -35,7 +35,7 @@ layui.use(['form', 'layer', 'upload'], function () {
     //多文件列表示例
     var demoListView = $('#demoList'), uploadListIns = upload.render({
         elem: '#testList',
-        url: HK.ctxPath + '/sys/blog/blogTemp',
+        url: HK.ctxPath + '/sys/blog/weekTemp',
         accept: 'file',
         exts: 'md',
         size: 4 * 1024,

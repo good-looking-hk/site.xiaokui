@@ -16,6 +16,7 @@ import java.util.Map;
 /**
  * 全局控制器异常拦截器，优先级越高值越低
  * 结果可返回一个对象（@ResponseBody），会转化成相应的字符串，亦可返回一个字符串，返回相应的界面，并携带信息
+ *
  * @author HK
  * @date 2018-05-31 01:37
  */
@@ -67,15 +68,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     @ResponseBody
     public ResultEntity notFound(RuntimeException e, HttpServletRequest request) {
-        if (log.isDebugEnabled()) {
-            log.debug("url[{}]访问出错", request.getRequestURI());
-            Map<String, String[]> map =  request.getParameterMap();
-            for (Map.Entry<String, String[]> m : map.entrySet()) {
-                log.debug(m.getKey() + ":" + Arrays.toString(m.getValue()));
-            }
-            e.printStackTrace();
+        log.error("url[{}]访问出错,错误信息:{}", request.getRequestURI(), e.getCause());
+        Map<String, String[]> map = request.getParameterMap();
+        for (Map.Entry<String, String[]> m : map.entrySet()) {
+            log.error(m.getKey() + ":" + Arrays.toString(m.getValue()));
         }
+        e.printStackTrace();
         return ResultEntity.error(e.getMessage() + " cause by " + e.getCause());
     }
-
 }

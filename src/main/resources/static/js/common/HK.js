@@ -48,7 +48,8 @@ var HK = {
         var reg = new RegExp("(^|&)" + key + "=([^&]*)(&|$)", "i");
         var r = window.location.search.substr(1).match(reg);
         if (r != null) {
-            return unescape(r[2]);
+            // console.log('r' + r);
+            return r[2];
         }
         return null;
     },

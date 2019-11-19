@@ -5,7 +5,7 @@ server:
 
 spring:
   profiles:
-    #需要激活的profile
+    #需要激活的profile localH或remote
     active: local
   mvc:
     view:

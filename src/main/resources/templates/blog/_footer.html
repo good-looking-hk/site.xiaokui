@@ -35,6 +35,7 @@
         let layout = HK.getGetParam("layout");
         let type = HK.getGetParam("type");
         let passwd = HK.getGetParam('passwd');
+
         let url = "${ctxPath}/blog/${user.blogSpace}";
         if (key === 'layout') {
             layout = value;
@@ -63,9 +64,9 @@
     }
 
     function reUrl(layout, type, url, passwd) {
-        console.log(layout + type + passwd + url);
+        // console.log(layout, type, passwd, url);
         if (HK.isNotEmpty(passwd)) {
-            type += "&passwd=" + passwd;
+            type += "&passwd=" + decodeURI(passwd);
         }
         if (!HK.isEmpty(layout) && !HK.isEmpty(type)) {
             return window.location.href = url + "?layout=" + layout + "&type=" + type;

@@ -32,7 +32,7 @@ import static site.xiaokui.module.sys.blog.BlogConstants.*;
  * @date 2018-06-24 21:33
  */
 @Slf4j
-@Controller
+@Controller("BLOG:BLOG")
 @RequestMapping(BlogConstants.BLOG_PREFIX)
 public class BlogController extends AbstractController {
     /**
@@ -60,8 +60,7 @@ public class BlogController extends AbstractController {
         if (StringUtil.isAllEmpty(name, dir, beginTime, endTime)) {
             SysBlog blog = new SysBlog();
             blog.setUserId(this.getUserId());
-            List<SysBlog> l = blogService.match(blog);
-            return l;
+            return blogService.match(blog);
         }
         Query<SysBlog> query = blogService.createQuery();
         query.andEq("user_id", this.getUserId());
@@ -77,10 +76,39 @@ public class BlogController extends AbstractController {
         return blogService.query(query);
     }
 
+
     @RequiresPermissions(BLOG_PREFIX + ADD)
-    @PostMapping("/temp")
+    @PostMapping("/blogTemp")
     @ResponseBody
-    public ResultEntity temp(MultipartFile file) {
+    public ResultEntity blogTemp(MultipartFile file) {
+        return temp(file, true);
+    }
+
+    @RequiresPermissions(BLOG_PREFIX + ADD)
+    @PostMapping("/add")
+    @ResponseBody
+    public ResultEntity addBlog(String dir, String name, Integer orderNum, String createTime, Integer characterCount) {
+        return addRecord(dir, name, orderNum, createTime, characterCount);
+    }
+
+    @RequiresPermissions(BLOG_PREFIX + ADD)
+    @GetMapping("/week")
+    public String week() {
+        // 周报上传
+        return BLOG_PREFIX + "/week";
+    }
+
+    @RequiresPermissions(BLOG_PREFIX + ADD)
+    @PostMapping("/weekTemp")
+    @ResponseBody
+    public ResultEntity weekTemp(MultipartFile file) {
+        return temp(file, false);
+    }
+
+    /**
+     * @param isBlog 普通博客或周报
+     */
+    public ResultEntity temp(MultipartFile file, boolean isBlog) {
         if (file == null || file.isEmpty() || file.getSize() > MAX_BLOG_UPLOAD_FILE) {
             return this.error("文件为空或过大");
         }
@@ -93,18 +121,18 @@ public class BlogController extends AbstractController {
             return this.error("文件格式只能为html或md");
         }
 
-        UploadBlog blog = blogService.saveTemp(file, this.getUserId());
+        UploadBlog blog = blogService.saveTemp(file, this.getUserId(), isBlog);
         if (blog.getErrorInfo() != null) {
             return this.error(blog.getErrorInfo());
+        }
+        if (!isBlog) {
+            blog.setDir(xiaokuiCache.getCompany());
         }
         blog.setBlogSpace(this.getUser().getBlogSpace());
         return this.ok().put("upload", blog);
     }
 
-    @RequiresPermissions(BLOG_PREFIX + ADD)
-    @PostMapping(ADD)
-    @ResponseBody
-    public ResultEntity add(String dir, String name, Integer orderNum, String createTime, Integer characterCount) {
+    public ResultEntity addRecord(String dir, String name, Integer orderNum, String createTime, Integer characterCount) {
         if (StringUtil.hasEmpty(dir, name)) {
             return this.paramError(dir, name);
         }
@@ -115,11 +143,10 @@ public class BlogController extends AbstractController {
         blog.setDir(dir);
         blog.setCreateTime(TimeUtil.parseDate(createTime));
         blog.setCharacterCount(characterCount);
-        if (orderNum == null) {
-            blog.setOrderNum(0);
-        } else {
+        if (orderNum != null) {
             blog.setOrderNum(orderNum);
         }
+
         // 默认博客为公开，用户可以进一步修改
         String company = xiaokuiCache.getCompany();
         if (dir.equals(company)) {
@@ -202,7 +229,7 @@ public class BlogController extends AbstractController {
             return this.error("格式形如:关于-20171022.html");
         }
 
-        File upload = BlogUtil.resolveUploadFile(file, this.getUserId()).getUploadFile();
+        File upload = BlogUtil.resolveUploadFile(file, this.getUserId(), true).getUploadFile();
         if (upload == null || !upload.exists()) {
             return this.error("文件上传失败");
         }

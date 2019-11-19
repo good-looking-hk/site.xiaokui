@@ -1,6 +1,8 @@
 package site.xiaokui.module.sys.blog.util;
 
 import cn.hutool.core.date.DatePattern;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.NumberUtil;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
@@ -87,10 +89,10 @@ public class BlogUtil {
     /**
      * 解析Typora生成的html文件
      */
-    public static UploadBlog resolveUploadFile(MultipartFile upload, Integer userId) {
+    public static UploadBlog resolveUploadFile(MultipartFile upload, Integer userId, boolean isBlog) {
         String fullName = upload.getOriginalFilename();
         // 解析文件名
-        UploadBlog blog = resolveFileName(fullName);
+        UploadBlog blog = resolveFileName(fullName, isBlog);
         if (blog.getErrorInfo() != null) {
             return blog;
         }
@@ -164,16 +166,19 @@ public class BlogUtil {
 
     /**
      * 对于名字的解析是很严格的，下面例子都是过关的
-     * 1.Spring源码：bean的加载-6-20180808.html
-     * 2.Spring源码：bean的加载-20180808-6.html
-     * 3.Spring源码：bean的加载-6.html
-     * 4.Spring源码：bean的加载-20180808.html
+     * 1.Spring源码：bean的加载-6-20180808.html 或 md
+     * 2.Spring源码：bean的加载-20180808-6.html 或 md
+     * 3.Spring源码：bean的加载-6.html 或 md
+     * 4.Spring源码：bean的加载-20180808.html 或 md
      * 完整的解析格式为 目录：标题-序号-日期.后缀
+     *
+     * 如果是周报格式，则下面例子是过关的
+     * 20190929-实习周报.md
      *
      * @param fullName html文件全名 智能解析
      * @return 解析后上传博客对象
      */
-    public static UploadBlog resolveFileName(String fullName) {
+    public static UploadBlog resolveFileName(String fullName, boolean isBlog) {
         UploadBlog blog = new UploadBlog();
         if (StringUtil.isEmpty(fullName)) {
             blog.setErrorInfo("不合法的文件：" + fullName);
@@ -188,9 +193,21 @@ public class BlogUtil {
         int index = fullName.lastIndexOf(".");
         // 如.html或.md
         blog.setSuffix(fullName.substring(index));
+        // 去除后缀
         fullName = fullName.substring(0, index);
 
-        // 取出目录，建议使用中文分号，英文分号也行
+        // 如果是周报上传文件
+        if (!isBlog) {
+            String[] arr = fullName.split("-");
+            if (arr.length != 2 || arr[0].length() != 8 || !NumberUtil.isInteger(arr[0])) {
+                throw new RuntimeException("不合法文件名：" + fullName + blog.getSuffix());
+            }
+            blog.setCreateTime(DateUtil.parse(arr[0]));
+            blog.setName(arr[1]);
+            return blog;
+        }
+
+        // 后续对于博客文件的处理：取出目录，建议使用中文分号，英文分号也行
         index = fullName.contains("：") ? fullName.indexOf("：") : fullName.indexOf(":");
         if (index < 0) {
             blog.setErrorInfo("您可能没有包含中文分号（：）");
@@ -277,15 +294,17 @@ public class BlogUtil {
 
     public static void main(String[] args) {
         String fullName = "Spring源码：bean的加载-6-20180808.html";
-        System.out.println(resolveFileName(fullName));
+        System.out.println(resolveFileName(fullName, true));
         fullName = "Spring源码：bean的加载-20180808-6.html";
-        System.out.println(resolveFileName(fullName));
+        System.out.println(resolveFileName(fullName, true));
         fullName = "Spring源码：bean的加载-6.html";
-        System.out.println(resolveFileName(fullName));
+        System.out.println(resolveFileName(fullName, true));
         fullName = "Spring源码：bean的加载-20180808.html";
-        System.out.println(resolveFileName(fullName));
+        System.out.println(resolveFileName(fullName, true));
         int index = fullName.lastIndexOf(".");
         System.out.println(fullName.substring(index));
+        fullName = "20190929-实习周报.md";
+        System.out.println(resolveFileName(fullName,  false));
     }
 }
 

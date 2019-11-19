@@ -111,17 +111,14 @@
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
-    <springProfile name="online">
+    <springProfile name="remote">
         <root>
             <appender-ref ref="MY_FILE"/>
+            <appender-ref ref="CONSOLE"/>
         </root>
         <logger name="site.xiaokui">
             <appender-ref ref="MY_FILE"/>
-        </logger>
-    </springProfile>
-    <springProfile name="win">
-        <root>
             <appender-ref ref="CONSOLE"/>
-        </root>
+        </logger>
     </springProfile>
 </configuration>

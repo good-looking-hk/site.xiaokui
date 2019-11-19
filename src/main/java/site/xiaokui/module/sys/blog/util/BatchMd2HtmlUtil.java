@@ -52,7 +52,7 @@ public class BatchMd2HtmlUtil {
         } else {
             if (file.getName().endsWith(".md")) {
                 FileReader reader = new FileReader(file);
-                UploadBlog blog = BlogUtil.resolveFileName(file.getName());
+                UploadBlog blog = BlogUtil.resolveFileName(file.getName(), true);
                 if (blog.getDir() != null) {
                     File target = new File(HTML_DIR + "/" + blog.getDir() + "/" + blog.getName() + ".html");
                     if (!target.exists()) {

@@ -13,8 +13,6 @@ import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSource
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.apache.shiro.web.servlet.Cookie;
-import org.apache.shiro.web.servlet.ShiroHttpSession;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.apache.shiro.web.session.mgt.WebSessionManager;
@@ -169,7 +167,7 @@ public class ShiroConfig {
         if (PROFILE_LOCAL.equals(profile)) {
             // 本地免登录
             filterMap.put("/**", StringUtil.addDot(onlineSessionFilter.getFilterName(), REMEMBER_ME));
-        } else if (PROFILE_ONLINE.equals(profile) || PROFILE_WIN.equals(profile)) {
+        } else if (PROFILE_REMOTE.equals(profile) || PROFILE_WIN.equals(profile)) {
             // 线上需要登录
             filterMap.put("/**", StringUtil.addDot(onlineSessionFilter.getFilterName(), LOGIN_USER));
         } else {

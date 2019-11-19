@@ -38,7 +38,7 @@ import java.util.function.Predicate;
  * @date 2018-06-25 14:16
  */
 @Slf4j
-@Controller("BLOG")
+@Controller("BLOG:INDEX")
 @RequestMapping(BlogConstants.PREFIX)
 public class IndexController extends BaseController {
 
@@ -225,13 +225,13 @@ public class IndexController extends BaseController {
         if (blog == null) {
             return ERROR;
         }
-        SysBlog preBlog = blogService.perBlog(user.getId(), blog.getDir(), blog.getOrderNum());
+        SysBlog preBlog = blogService.perBlog(blog);
         if (preBlog != null) {
             blog.setPreBlog(BlogUtil.getBlogPath(preBlog.getDir(), preBlog.getName(), user.getBlogSpace()));
             blog.setPreBlogTitle(preBlog.getTitle());
         }
 
-        SysBlog nextBlog = blogService.nexBlog(user.getId(), blog.getDir(), blog.getOrderNum());
+        SysBlog nextBlog = blogService.nexBlog(blog);
         if (nextBlog != null) {
             blog.setNextBlog(BlogUtil.getBlogPath(nextBlog.getDir(), nextBlog.getName(), user.getBlogSpace()));
             blog.setNextBlogTitle(nextBlog.getTitle());

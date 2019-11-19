@@ -296,10 +296,17 @@ public class BlogService extends BaseService<SysBlog> {
         return matchOne(sysBlog);
     }
 
-    public SysBlog perBlog(Integer userId, String dir, Integer orderNum) {
+    public SysBlog perBlog(SysBlog blog) {
         Query<SysBlog> query = createQuery();
-        query.andEq("user_id", userId).andEq("dir", dir).andLess("order_num", orderNum)
-                .desc("order_num").limit(1, 1);
+        query.andEq("user_id", blog.getUserId()).andEq("dir", blog.getDir());
+        // 优先使用序号，其次是日期
+        if (blog.getOrderNum() != null && blog.getOrderNum() != 0) {
+            query.andLess("order_num", blog.getOrderNum());
+            query.desc("order_num").limit(1, 1);
+        } else {
+            query.andLess("create_time", blog.getCreateTime());
+            query.desc("create_time").limit(1, 1);
+        }
         List<SysBlog> list = query.select();
         if (list == null || list.size() == 0) {
             return null;
@@ -307,10 +314,17 @@ public class BlogService extends BaseService<SysBlog> {
         return list.get(0);
     }
 
-    public SysBlog nexBlog(Integer userId, String dir, Integer orderNum) {
+    public SysBlog nexBlog(SysBlog blog) {
         Query<SysBlog> query = createQuery();
-        query.andEq("user_id", userId).andEq("dir", dir).andGreat("order_num", orderNum)
-                .asc("order_num").limit(1, 1);
+        query.andEq("user_id", blog.getUserId()).andEq("dir", blog.getDir());
+        // 优先使用序号，其次是日期
+        if (blog.getOrderNum() != null && blog.getOrderNum() != 0) {
+            query.andGreat("order_num", blog.getOrderNum());
+            query.asc("order_num").limit(1, 1);
+        } else {
+            query.andGreat("create_time", blog.getCreateTime());
+            query.asc("create_time").limit(1, 1);
+        }
         List<SysBlog> list = query.select();
         if (list == null || list.size() == 0) {
             return null;
@@ -318,8 +332,8 @@ public class BlogService extends BaseService<SysBlog> {
         return list.get(0);
     }
 
-    public UploadBlog saveTemp(MultipartFile file, Integer userId) {
-        return BlogUtil.resolveUploadFile(file, userId);
+    public UploadBlog saveTemp(MultipartFile file, Integer userId, boolean isBlog) {
+        return BlogUtil.resolveUploadFile(file, userId, isBlog);
     }
 
     /**

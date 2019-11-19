@@ -40,9 +40,8 @@ spring:
 #    date-format: yyyy-MM-dd HH:mm:ss
 #    time-zone: GMT+8
 
-# 需要配合logback-spring.xml
+# 需要配合logback-spring.xml，默认只输出到控制台
 logging:
   level.root: info
   level.site.xiaokui: debug
-  path: ${xiaokui.logsPath}
-  file: local.log
+#  level.org.springframework.web: debug
