@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import site.xiaokui.XiaokuiCache;
+import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.config.shiro.ShiroKit;
 import site.xiaokui.module.base.BaseConstants;
 import site.xiaokui.module.base.controller.BaseController;
@@ -62,6 +63,12 @@ public class IndexController extends BaseController {
      */
     @GetMapping({EMPTY, INDEX})
     public String index() {
+        // 如果数据库设置了首页
+        String index = xiaokuiCache.getBlogIndex();
+        System.out.println(index);
+        if (StringUtil.isNotBlank(index)) {
+            return FORWARD + index;
+        }
         SysUser user = userService.top();
         if (user == null) {
             return FORWARD_ERROR;
@@ -115,7 +122,7 @@ public class IndexController extends BaseController {
             blogUser.setDirCount(protectedList.size());
         } else if (BlogConstants.BLOG_TYPE_PRI.equals(type)) {
             // TODO
-            return FORWARD + "/blog/" +  blogSpace;
+            return ERROR;
         } else {
             List<List<SysBlog>> dirLists = details.getPublicList();
             List<SysBlog> recentUpload = blogService.recentUpload(user.getId(), user.getBlogSpace());

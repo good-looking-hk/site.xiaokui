@@ -145,6 +145,7 @@ public class BlogUtil {
                     // 字数统计，近似值
                     int charCount = (int) UploadBlog.determineCharCount(data.getTextLength());
                     blog.setCharacterCount(charCount);
+                    blog.setUploadFile(targetFile);
                 }
             } else if (MD_SUFFIX.equals(blog.getSuffix()) && upload.getSize() >= MAX_BLOG_UPLOAD_FILE) {
                 // 后台开个线程执行，异步返回结果
@@ -172,7 +173,7 @@ public class BlogUtil {
      * 4.Spring源码：bean的加载-20180808.html 或 md
      * 完整的解析格式为 目录：标题-序号-日期.后缀
      *
-     * 如果是周报格式，则下面例子是过关的
+     * 如果是非博客格式，则下面例子是过关的
      * 20190929-实习周报.md
      *
      * @param fullName html文件全名 智能解析

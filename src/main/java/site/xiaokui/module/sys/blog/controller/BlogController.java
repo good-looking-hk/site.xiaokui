@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.jsf.FacesContextUtils;
 import org.springframework.web.multipart.MultipartFile;
 import site.xiaokui.XiaokuiCache;
 import site.xiaokui.common.util.StringUtil;
@@ -35,6 +36,7 @@ import static site.xiaokui.module.sys.blog.BlogConstants.*;
 @Controller("BLOG:BLOG")
 @RequestMapping(BlogConstants.BLOG_PREFIX)
 public class BlogController extends AbstractController {
+
     /**
      * 默认为 /sys/blog
      */
@@ -109,16 +111,9 @@ public class BlogController extends AbstractController {
      * @param isBlog 普通博客或周报
      */
     public ResultEntity temp(MultipartFile file, boolean isBlog) {
-        if (file == null || file.isEmpty() || file.getSize() > MAX_BLOG_UPLOAD_FILE) {
-            return this.error("文件为空或过大");
-        }
-        String fileName = file.getOriginalFilename();
-        if (this.isEmpty(fileName)) {
-            return this.error("文件名不能为空");
-        }
-        boolean legal = fileName.endsWith(HTML_SUFFIX) || fileName.endsWith(MD_SUFFIX);
-        if (!legal) {
-            return this.error("文件格式只能为html或md");
+        ResultEntity checkResult = checkFile(file);
+        if (checkResult != null) {
+            return checkResult;
         }
 
         UploadBlog blog = blogService.saveTemp(file, this.getUserId(), isBlog);
@@ -217,35 +212,49 @@ public class BlogController extends AbstractController {
     @PostMapping("/user")
     @ResponseBody
     public ResultEntity user(MultipartFile file) {
-        if (file == null || file.isEmpty() || file.getSize() > MAX_BLOG_UPLOAD_FILE) {
-            return this.error("文件为空或过大");
+        ResultEntity checkResult = checkFile(file);
+        if (checkResult != null) {
+            return checkResult;
         }
         String fileName = file.getOriginalFilename();
-        if (this.isEmpty(fileName) || !fileName.endsWith(HTML_SUFFIX)) {
-            return this.error("必须是html文件");
-        }
         int index = fileName.indexOf('-');
         if (index < 0) {
-            return this.error("格式形如:关于-20171022.html");
+            return this.error("格式形如:20171022-关于.html");
         }
 
-        File upload = BlogUtil.resolveUploadFile(file, this.getUserId(), true).getUploadFile();
+        UploadBlog blog = BlogUtil.resolveUploadFile(file, this.getUserId(), false);
+        File upload = blog.getUploadFile();
         if (upload == null || !upload.exists()) {
-            return this.error("文件上传失败");
+            return this.error("文件上传失败:" + blog);
         }
 
         // 移动到用户根目录下
-        String name = fileName.substring(0, index);
+        String name = fileName.substring(index + 1, fileName.lastIndexOf('.'));
         if (!"关于".equals(name) && !"简历".equals(name)) {
             return this.error("不支持的文件名:" + name);
         }
-        String time = fileName.substring(index + 1, fileName.lastIndexOf("."));
+        String time = fileName.substring(0, index);
         File target = new File(upload.getParentFile().getParent() + "/" +  name + ".html");
         boolean result = upload.renameTo(target);
         if (result) {
             target.setLastModified(DateUtil.parse(time).getTime());
             log.info("用户{}存储了自定义key[name={},time={}]", this.getUserId(), fileName, time);
         }
-        return this.returnResult(result, "更新失败",  "更新成功");
+        return this.returnResult(result, "上传失败",  "上传成功");
+    }
+
+    private ResultEntity checkFile(MultipartFile file) {
+        if (file == null || file.isEmpty() || file.getSize() > MAX_BLOG_UPLOAD_FILE) {
+            return this.error("文件为空或过大");
+        }
+        String fileName = file.getOriginalFilename();
+        if (this.isEmpty(fileName)) {
+            return this.error("文件名不能为空");
+        }
+        boolean legal = fileName.endsWith(HTML_SUFFIX) || fileName.endsWith(MD_SUFFIX);
+        if (!legal) {
+            return this.error("文件格式只能为html或md");
+        }
+        return null;
     }
 }

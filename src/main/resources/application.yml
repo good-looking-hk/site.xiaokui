@@ -5,8 +5,8 @@ server:
 
 spring:
   profiles:
-    #需要激活的profile localH或remote
-    active: local
+    #需要激活的profile local或remote
+    active: remote
   mvc:
     view:
       prefix: /

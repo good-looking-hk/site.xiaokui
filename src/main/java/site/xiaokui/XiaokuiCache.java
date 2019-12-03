@@ -55,6 +55,10 @@ public class XiaokuiCache implements ApplicationRunner {
         return this.cacheMap.get("index");
     }
 
+    public String getBlogIndex() {
+        return this.cacheMap.get("blogIndex");
+    }
+
     public String getCompany() {
         return this.cacheMap.get("company");
     }
