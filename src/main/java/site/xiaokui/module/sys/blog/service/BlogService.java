@@ -377,7 +377,7 @@ public class BlogService extends BaseService<SysBlog> {
             String str = targetFile.delete() ? "成功" : "失败";
             return ResultEntity.error(e.getMessage() + "(删除上传文件" + str + ")");
         }
-        // 是最近上传缓存失效
+        // 使最近上传缓存失效
         this.reloadRecentUploadCache(userId);
         BlogUtil.clearBlogCache();
         return ResultEntity.ok("保存成功");

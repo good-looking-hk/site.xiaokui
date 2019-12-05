@@ -149,7 +149,6 @@ public class BlogController extends AbstractController {
         } else {
             blog.setStatus(BlogStatusEnum.PUBLIC.getCode());
         }
-        BlogUtil.clearBlogCache();
         return blogService.saveBlog(blog);
     }
 

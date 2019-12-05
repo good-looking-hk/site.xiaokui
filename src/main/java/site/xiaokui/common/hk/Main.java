@@ -15,7 +15,10 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     public static void main(String[] args) {
-        char lon = 40845;
-        System.out.println(lon);
+        int i = 0, j = 0;
+        System.out.println(i++);
+        System.out.println(i);
+        System.out.println(i++ == i);
+        System.out.println(i + j++ == 2);
     }
 }
