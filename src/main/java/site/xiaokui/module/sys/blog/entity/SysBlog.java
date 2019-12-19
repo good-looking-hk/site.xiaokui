@@ -109,13 +109,28 @@ public class SysBlog extends ParentEntity {
      * 根据时间排序，默认从小到大
      */
     public static class DateComparator implements Comparator<SysBlog> {
+        private boolean orderByCreateTime = true;
+        public DateComparator() {
+        }
+        public DateComparator(boolean orderByCreateTime) {
+            this.orderByCreateTime = orderByCreateTime;
+        }
+
         @Override
         public int compare(SysBlog o1, SysBlog o2) {
-            int r = o2.createTime.compareTo(o1.createTime);
-            if (r != 0) {
-                return r;
+            if (orderByCreateTime) {
+                int r = o2.createTime.compareTo(o1.createTime);
+                if (r != 0) {
+                    return r;
+                }
+                return o2.id.compareTo(o1.id);
+            } else {
+                int r = o2.modifiedTime.compareTo(o1.modifiedTime);
+                if (r != 0) {
+                    return r;
+                }
+                return o2.id.compareTo(o1.id);
             }
-            return o2.id.compareTo(o1.id);
         }
     }
 }

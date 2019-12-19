@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,6 +59,12 @@ public class IndexController extends BaseController {
     @Autowired
     private XiaokuiCache xiaokuiCache;
 
+    @Value("${xiaokui.recent-upload}")
+    private Integer recentUploadCount;
+
+    @Value("${xiaokui.recent-update}")
+    private Integer recentUpdateCount;
+
     /**
      * 默认首页为第一位注册的博客空间
      */
@@ -65,19 +72,19 @@ public class IndexController extends BaseController {
     public String index() {
         // 如果数据库设置了首页
         String index = xiaokuiCache.getBlogIndex();
-        System.out.println(index);
         if (StringUtil.isNotBlank(index)) {
             return FORWARD + index;
         }
+        // 默认取第一位用户
         SysUser user = userService.top();
         if (user == null) {
             return FORWARD_ERROR;
         }
         // 这里多了一次数据库查询
         if (this.isNotEmpty(user.getBlogSpace())) {
-            return REDIRECT + BLOG_PREFIX + "/" + user.getBlogSpace() + "?layout=time";
+            return REDIRECT + BLOG_PREFIX + "/" + user.getBlogSpace();
         }
-        return REDIRECT + BLOG_PREFIX + "/" + user.getId() + "?layout=time";
+        return REDIRECT + BLOG_PREFIX + "/" + user.getId();
     }
 
     /**
@@ -101,8 +108,9 @@ public class IndexController extends BaseController {
             log.info("受保护访问通过，userId为{}，passwd为{}", user.getId(), passwd);
             proCheckPass = true;
         }
-        List<SysBlog> blogList = blogService.listBlogByUserId(user.getId());
-        BlogDetailList details = BlogUtil.resolveBlogList(blogList, blogSpace, false);
+        List<SysBlog> allBlogList = blogService.listBlogByUserId(user.getId());
+
+        BlogDetailList details = BlogUtil.resolveBlogList(allBlogList, user.getId(), blogSpace, false);
         BlogUser blogUser = new BlogUser(user);
 
         commonConfig(model);
@@ -125,31 +133,18 @@ public class IndexController extends BaseController {
             return ERROR;
         } else {
             List<List<SysBlog>> dirLists = details.getPublicList();
-            List<SysBlog> recentUpload = blogService.recentUpload(user.getId(), user.getBlogSpace());
-            blogList.removeIf(new Predicate<SysBlog>() {
-                @Override
-                public boolean test(SysBlog blog) {
-                    return !blog.getStatus().equals(BlogStatusEnum.PUBLIC.getCode());
-                }
-            });
-            Map<String, Double> map = blogService.mostView(user.getId(), blogList);
-            List<SysBlog> mostView = new ArrayList<>();
-            // 从内存运算读取性能远远好过数据库读
-            for (String i : map.keySet()) {
-                for (SysBlog b : blogList) {
-                    if (b.getId().toString().equals(i)) {
-                        b.setViewCount(map.get(i).intValue());
-                        mostView.add(b);
-                    }
-                }
-            }
+            List recentUpload = details.getUploadTopN(this.recentUploadCount);
+            List recentUpdate = details.getUpdateTopN(this.recentUpdateCount);
+            List<SysBlog> mostViewList = blogService.mostViewList(user.getId(), allBlogList);
+
             blogUser.setBlogList(dirLists);
             blogUser.setPub(details.getPub());
             blogUser.setPro(details.getPro());
             blogUser.setPageTotal(details.getPub());
             blogUser.setDirCount(dirLists.size());
-            model.addAttribute("recent", recentUpload);
-            model.addAttribute("most", mostView);
+            model.addAttribute("upload", recentUpload);
+            model.addAttribute("update", recentUpload);
+            model.addAttribute("view", mostViewList);
         }
         model.addAttribute("user", blogUser);
         return BLOG_INDEX ;
@@ -244,6 +239,7 @@ public class IndexController extends BaseController {
             blog.setNextBlogTitle(nextBlog.getTitle());
         }
         blog.setFilePath(BlogUtil.getFilePath(user.getId(), blog.getDir(), blog.getName()));
+        blog.setViewCount(blogService.getViewCount(blog.getId()));
 
         blogService.addViewCount(this.getIP(), this.getUserId(), blog.getId(), blog.getUserId());
         BlogUser blogUser = new BlogUser(user);
@@ -270,7 +266,7 @@ public class IndexController extends BaseController {
                     .and(query.condition().orLike("dir", "%" + key + "%").orLike("name", "%" + key + "%"));
         }
         List<SysBlog> blogList = blogService.query(query);
-        BlogDetailList details = BlogUtil.resolveBlogList(blogList, blogSpace, false);
+        BlogDetailList details = BlogUtil.resolveBlogList(blogList, user.getId(), blogSpace, false);
         BlogUser blogUser = new BlogUser(user);
         model.addAttribute("user", blogUser);
         model.addAttribute("titles", details.getPubDir());

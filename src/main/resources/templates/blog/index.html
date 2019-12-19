@@ -16,11 +16,11 @@
     <center style="margin: 60px;"><h3>空空如也</h3></center>
     @}
 </div>
-@if (isNotEmpty(most)) {
+@if (isNotEmpty(view)) {
 <div class="right-nav hid">
     <p>最多访问</p>
     <ul>
-        @for (r in most) {
+        @for (r in view) {
         <li>
             <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.viewCount}次</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
@@ -34,11 +34,11 @@
     </ul>
 </div>
 @}
-@if (isNotEmpty(recent)) {
+@if (isNotEmpty(upload)) {
 <div class="right-nav hid" style="top: 460px;">
     <p>最新发布</p>
     <ul>
-        @for (r in recent) {
+        @for (r in upload) {
         <li>
             <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.createTime, "MM-dd"}</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
@@ -48,20 +48,18 @@
     </ul>
 </div>
 @}
-@if (isNotEmpty(recent) && isNotEmpty(most)) {
-<div class="right-nav hid" style="left:5%;padding-bottom:2px;" hidden>
-    <p style="text-align: left">实时推荐</p>
-    <p class="layui-text" style="text-align:left">
-        目前我是这样想的：综合博客的创建日期、修改日期以及阅读量，为读者提供推荐，大致算法如下：以之前9个月作为一个分界点，前面的全部排除，后面的根据日期差，给定分值1。再根据创建日期和修改日期给定分值2。两者相加，
-        即为该篇博客的推荐值，系统根据这个值进行排行。最后就是后台开个定时任务，每过一个小时更新排行榜。
-    </p>
-    <p class="layui-text" style="text-align:left">
-        理想状态是这样的：能综合博客本身（自身属性，如访问量、作者知名度等） + 读者本身（系统记录，如历史浏览、偏好内容等）进行精确推荐。
-    </p>
-    <p class="layui-text" style="text-align:left">有待开发/完善</p>
-    <p class="layui-text" style="text-align:left">
-        小贴士：对于谷歌浏览器（推荐使用），打开开发者工具（F12），右击刷新按钮，点击"清空缓存，并硬性重新加载"（或直接按Ctrl + Shift + R），即可清除浏览器对静态资源的缓存。
-    </p>
+@if (isNotEmpty(update)) {
+<div class="right-nav hid" style="left:5%;padding-bottom:2px;">
+    <p>最近修改</p>
+    <ul>
+        @for (r in update) {
+        <li>
+            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.createTime, "MM-dd"}</span>
+            <a target="_blank" href="${ctxPath + r.blogPath}"
+               class="layui-col-xs10 p1">${rLP.index}.${r.dir}:${r.title}</a>
+        </li>
+        @}
+    </ul>
 </div>
 @}
 <div id="aplayer"></div>

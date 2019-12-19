@@ -8,7 +8,7 @@
         </div>
         <div class="panel-body">
             @if (isNotEmpty(user.blog.characterCount)) {
-                @ var minute = parseInt(user.blog.characterCount / 1850);
+                @ var minute = parseInt(user.blog.characterCount / 1050) + 1;
                 @ minute = minute < 5 ? minute + 1 : minute;
                 @ minute = minute > 10 ? minute - 2 : minute;
                 @ minute = minute > 20 ? minute - 4 : minute;

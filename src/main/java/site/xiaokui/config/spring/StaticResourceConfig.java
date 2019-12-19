@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import site.xiaokui.module.base.BaseConstants;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public class StaticResourceConfig implements WebMvcConfigurer {
         for (HttpMessageConverter converter : converters) {
             if (converter instanceof StringHttpMessageConverter) {
                 StringHttpMessageConverter messageConverter = (StringHttpMessageConverter) converter;
-                messageConverter.setDefaultCharset(Charset.forName("UTF-8"));
+                messageConverter.setDefaultCharset(StandardCharsets.UTF_8);
             }
         }
     }

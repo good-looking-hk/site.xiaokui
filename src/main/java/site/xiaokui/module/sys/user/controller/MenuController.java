@@ -203,7 +203,6 @@ public class MenuController extends AbstractController {
         sysMenu.setOrderNum(orderNum);
         sysMenu.setIcon(icon);
         sysMenu.setEnabled(enable);
-        sysMenu.setModifiedTime(new Date());
 
         //更新菜单，忽略为的null的更新值
         boolean success = menuService.updateByIdIgnoreNull(sysMenu);

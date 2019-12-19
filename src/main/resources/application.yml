@@ -14,7 +14,8 @@ spring:
       use-suffix-pattern: true #忽略小数点后缀，如/test.tss仍然是匹配/test
   http:
     encoding:
-      charset: utf-8
+      charset: UTF-8
+      force: true
   aop:
     proxy-target-class: true #false为启用jdk默认动态代理(面向接口),true为cglib动态代理(面向继承)
 
@@ -29,3 +30,4 @@ xiaokui:
   session-check: 60 * 30
   most-view: 8
   recent-upload: 8
+  recent-update: 10

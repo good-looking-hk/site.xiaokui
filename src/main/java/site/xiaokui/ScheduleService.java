@@ -6,12 +6,15 @@ import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import site.xiaokui.module.sys.blog.service.BlogService;
 
 import java.util.Date;
+
+import static site.xiaokui.module.base.BaseConstants.PROFILE_REMOTE;
 
 /**
  * 具体cron表达是间http://www.cnblogs.com/peida/archive/2013/01/08/2850483.html
@@ -26,11 +29,14 @@ public class ScheduleService implements ApplicationRunner {
     @Autowired
     private BlogService blogService;
 
+    @Value("${spring.profiles.active}")
+    private String profile;
+
     /**
      * DefaultApplicationArguments
      */
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void run(ApplicationArguments args) {
         log.info("Spring Boot已完全启动，启动定时任务监听");
         try {
             CronUtil.start();
@@ -38,7 +44,9 @@ public class ScheduleService implements ApplicationRunner {
             // 已经开始监听，不可再次开始
             return;
         }
-//        startTaskPerNightZeroClock("REDIS_TASK", blogService.redisTask());
+        if (PROFILE_REMOTE.equals(profile)) {
+            startTaskPerNightZeroClock("REDIS_TASK", blogService.redisTask());
+        }
 //        testTask(blogService.redisTask());
     }
 

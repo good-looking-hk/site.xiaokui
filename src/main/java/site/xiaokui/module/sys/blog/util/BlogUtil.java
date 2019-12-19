@@ -31,10 +31,13 @@ public class BlogUtil {
 
     private static final String BLOG_PREFIX = PREFIX + "/";
 
-    private static final Map<String, BlogDetailList> BLOG_CACHE = new HashMap<>(4);
+    private static final Map<Integer, BlogDetailList> BLOG_CACHE = new HashMap<>(4);
 
-    public static void clearBlogCache() {
-        BLOG_CACHE.clear();
+    /**
+     * 清除缓存
+     */
+    public static void clearBlogCache(Integer userId) {
+        BLOG_CACHE.remove(userId);
     }
 
     /**
@@ -76,18 +79,20 @@ public class BlogUtil {
      * 排序操作也可在数据库进行，在数据量大时可以做比较选择
      * 需要注意清空map缓存
      */
-    public static BlogDetailList resolveBlogList(List<SysBlog> blogList, String blogSpace, boolean cache) {
-        BlogDetailList list = BLOG_CACHE.get(blogSpace);
-        if (list == null || !cache) {
+    public static BlogDetailList resolveBlogList(List<SysBlog> blogList, Integer userId, String blogSpace, boolean useCache) {
+        BlogDetailList list;
+        if (useCache) {
+            list = BLOG_CACHE.get(userId);
+            log.info("blogSpace:{}从缓存获取数据", blogSpace);
+        } else {
             list = new BlogDetailList(blogList, blogSpace);
-            BLOG_CACHE.put(blogSpace, list);
+            BLOG_CACHE.put(userId, list);
         }
-        log.info("blogSpace:{}从缓存获取数据", blogSpace);
         return list;
     }
 
     /**
-     * 解析Typora生成的html文件
+     * 解析Typora生成的html/md文件
      */
     public static UploadBlog resolveUploadFile(MultipartFile upload, Integer userId, boolean isBlog) {
         String fullName = upload.getOriginalFilename();

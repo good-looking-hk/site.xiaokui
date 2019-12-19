@@ -8,9 +8,9 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import site.xiaokui.module.base.entity.SysConfig;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author HK
@@ -19,7 +19,7 @@ import java.util.Map;
 @Component
 public class XiaokuiCache implements ApplicationRunner {
 
-    private Map<String, String> cacheMap = new HashMap<>(8);
+    private Map<String, String> cacheMap = new ConcurrentHashMap<>(8);
 
     @Autowired
     private SQLManager sqlManager;

@@ -12,10 +12,10 @@ import java.util.*;
  */
 public class BlogDetailList {
 
-    private int pri, pro, pub;
-
     @Getter
     private List<List<SysBlog>> publicList = new ArrayList<>(), protectedList = new LinkedList<>(), privateList = new LinkedList<>();
+
+    private List<SysBlog> uploadTopNList = new ArrayList<>(), updateTopNList = new ArrayList<>();
 
     private List<SysBlog> pubTemp = new ArrayList<>(), proTemp = new LinkedList<>(), priTemp = new LinkedList<>();
 
@@ -86,7 +86,6 @@ public class BlogDetailList {
         handleList(2, 2, 2, privateList, blog);
     }
 
-
     /**
      * @param countIndex 用于避免Java里面的值引用传递
      * @param dirIndex   同countIndex
@@ -119,7 +118,7 @@ public class BlogDetailList {
                 blogList.addAll(list);
             }
             // 自定义比较器
-            blogList.sort(new SysBlog.DateComparator());
+            blogList.sort(new SysBlog.DateComparator(true));
             if (blogList.size() != 0 && blogList.get(0) != null) {
                 int newYear = DateUtil.year(blogList.get(0).getCreateTime());
                 createYears.add(newYear);
@@ -146,11 +145,26 @@ public class BlogDetailList {
         }
     }
 
+    public void resolveTopN(List<List<SysBlog>> pubList) {
+        if (pubList != null) {
+            List<SysBlog> blogList = new LinkedList<>();
+            for (List<SysBlog> list : pubList) {
+                blogList.addAll(list);
+            }
+            // 自定义比较器
+            blogList.sort(new SysBlog.DateComparator(true));
+            this.uploadTopNList.addAll(blogList);
+            blogList.sort(new SysBlog.DateComparator(false));
+            this.updateTopNList.addAll(blogList);
+        }
+    }
+
     public BlogDetailList(List<SysBlog> blogList, String blogSpace) {
         resolveDirList(blogList, blogSpace);
         resolveDateList(publicList, pubCreateYears, pubCreateTimeList);
         resolveDateList(protectedList, proCreateYears, proCreateTimeList);
         resolveDateList(privateList, priCreateYears, priCreateTimeList);
+        resolveTopN(publicList);
     }
 
     public int getPub() {
@@ -175,5 +189,19 @@ public class BlogDetailList {
 
     public List getPubDir() {
         return dirs[0];
+    }
+
+    public List getUploadTopN(int n) {
+        if (n > this.uploadTopNList.size()) {
+            return this.uploadTopNList;
+        }
+        return this.uploadTopNList.subList(0, n);
+    }
+
+    public List getUpdateTopN(int n) {
+        if (n > this.updateTopNList.size()) {
+            return this.updateTopNList;
+        }
+        return this.updateTopNList.subList(0, n);
     }
 }

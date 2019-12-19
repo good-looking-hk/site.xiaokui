@@ -114,7 +114,6 @@ public class RoleController extends AbstractController {
     @PostMapping(EDIT)
     @ResponseBody
     public ResultEntity edit(SysRole role) {
-        role.setModifiedTime(new Date());
         boolean success = roleService.updateById(role);
         return returnResult(success);
 

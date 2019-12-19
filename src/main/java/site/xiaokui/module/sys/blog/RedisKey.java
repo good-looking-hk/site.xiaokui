@@ -24,7 +24,7 @@ public class RedisKey {
     /**
      * 博客访问次数--所有博客
      */
-    public static final String HASH_BLOG_VIEW_COUNT = "blog_view_map";
+    public static final String ALL_HASH_BLOG_VIEW_COUNT = "all_blog_view_map";
 
     /**
      * 黑名单，不能增加阅读量，直接删除key即可

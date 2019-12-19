@@ -38,14 +38,14 @@ public class UploadBlog {
 
     public static double determineCharCount(long htmlLength) {
         if (htmlLength <= 1000) {
-            return htmlLength * 0.94;
-        }
-        if (htmlLength <= 2000) {
             return htmlLength * 0.93;
         }
-        if (htmlLength <= 5000) {
-            return htmlLength * 0.92;
+        if (htmlLength <= 2000) {
+            return htmlLength * 0.91;
         }
-        return htmlLength * 0.9;
+        if (htmlLength <= 5000) {
+            return htmlLength * 0.8;
+        }
+        return htmlLength * 0.75;
     }
 }
