@@ -120,8 +120,6 @@ public class SysBlog extends ParentEntity {
      */
     public static class DateComparator implements Comparator<SysBlog> {
         private boolean orderByCreateTime = true;
-        public DateComparator() {
-        }
         public DateComparator(boolean orderByCreateTimeNotByUpdateTime) {
             this.orderByCreateTime = orderByCreateTimeNotByUpdateTime;
         }
@@ -170,21 +168,47 @@ public class SysBlog extends ParentEntity {
      */
     public int calculateRecommendValue() {
         Date now = new Date();
-        long createTimeValue = 0, updateTimeValue = 0, yesterdayValue = 0, viewCountValue = 0;
+        double createTimeValue = 0, updateTimeValue = 7, yesterdayValue = 2, viewCountValue = 1, characterValue = 0;
         if (this.getCreateTime() != null) {
-            createTimeValue = (now.getTime() - this.getCreateTime().getTime()) / (24 * 60 * 60 * 1000) * 2;
+            // 这个值越大，则推荐值越低，负相关
+            createTimeValue = (double) (now.getTime() - this.getCreateTime().getTime()) / (24 * 60 * 60 * 1000);
         }
         if (this.getUpdateTime() != null) {
-            updateTimeValue = (now.getTime() - this.getUpdateTime().getTime()) / (24 * 60 * 60 * 1000) * 11;
+            // 这个值越小，则推荐值越高，负相关
+            updateTimeValue = (double) (now.getTime() - this.getUpdateTime().getTime()) / (24 * 60 * 60 * 1000);
         }
         if (this.getYesterday() != null) {
-            yesterdayValue = this.getYesterday() * 4;
+            // 正相关
+            yesterdayValue = (this.getYesterday() + 2) * 2.1 + 10;
+            if (yesterdayValue > 200) {
+                yesterdayValue = (yesterdayValue - 150) / 4.7 + 20;
+            }
         }
         if (this.getViewCount() != null) {
-            viewCountValue = this.getViewCount() * 7;
+            // 正相关
+            viewCountValue = (this.getViewCount() + 1) * 1.7 + 20;
+            if (yesterdayValue > 300) {
+                yesterdayValue = (yesterdayValue - 200) / 6.3 + 30;
+            }
         }
-        long value = createTimeValue + updateTimeValue + yesterdayValue + viewCountValue;
+        if (createTimeValue > 365) {
+            createTimeValue /= 4.8;
+        } else {
+            createTimeValue = createTimeValue / 4.7 + 25;
+        }
+        if (updateTimeValue > 30) {
+            updateTimeValue = updateTimeValue / 11 + 1;
+        } else {
+            updateTimeValue = updateTimeValue / 2.8 - 9.5;
+        }
+        if (this.getCharacterCount() != null) {
+            characterValue = (double) this.characterCount / 650 + 2;
+        }
+        System.out.println("1250-" + createTimeValue + "-" + updateTimeValue * 57 + "+" + yesterdayValue + "+" + viewCountValue + "+" + characterValue);
+        double value = 1150 - createTimeValue  - (updateTimeValue * 57) + yesterdayValue + viewCountValue + characterValue;
+
         this.recommendValue = (int) value;
+        System.out.println(this.getDir() + ":" + this.getName() + ":" + this.recommendValue);
         return this.recommendValue;
     }
 }

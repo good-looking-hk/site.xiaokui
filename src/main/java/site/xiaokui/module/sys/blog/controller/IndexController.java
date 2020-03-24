@@ -259,7 +259,7 @@ public class IndexController extends BaseController {
             return ERROR;
         }
         Query<SysBlog> query = blogService.createQuery();
-        if (NumberUtil.isInteger(key)) {
+        if (NumberUtil.isInteger(key) && key.length() == 4) {
             query.andEq("user_id", user.getId()).andLike("create_time", "%" + key + "%");
         } else {
             query.andEq("user_id", user.getId())
@@ -268,6 +268,13 @@ public class IndexController extends BaseController {
         List<SysBlog> blogList = blogService.query(query);
         BlogDetailList details = BlogUtil.resolveBlogList(blogList, user.getId(), blogSpace, false);
         BlogUser blogUser = new BlogUser(user);
+
+
+        blogUser.setPub(details.getPub());
+        blogUser.setPro(details.getPro());
+        blogUser.setPageTotal(details.getPub());
+        blogUser.setDirCount(details.getPubDir().size());
+
         model.addAttribute("user", blogUser);
         model.addAttribute("titles", details.getPubDir());
         model.addAttribute("lists", details.getPublicList());
