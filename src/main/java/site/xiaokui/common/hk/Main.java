@@ -14,11 +14,22 @@ import java.util.concurrent.TimeUnit;
  */
 public class Main {
 
+
+    public static class A {
+        public String getA() {
+            return "A";
+        }
+    }
+
+    public static class B extends A {
+        public String getB() {
+            return "B";
+        }
+    }
+
     public static void main(String[] args) {
-        int i = 0, j = 0;
-        System.out.println(i++);
-        System.out.println(i);
-        System.out.println(i++ == i);
-        System.out.println(i + j++ == 2);
+        A a = new A();
+        String result = ((B) a).getB();
+        System.out.println(result);
     }
 }

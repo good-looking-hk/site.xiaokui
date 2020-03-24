@@ -23,7 +23,7 @@ import static site.xiaokui.module.base.BaseConstants.PROFILE_REMOTE;
  * @date 2019-02-21 15:27
  */
 @Slf4j
-@Component
+//@Component
 public class ScheduleService implements ApplicationRunner {
 
     @Autowired

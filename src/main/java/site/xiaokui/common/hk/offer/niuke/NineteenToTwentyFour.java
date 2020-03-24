@@ -153,9 +153,9 @@ public class NineteenToTwentyFour {
 
         private static void test() {
             int[] arr = new int[]{1, 2, 3, 4, 5};
-            int[] arr1 = new int[]{1, 2, 5, 4, 3};
-            int[] arr2 = new int[]{2, 1, 5, 3, 4};
-            int[] arr3 = new int[]{1, 2, 3, 4, 5};
+            int[] arr1 = new int[]{1, 2, 5, 4, 3}; // 栈高度为3
+            int[] arr2 = new int[]{2, 1, 5, 3, 4}; //
+            int[] arr3 = new int[]{1, 2, 3, 4, 5}; //
             int[] arr4 = new int[]{3, 2, 1, 4, 5};
             boolean result = new TwentyOne().IsPopOrder(arr, arr4);
             System.out.println(result);

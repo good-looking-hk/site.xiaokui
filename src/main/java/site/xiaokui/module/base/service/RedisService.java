@@ -26,10 +26,18 @@ public class RedisService {
     public static final int ONE_HOUR = 60 * 60, ONE_DAY = 24 * ONE_HOUR, ONE_WEEK = 7 * ONE_DAY, ONE_MONTH = 30 * ONE_DAY;
 
     public RedisService(@Value("${spring.redis.host}") String ip, @Value("${spring.redis.port}") int port, @Value("${spring.redis.password}") String password) {
+        JedisPoolConfig config = new JedisPoolConfig();
+        // 最大空闲连接数, 默认8个
+        config.setMaxIdle(16);
+        // 获取连接时的最大等待毫秒数(如果设置为阻塞时BlockWhenExhausted),如果超时就抛异常, 小于零:阻塞不确定的时间,  默认-1
+        config.setMaxWaitMillis(8000);
+        // 最大连接数, 默认8个
+        config.setMaxTotal(16);
+
         if (password == null || "".equals(password)) {
-            jedisPool = new JedisPool(ip, port);
+            jedisPool = new JedisPool(config, ip, port);
         } else {
-            jedisPool = new JedisPool(new GenericObjectPoolConfig(), ip, port, Protocol.DEFAULT_TIMEOUT, password,
+            jedisPool = new JedisPool(config, ip, port, Protocol.DEFAULT_TIMEOUT, password,
                     Protocol.DEFAULT_DATABASE, null);
         }
         try {

@@ -30,4 +30,4 @@ xiaokui:
   session-check: 60 * 30
   most-view: 8
   recent-upload: 8
-  recent-update: 10
+  recommend-count: 16

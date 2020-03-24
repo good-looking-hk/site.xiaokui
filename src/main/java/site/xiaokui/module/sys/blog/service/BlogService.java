@@ -156,6 +156,7 @@ public class BlogService extends BaseService<SysBlog> {
                 temp.setId(origin.getId());
                 temp.setCreateTime(blog.getCreateTime());
                 temp.setCharacterCount(blog.getCharacterCount());
+                temp.setUpdateTime(blog.getUpdateTime());
                 boolean success = this.updateByIdIgnoreNull(temp);
                 if (success) {
                     return ResultEntity.ok("更新文件成功");

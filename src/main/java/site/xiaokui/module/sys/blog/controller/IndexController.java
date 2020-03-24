@@ -62,8 +62,8 @@ public class IndexController extends BaseController {
     @Value("${xiaokui.recent-upload}")
     private Integer recentUploadCount;
 
-    @Value("${xiaokui.recent-update}")
-    private Integer recentUpdateCount;
+    @Value("${xiaokui.recommend-count}")
+    private Integer recommendCount;
 
     /**
      * 默认首页为第一位注册的博客空间
@@ -110,7 +110,7 @@ public class IndexController extends BaseController {
         }
         List<SysBlog> allBlogList = blogService.listBlogByUserId(user.getId());
 
-        BlogDetailList details = BlogUtil.resolveBlogList(allBlogList, user.getId(), blogSpace, false);
+        BlogDetailList details = BlogUtil.resolveBlogList(allBlogList, user.getId(), blogSpace, true);
         BlogUser blogUser = new BlogUser(user);
 
         commonConfig(model);
@@ -133,8 +133,8 @@ public class IndexController extends BaseController {
             return ERROR;
         } else {
             List<List<SysBlog>> dirLists = details.getPublicList();
-            List recentUpload = details.getUploadTopN(this.recentUploadCount);
-            List recentUpdate = details.getUpdateTopN(this.recentUpdateCount);
+            List recentUploadList = details.getUploadTopN(this.recentUploadCount);
+            List recommendList = details.getRecommendTopN(this.recommendCount);
             List<SysBlog> mostViewList = blogService.mostViewList(user.getId(), allBlogList);
 
             blogUser.setBlogList(dirLists);
@@ -142,8 +142,8 @@ public class IndexController extends BaseController {
             blogUser.setPro(details.getPro());
             blogUser.setPageTotal(details.getPub());
             blogUser.setDirCount(dirLists.size());
-            model.addAttribute("upload", recentUpload);
-            model.addAttribute("update", recentUpload);
+            model.addAttribute("upload", recentUploadList);
+            model.addAttribute("recommend", recommendList);
             model.addAttribute("view", mostViewList);
         }
         model.addAttribute("user", blogUser);

@@ -15,7 +15,7 @@ public class BlogDetailList {
     @Getter
     private List<List<SysBlog>> publicList = new ArrayList<>(), protectedList = new LinkedList<>(), privateList = new LinkedList<>();
 
-    private List<SysBlog> uploadTopNList = new ArrayList<>(), updateTopNList = new ArrayList<>();
+    private List<SysBlog> uploadTopNList = new ArrayList<>(), modifyTopNList = new ArrayList<>(), recommendTopNList = new ArrayList<>();
 
     private List<SysBlog> pubTemp = new ArrayList<>(), proTemp = new LinkedList<>(), priTemp = new LinkedList<>();
 
@@ -154,8 +154,9 @@ public class BlogDetailList {
             // 自定义比较器
             blogList.sort(new SysBlog.DateComparator(true));
             this.uploadTopNList.addAll(blogList);
-            blogList.sort(new SysBlog.DateComparator(false));
-            this.updateTopNList.addAll(blogList);
+            // 暂时去掉按更新时间排序blogList.sort(new SysBlog.DateComparator(false));//
+            blogList.sort(new SysBlog.RecommendComparator());
+            this.recommendTopNList.addAll(blogList);
         }
     }
 
@@ -198,10 +199,17 @@ public class BlogDetailList {
         return this.uploadTopNList.subList(0, n);
     }
 
-    public List getUpdateTopN(int n) {
-        if (n > this.updateTopNList.size()) {
-            return this.updateTopNList;
+    public List getModifyTopN(int n) {
+        if (n > this.modifyTopNList.size()) {
+            return this.modifyTopNList;
         }
-        return this.updateTopNList.subList(0, n);
+        return this.modifyTopNList.subList(0, n);
+    }
+
+    public List getRecommendTopN(int n) {
+        if (n > this.recommendTopNList.size()) {
+            return this.recommendTopNList;
+        }
+        return this.recommendTopNList.subList(0, n);
     }
 }

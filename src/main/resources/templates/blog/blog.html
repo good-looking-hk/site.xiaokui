@@ -15,10 +15,10 @@
             <p style="font-size: 14px;color: #777777;">字数约 ${user.blog.characterCount} 字, 阅读耗时约 ${minute} 分钟</p>
             @}
             @printFile("blog:" + user.blog.filePath + ".html");
-            @if(isNotEmpty(user.blog.createTime) && isNotEmpty(user.blog.modifiedTime)) {
+            @if(isNotEmpty(user.blog.createTime) && isNotEmpty(user.blog.updateTime)) {
             <blockquote>
                 <small>
-                    Views ${user.blog.viewCount!"1"} times and Created by ${user.name} on ${user.blog.createTime, "yyyy-MM-dd"} and Updated on ${user.blog.modifiedTime, "yyyy-MM-dd"}
+                    Views ${user.blog.viewCount!"1"} times and Created by ${user.name} on ${user.blog.createTime, "yyyy-MM-dd"} and Updated on ${user.blog.updateTime, "yyyy-MM-dd"}
                 </small>
             </blockquote>
             @} else if (isNotEmpty(user.blog.createTime)) {

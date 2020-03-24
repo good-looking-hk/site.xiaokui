@@ -76,4 +76,13 @@ public class GlobalExceptionHandler {
         e.printStackTrace();
         return ResultEntity.error(e.getMessage() + " cause by " + e.getCause());
     }
-}
+
+    /**
+     * 拦截未知异常
+     */
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public ResultEntity exception(RuntimeException e, HttpServletRequest request) {
+        e.printStackTrace();
+        return ResultEntity.error(e.getMessage() + " cause by " + e.getCause());
+    }}

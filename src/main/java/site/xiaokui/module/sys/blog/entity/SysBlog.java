@@ -1,12 +1,15 @@
 package site.xiaokui.module.sys.blog.entity;
 
+import cn.hutool.core.date.DateUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import site.xiaokui.common.util.StringUtil;
+import site.xiaokui.common.util.TimeUtil;
 import site.xiaokui.module.base.entity.ParentEntity;
 
 import java.util.Comparator;
+import java.util.Date;
 
 /**
  * @author HK
@@ -16,7 +19,7 @@ import java.util.Comparator;
  * 另外就是createTime是博客最初写的时间，而modifiedTime是博客上传的时间，其中createTime是允许主动改变的，
  * 而modifiedTime是被动改变的
  * 对于博客的排序，参见 {@link DirComparator}
- * 对于博客字数的统计算法，参见 {@link UploadBlog#characterCount}
+ * 对于博客字数的统计算法，参见 {@link UploadBlog#determineCharCount}
  */
 @ToString(callSuper = true)
 @Getter@Setter
@@ -80,6 +83,13 @@ public class SysBlog extends ParentEntity {
      */
     private Integer characterCount;
 
+    /**
+     * 博客更新时间，手动更新
+     */
+    private Date updateTime;
+
+    private transient Integer recommendValue;
+
     /// 留作纪念
 
     /**
@@ -112,8 +122,8 @@ public class SysBlog extends ParentEntity {
         private boolean orderByCreateTime = true;
         public DateComparator() {
         }
-        public DateComparator(boolean orderByCreateTime) {
-            this.orderByCreateTime = orderByCreateTime;
+        public DateComparator(boolean orderByCreateTimeNotByUpdateTime) {
+            this.orderByCreateTime = orderByCreateTimeNotByUpdateTime;
         }
 
         @Override
@@ -125,12 +135,56 @@ public class SysBlog extends ParentEntity {
                 }
                 return o2.id.compareTo(o1.id);
             } else {
-                int r = o2.modifiedTime.compareTo(o1.modifiedTime);
+                int r = o2.updateTime.compareTo(o1.updateTime);
                 if (r != 0) {
                     return r;
                 }
                 return o2.id.compareTo(o1.id);
             }
         }
+    }
+
+    /**
+     * 推荐值比较器，具体算法思路大致如下：创建时间影响占比0.1、总阅读量占比0.35、昨日阅读量占比0.15，更新时间占比0.4
+     * 如果该项没有值则忽略，假设有如下数据
+     *     序号 名称 创建时间 更新时间 昨日阅读量 总阅读量
+     *     1   博客1 20200101 20200102 10    100
+     *     2   博客2 20200202 20200220 200   200
+     *     3   博客3 20200301 20200311 2     3
+     */
+    public static class RecommendComparator implements Comparator<SysBlog> {
+        @Override
+        public int compare(SysBlog o1, SysBlog o2) {
+            if (o1.getRecommendValue() == null) {
+                o1.recommendValue = o1.calculateRecommendValue();
+            }
+            if (o2.getRecommendValue() == null) {
+                o2.recommendValue = o2.calculateRecommendValue();
+            }
+            return o2.recommendValue - o1.recommendValue;
+        }
+    }
+
+    /**
+     * 有待后续改进
+     */
+    public int calculateRecommendValue() {
+        Date now = new Date();
+        long createTimeValue = 0, updateTimeValue = 0, yesterdayValue = 0, viewCountValue = 0;
+        if (this.getCreateTime() != null) {
+            createTimeValue = (now.getTime() - this.getCreateTime().getTime()) / (24 * 60 * 60 * 1000) * 2;
+        }
+        if (this.getUpdateTime() != null) {
+            updateTimeValue = (now.getTime() - this.getUpdateTime().getTime()) / (24 * 60 * 60 * 1000) * 11;
+        }
+        if (this.getYesterday() != null) {
+            yesterdayValue = this.getYesterday() * 4;
+        }
+        if (this.getViewCount() != null) {
+            viewCountValue = this.getViewCount() * 7;
+        }
+        long value = createTimeValue + updateTimeValue + yesterdayValue + viewCountValue;
+        this.recommendValue = (int) value;
+        return this.recommendValue;
     }
 }

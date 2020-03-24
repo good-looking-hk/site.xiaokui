@@ -29,6 +29,7 @@ public class BaseEntity implements ToZTreeNode, Serializable {
     /**
      * 关于修改时间的确定，可以自己在代码层控制，也可以依赖于数据库的时间戳自动更新
      * 两者都行，建议是依赖于数据库自动更新（建表时需要设置）
+     * 这个是由数据库自动更新的
      */
     protected Date modifiedTime;
 

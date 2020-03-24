@@ -83,10 +83,13 @@ public class BlogUtil {
         BlogDetailList list;
         if (useCache) {
             list = BLOG_CACHE.get(userId);
+            if (list == null) {
+                list = new BlogDetailList(blogList, blogSpace);
+                BLOG_CACHE.put(userId, list);
+            }
             log.info("blogSpace:{}从缓存获取数据", blogSpace);
         } else {
             list = new BlogDetailList(blogList, blogSpace);
-            BLOG_CACHE.put(userId, list);
         }
         return list;
     }

@@ -49,6 +49,8 @@ public class BlogCacheService {
         } catch (Exception e) {
             log.error("redis操作错误", e);
             throw e;
+        } finally {
+            jedis.close();
         }
     }
 
@@ -87,6 +89,8 @@ public class BlogCacheService {
         } catch (Exception e) {
             log.error("redis读取userId:{}博客top{}出错", userId, mostView);
             throw e;
+        } finally {
+            jedis.close();
         }
     }
 

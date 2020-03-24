@@ -137,6 +137,7 @@ public class BlogController extends AbstractController {
         blog.setTitle(name);
         blog.setDir(dir);
         blog.setCreateTime(TimeUtil.parseDate(createTime));
+        blog.setUpdateTime(new Date());
         blog.setCharacterCount(characterCount);
         if (orderNum != null) {
             blog.setOrderNum(orderNum);

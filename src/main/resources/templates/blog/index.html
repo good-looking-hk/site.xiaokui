@@ -23,6 +23,7 @@
         @for (r in view) {
         <li>
             <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.viewCount}次</span>
+
             <a target="_blank" href="${ctxPath + r.blogPath}"
                class="layui-col-xs10 p1">${rLP.index}.${r.dir}:${r.title}</a>
         </li>
@@ -40,23 +41,23 @@
     <ul>
         @for (r in upload) {
         <li>
-            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.createTime, "MM-dd"}</span>
+            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.createTime, "yyyyMMdd"}</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
-               class="layui-col-xs10 p1">${rLP.index}.${r.dir}:${r.title}</a>
+               class="layui-col-xs9 p1">${rLP.index}.${r.dir}:${r.title}</a>
         </li>
         @}
     </ul>
 </div>
 @}
-@if (isNotEmpty(update)) {
+@if (isNotEmpty(recommend)) {
 <div class="right-nav hid" style="left:5%;padding-bottom:2px;">
-    <p>最近修改</p>
+    <p>推荐阅读</p>
     <ul>
-        @for (r in update) {
+        @for (r in recommend) {
         <li>
-            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.createTime, "MM-dd"}</span>
+            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${'热度' + r.recommendValue}</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
-               class="layui-col-xs10 p1">${rLP.index}.${r.dir}:${r.title}</a>
+               class="layui-col-xs9 p1">${rLP.index}.${r.dir}:${r.title}</a>
         </li>
         @}
     </ul>
