@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import site.xiaokui.XiaokuiCache;
+import site.xiaokui.CacheCenter;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.controller.BaseController;
 import site.xiaokui.module.sys.user.UserConstants;
@@ -25,7 +25,7 @@ import java.util.List;
 public class IndexController extends BaseController {
 
     @Autowired
-    private XiaokuiCache xiaokuiCache;
+    private CacheCenter cacheCenter;
 
     @Autowired
     private MenuService menuService;
@@ -37,7 +37,7 @@ public class IndexController extends BaseController {
 
     @GetMapping({"/", "/index"})
     public String index() {
-        String index = xiaokuiCache.getIndex();
+        String index = cacheCenter.getSysConfigCache().getIndex();
         if (StringUtil.isNotBlank(index)) {
             return FORWARD + index;
         }
@@ -47,7 +47,7 @@ public class IndexController extends BaseController {
     @RequestMapping(value = "/clearCache", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseBody
     public String clearCache() {
-        xiaokuiCache.reload();
+        cacheCenter.clearSysConfigCache();
         return "重新载入配置成功";
     }
 

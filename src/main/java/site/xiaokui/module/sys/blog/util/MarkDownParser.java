@@ -29,7 +29,6 @@ public class MarkDownParser {
         options.set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create()));
         parser = Parser.builder(options).build();
         renderer = HtmlRenderer.builder(options).build();
-
     }
 
     public ParseData parse(Reader reader) throws IOException {

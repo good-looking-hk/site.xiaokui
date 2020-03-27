@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Tuple;
-import site.xiaokui.ScheduleService;
+import site.xiaokui.ScheduleCenter;
 import site.xiaokui.common.aop.annotation.Log;
 import site.xiaokui.module.base.entity.ResultEntity;
 import site.xiaokui.module.base.service.BaseService;
@@ -159,6 +159,7 @@ public class BlogService extends BaseService<SysBlog> {
                 temp.setUpdateTime(blog.getUpdateTime());
                 boolean success = this.updateByIdIgnoreNull(temp);
                 if (success) {
+                    BlogUtil.clearBlogCache(userId);
                     return ResultEntity.ok("更新文件成功");
                 } else {
                     return ResultEntity.ok("更新文件失败");
@@ -183,7 +184,7 @@ public class BlogService extends BaseService<SysBlog> {
 
     /**
      * 开始任务时，会事先准备好缓存数据
-     * 依赖于{@link ScheduleService}执行
+     * 依赖于{@link ScheduleCenter}执行
      * 每天23：59执行
      */
     @Log(name = "redis数据同步至数据库", writeToDB = true)

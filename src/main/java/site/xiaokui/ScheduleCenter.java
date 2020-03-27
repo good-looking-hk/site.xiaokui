@@ -24,7 +24,7 @@ import static site.xiaokui.module.base.BaseConstants.PROFILE_REMOTE;
  */
 @Slf4j
 //@Component
-public class ScheduleService implements ApplicationRunner {
+public class ScheduleCenter implements ApplicationRunner {
 
     @Autowired
     private BlogService blogService;

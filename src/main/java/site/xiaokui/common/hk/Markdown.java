@@ -19,9 +19,9 @@ import java.util.Arrays;
 public class Markdown {
 
     public static void main(String[] args) throws IOException {
-        File file = new File("test.md");
+        File file = new File("temp/Java虚拟机：Java内存区域-1-20171001.md");
         if (!file.exists()) {
-            throw new RuntimeException("文件不存在");
+            throw new RuntimeException("文件不存在:" + file.getAbsolutePath());
         }
         FileReader fileReader = new FileReader(file);
         MutableDataSet options = new MutableDataSet();
@@ -30,7 +30,7 @@ public class Markdown {
         HtmlRenderer renderer = HtmlRenderer.builder(options).build();
         Node document = parser.parseReader(fileReader);
         String html = renderer.render(document);
-        File target = new File("target.html");
+        File target = new File("temp/target.html");
         if (!target.exists()) {
             target.createNewFile();
         }

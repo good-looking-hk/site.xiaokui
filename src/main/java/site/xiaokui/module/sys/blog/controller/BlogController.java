@@ -8,9 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.jsf.FacesContextUtils;
 import org.springframework.web.multipart.MultipartFile;
-import site.xiaokui.XiaokuiCache;
+import site.xiaokui.CacheCenter;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.common.util.TimeUtil;
 import site.xiaokui.module.base.controller.AbstractController;
@@ -46,7 +45,7 @@ public class BlogController extends AbstractController {
     private BlogService blogService;
 
     @Autowired
-    private XiaokuiCache xiaokuiCache;
+    private CacheCenter cacheCenter;
 
     @Override
     protected String setPrefix() {
@@ -121,7 +120,7 @@ public class BlogController extends AbstractController {
             return this.error(blog.getErrorInfo());
         }
         if (!isBlog) {
-            blog.setDir(xiaokuiCache.getCompany());
+            blog.setDir(cacheCenter.getSysConfigCache().getCompany());
         }
         blog.setBlogSpace(this.getUser().getBlogSpace());
         return this.ok().put("upload", blog);
@@ -144,7 +143,7 @@ public class BlogController extends AbstractController {
         }
 
         // 默认博客为公开，用户可以进一步修改
-        String company = xiaokuiCache.getCompany();
+        String company = cacheCenter.getSysConfigCache().getCompany();
         if (dir.equals(company)) {
             blog.setStatus(BlogStatusEnum.PROTECTED.getCode());
         } else {

@@ -1,23 +1,15 @@
 package site.xiaokui.module.sys.blog.service;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.NumberUtil;
-import cn.hutool.cron.task.Task;
 import lombok.extern.slf4j.Slf4j;
-import org.beetl.sql.core.SQLReady;
-import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Tuple;
-import site.xiaokui.ScheduleService;
-import site.xiaokui.common.aop.annotation.Log;
-import site.xiaokui.module.base.service.EmailService;
 import site.xiaokui.module.base.service.RedisService;
 import site.xiaokui.module.sys.blog.RedisKey;
 import site.xiaokui.module.sys.blog.entity.SysBlog;
-import site.xiaokui.module.sys.blog.util.BlogUtil;
 
 import java.util.*;
 
@@ -52,6 +44,10 @@ public class BlogCacheService {
         } finally {
             jedis.close();
         }
+    }
+
+    public void clearCache(Integer userId) {
+
     }
 
     /**

@@ -69,8 +69,8 @@ dependencies {
 //    runtime('mysql:mysql-connector-java')
     compile 'mysql:mysql-connector-java:8.0.9-rc'
 
-    compile 'com.vladsch.flexmark:flexmark:0.50.40'
-    compile 'com.vladsch.flexmark:flexmark-ext-tables:0.50.40'
+    compile 'com.vladsch.flexmark:flexmark:0.60.2'
+    compile 'com.vladsch.flexmark:flexmark-ext-tables:0.60.2'
 //    compile 'com.vladsch.flexmark:flexmark-all:0.50.40'
 
 

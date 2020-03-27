@@ -12,14 +12,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import site.xiaokui.XiaokuiCache;
+import site.xiaokui.CacheCenter;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.config.shiro.ShiroKit;
 import site.xiaokui.module.base.BaseConstants;
 import site.xiaokui.module.base.controller.BaseController;
 import site.xiaokui.module.sys.blog.BlogConstants;
 import site.xiaokui.module.sys.blog.entity.BlogDetailList;
-import site.xiaokui.module.sys.blog.entity.BlogStatusEnum;
 import site.xiaokui.module.sys.blog.entity.BlogUser;
 import site.xiaokui.module.sys.blog.entity.SysBlog;
 import site.xiaokui.module.sys.blog.service.BlogService;
@@ -29,11 +28,8 @@ import site.xiaokui.module.sys.user.entity.SysUser;
 import site.xiaokui.module.sys.user.service.UserService;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Predicate;
 
 /**
  * @author HK
@@ -57,7 +53,7 @@ public class IndexController extends BaseController {
     private BlogService blogService;
 
     @Autowired
-    private XiaokuiCache xiaokuiCache;
+    private CacheCenter cacheCenter;
 
     @Value("${xiaokui.recent-upload}")
     private Integer recentUploadCount;
@@ -71,7 +67,7 @@ public class IndexController extends BaseController {
     @GetMapping({EMPTY, INDEX})
     public String index() {
         // 如果数据库设置了首页
-        String index = xiaokuiCache.getBlogIndex();
+        String index = cacheCenter.getSysConfigCache().getBlogIndex();
         if (StringUtil.isNotBlank(index)) {
             return FORWARD + index;
         }
@@ -329,10 +325,10 @@ public class IndexController extends BaseController {
     }
 
     private void commonConfig(Model model) {
-        if (xiaokuiCache.showAbout()) {
+        if (cacheCenter.getSysConfigCache().showAbout()) {
             model.addAttribute("about", true);
         }
-        if (xiaokuiCache.showResume()) {
+        if (cacheCenter.getSysConfigCache().showResume()) {
             model.addAttribute("resume", true);
         }
     }

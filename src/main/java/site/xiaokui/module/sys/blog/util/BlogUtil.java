@@ -37,7 +37,11 @@ public class BlogUtil {
      * 清除缓存
      */
     public static void clearBlogCache(Integer userId) {
-        BLOG_CACHE.remove(userId);
+        if (userId == null) {
+            BLOG_CACHE.clear();
+        } else {
+            BLOG_CACHE.remove(userId);
+        }
     }
 
     /**

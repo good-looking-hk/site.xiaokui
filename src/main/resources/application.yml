@@ -27,7 +27,7 @@ spring:
 
 xiaokui:
   session-alive: 60 * 60 * 24
-  session-check: 60 * 30
+  session-check: 60 * 60 * 6
   most-view: 8
   recent-upload: 8
   recommend-count: 16

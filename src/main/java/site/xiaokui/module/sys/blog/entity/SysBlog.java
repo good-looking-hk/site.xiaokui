@@ -199,16 +199,18 @@ public class SysBlog extends ParentEntity {
         if (updateTimeValue > 30) {
             updateTimeValue = updateTimeValue / 11 + 1;
         } else {
-            updateTimeValue = updateTimeValue / 2.8 - 9.5;
+            updateTimeValue = updateTimeValue / 2.8 - 9;
         }
         if (this.getCharacterCount() != null) {
             characterValue = (double) this.characterCount / 650 + 2;
         }
-        System.out.println("1250-" + createTimeValue + "-" + updateTimeValue * 57 + "+" + yesterdayValue + "+" + viewCountValue + "+" + characterValue);
-        double value = 1150 - createTimeValue  - (updateTimeValue * 57) + yesterdayValue + viewCountValue + characterValue;
-
+//         System.out.println("1250-" + createTimeValue + "-" + updateTimeValue * 57 + "+" + yesterdayValue + "+" + viewCountValue + "+" + characterValue);
+        double value = 1150 - createTimeValue  - (updateTimeValue * 47) + yesterdayValue + viewCountValue + characterValue;
+        if (this.name.contains("*") || this.title.contains("*")) {
+            value += 100;
+        }
         this.recommendValue = (int) value;
-        System.out.println(this.getDir() + ":" + this.getName() + ":" + this.recommendValue);
+//         System.out.println(this.getDir() + ":" + this.getName() + ":" + this.recommendValue);
         return this.recommendValue;
     }
 }
