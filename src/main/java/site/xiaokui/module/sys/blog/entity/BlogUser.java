@@ -13,6 +13,8 @@ import java.util.List;
 @Data
 public class BlogUser {
 
+    private Integer id;
+
     private String name;
 
     private String selfDescription;
@@ -28,6 +30,7 @@ public class BlogUser {
     private List<List<SysBlog>> blogList;
 
     public BlogUser(SysUser user) {
+        this.id = user.getId();
         this.name = user.getName();
         this.avatar = user.getAvatar();
         // 判断用户是否自定义博客空间名称

@@ -1,5 +1,5 @@
 @include("/blog/_header.html"){}
-<div class="layui-main" style="padding: 15px 60px;margin-top: 26px;width:62%;">
+<div class="layui-main" style="padding: 15px 60px;margin-top: 26px;margin-left: 23%;width:62%;">
     <center>本页共 ${user.pageTotal} 篇，分为 ${user.dirCount} 个系列展示</center>
 
     @if (isNotEmpty(lists) && isNotEmpty(titles)) {
@@ -22,6 +22,53 @@
     <center style="margin: 60px;"><h3>空空如也</h3></center>
     @}
 </div>
+@if (isNotEmpty(view)) {
+<div class="right-nav hid">
+    <p>最多访问</p>
+    <ul>
+        @for (r in view) {
+        <li>
+            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.viewCount}次</span>
+
+            <a target="_blank" href="${ctxPath + r.blogPath}"
+               class="layui-col-xs10 p1">${rLP.index}.${r.dir}:${r.title}</a>
+        </li>
+        @}
+        <!--<li>-->
+        <!--<a href="/blog">测试测试测试测试测试测试测试测试测试</a>-->
+        <!--<span class="layui-badge layui-bg-gray" style="margin-left:5px">999999999999次</span>-->
+        <!--</li>-->
+    </ul>
+</div>
+@}
+@if (isNotEmpty(upload)) {
+<div class="right-nav hid" style="top: 460px;">
+    <p>最新发布</p>
+    <ul>
+        @for (r in upload) {
+        <li>
+            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.createTime, "yyyyMMdd"}</span>
+            <a target="_blank" href="${ctxPath + r.blogPath}"
+               class="layui-col-xs9 p1">${rLP.index}.${r.dir}:${r.title}</a>
+        </li>
+        @}
+    </ul>
+</div>
+@}
+@if (isNotEmpty(recommend)) {
+<div class="right-nav hid" style="left:5%;padding-bottom:2px;">
+    <p>推荐阅读</p>
+    <ul>
+        @for (r in recommend) {
+        <li>
+            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${'热度' + r.recommendValue}</span>
+            <a target="_blank" href="${ctxPath + r.blogPath}"
+               class="layui-col-xs9 p1">${rLP.index}.${r.dir}:${r.title}</a>
+        </li>
+        @}
+    </ul>
+</div>
+@}
 <div id="aplayer"></div>
 <script src="${ctxPath}/lib/jquery/jquery.min.js"></script>
 <script src="${ctxPath}/lib/layui/layui.js"></script>

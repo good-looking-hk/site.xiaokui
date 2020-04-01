@@ -13,6 +13,9 @@ import java.util.*;
 public class BlogDetailList {
 
     @Getter
+    private List<SysBlog> allBlogList;
+
+    @Getter
     private List<List<SysBlog>> publicList = new ArrayList<>(), protectedList = new LinkedList<>(), privateList = new LinkedList<>();
 
     private List<SysBlog> uploadTopNList = new ArrayList<>(), modifyTopNList = new ArrayList<>(), recommendTopNList = new ArrayList<>();
@@ -161,6 +164,7 @@ public class BlogDetailList {
     }
 
     public BlogDetailList(List<SysBlog> blogList, String blogSpace) {
+        this.allBlogList = blogList;
         resolveDirList(blogList, blogSpace);
         resolveDateList(publicList, pubCreateYears, pubCreateTimeList);
         resolveDateList(protectedList, proCreateYears, proCreateTimeList);

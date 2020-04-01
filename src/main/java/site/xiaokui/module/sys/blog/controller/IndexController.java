@@ -187,6 +187,12 @@ public class IndexController extends BaseController {
                 blogUser.setPageTotal(details.getPub());
                 blogUser.setDirCount(details.getPubDir().size());
             }
+            List recentUploadList = details.getUploadTopN(this.recentUploadCount);
+            List recommendList = details.getRecommendTopN(this.recommendCount);
+            List<SysBlog> mostViewList = blogService.mostViewList(blogUser.getId(), details.getAllBlogList());
+            model.addAttribute("upload", recentUploadList);
+            model.addAttribute("recommend", recommendList);
+            model.addAttribute("view", mostViewList);
             model.addAttribute("user", blogUser);
             return BLOG_INDEX + "1";
         }

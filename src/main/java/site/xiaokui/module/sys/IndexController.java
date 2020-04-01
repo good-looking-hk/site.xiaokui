@@ -39,7 +39,7 @@ public class IndexController extends BaseController {
     public String index() {
         String index = cacheCenter.getSysConfigCache().getIndex();
         if (StringUtil.isNotBlank(index)) {
-            return FORWARD + index;
+            return REDIRECT + index;
         }
         return FORWARD + "/blog";
     }
