@@ -37,6 +37,7 @@ public class CacheCenter implements ApplicationRunner {
     }
 
     public synchronized void clearSysConfigCache() {
+        this.clearBlogCache();
         this.sysConfigCache = initCacheMap();
     }
 

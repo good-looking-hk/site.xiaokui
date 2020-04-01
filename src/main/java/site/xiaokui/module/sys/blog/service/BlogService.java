@@ -143,34 +143,36 @@ public class BlogService extends BaseService<SysBlog> {
         }
         // 该文件地址是否已经已经存在，如果存在则替换
         File targetFile = BlogFileHelper.getInstance().locateFile(userId, blog.getDir(), blog.getName() + HTML_SUFFIX);
-        if (targetFile.exists()) {
+        // 数据库是否已存在记录
+        SysBlog origin = findBlog(userId, blog.getDir(), blog.getName());
+
+        if (targetFile.exists() || origin != null) {
             if (!targetFile.delete()) {
                 throw new RuntimeException("删除原有文件失败");
             } else if (!file.renameTo(targetFile)) {
                 throw new RuntimeException("上传文件替换原有文件失败");
             }
-            SysBlog origin = findBlog(userId, blog.getDir(), blog.getName());
+
+            // 如果文件地址未被占用，则移动文件
+            if (!targetFile.exists() && !file.renameTo(targetFile)) {
+                throw new RuntimeException("转存文件文件失败：" + targetFile.getName());
+            }
+
             // 如果博客信息已经存在，需要在数据库更新信息，即使源文件已存在
-            if (origin != null) {
-                SysBlog temp = new SysBlog();
-                temp.setId(origin.getId());
-                temp.setCreateTime(blog.getCreateTime());
-                temp.setCharacterCount(blog.getCharacterCount());
-                temp.setUpdateTime(blog.getUpdateTime());
-                boolean success = this.updateByIdIgnoreNull(temp);
-                if (success) {
-                    BlogUtil.clearBlogCache(userId);
-                    return ResultEntity.ok("更新文件成功");
-                } else {
-                    return ResultEntity.ok("更新文件失败");
-                }
+            SysBlog temp = new SysBlog();
+            temp.setId(origin.getId());
+            temp.setCreateTime(blog.getCreateTime());
+            temp.setCharacterCount(blog.getCharacterCount());
+            temp.setUpdateTime(blog.getUpdateTime());
+            boolean success = this.updateByIdIgnoreNull(temp);
+            if (success) {
+                BlogUtil.clearBlogCache(userId);
+                return ResultEntity.ok("更新文件成功");
+            } else {
+                return ResultEntity.ok("更新文件失败");
             }
         }
 
-        // 如果文件地址未被占用，则移动文件
-        if (!targetFile.exists() && !file.renameTo(targetFile)) {
-            throw new RuntimeException("转存文件文件失败：" + targetFile.getName());
-        }
         // 插入失败则删除文件，控制层和前端可进行验证，以确保此步的正确性
         try {
             this.insert(blog);

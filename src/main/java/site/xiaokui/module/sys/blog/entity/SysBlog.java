@@ -205,7 +205,7 @@ public class SysBlog extends ParentEntity {
             characterValue = (double) this.characterCount / 650 + 2;
         }
 //         System.out.println("1250-" + createTimeValue + "-" + updateTimeValue * 57 + "+" + yesterdayValue + "+" + viewCountValue + "+" + characterValue);
-        double value = 1150 - createTimeValue  - (updateTimeValue * 47) + yesterdayValue + viewCountValue + characterValue;
+        double value = 1150 - createTimeValue  - (updateTimeValue * 49) + yesterdayValue + viewCountValue + characterValue;
         if (this.name.contains("*") || this.title.contains("*")) {
             value += 100;
         }

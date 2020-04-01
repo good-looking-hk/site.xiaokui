@@ -8,18 +8,17 @@ import java.util.concurrent.CyclicBarrier;
 
 /**
  * @author HK
- * @date 2020-03-26 15:32
+ * @date 2020-03-30 14:23
  */
-public class NIO {
+public class AIO {
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws Exception {
         new Thread(new Runnable() {
             @SneakyThrows
             @Override
             public void run() {
-                NIOServer server = new NIOServer();
-                server.initServer(2222);
-                server.listen();            }
+                new AIOServer().init();
+            }
         }, "服务端线程").start();
 
         Thread.sleep(2000);
@@ -38,4 +37,5 @@ public class NIO {
             }, "客户端线程" + i).start();
         }
     }
+
 }

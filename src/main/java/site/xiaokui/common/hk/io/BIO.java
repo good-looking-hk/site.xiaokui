@@ -1,7 +1,9 @@
 package site.xiaokui.common.hk.io;
 
 import java.io.IOException;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 
 /**
  * @author HK
@@ -21,16 +23,15 @@ public class BIO {
             }
         }, "服务端线程").start();
 
-        CountDownLatch begin = new CountDownLatch(1);
-        CountDownLatch end = new CountDownLatch(10);
-        for (int i = 0; i < 3; i++) {
+        CyclicBarrier barrier = new CyclicBarrier(4);
+        for (int i = 0; i < 4; i++) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        begin.await();
+                        barrier.await();
                         new Client().init();
-                    } catch (IOException | InterruptedException e) {
+                    } catch (IOException | InterruptedException | BrokenBarrierException e) {
                         e.printStackTrace();
                     }
                 }

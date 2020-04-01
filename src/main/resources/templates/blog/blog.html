@@ -24,7 +24,7 @@
             @} else if (isNotEmpty(user.blog.createTime)) {
             <blockquote>
                 <small>
-                    Created by ${user.name} on ${user.blog.createTime, dateFormat="yyyy-MM-dd"}
+                    Views ${user.blog.viewCount!"1"} times and Created by ${user.name} on ${user.blog.createTime, dateFormat="yyyy-MM-dd"}
                 </small>
             </blockquote>
             @}

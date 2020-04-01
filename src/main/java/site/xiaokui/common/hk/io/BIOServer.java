@@ -17,16 +17,17 @@ public class BIOServer {
         ServerSocket serverSocket = new ServerSocket(2222);
         System.out.println("服务器主线程等待连接....");
         int i = 0;
-        while (true) {
-            Socket client = serverSocket.accept();
+        Socket client;
+        while ((client = serverSocket.accept()) != null) {
             i += 1;
+            Socket finalClient = client;
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println(Thread.currentThread().getName() + "与客户端" + client.getInetAddress().toString() + " 建立连接");
+                    System.out.println(Thread.currentThread().getName() + "与客户端" + finalClient.getInetAddress().toString() + " 建立连接");
                     BufferedReader br;
                     try {
-                        br = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                        br = new BufferedReader(new InputStreamReader(finalClient.getInputStream()));
                         String clientMessage;
                         while ((clientMessage = br.readLine()) != null) {
                             System.out.println(Thread.currentThread().getName() + "收到消息：" + clientMessage);

@@ -1,13 +1,9 @@
 package site.xiaokui.common.hk.io;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Scanner;
 
 /**
  * @author HK
@@ -23,9 +19,12 @@ public class Client {
         pw.println(req);
         pw.flush();
 
-        req = "hahaha";
+        Thread.sleep(2000);
+        req = "11111112";
         pw.println(req);
         pw.flush();
+
+        Thread.sleep(4000);
         pw.close();
         System.out.println("客户端：连接结束");
     }
