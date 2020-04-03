@@ -27,12 +27,17 @@ public class StaticResourceConfig implements WebMvcConfigurer {
     @Value("${xiaokui.staticLibsPath}")
     private String staticLibsPath;
 
+    @Value("${xiaokui.blogMusicPath}")
+    private String blogMusicPath;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         if (this.staticLibsPath == null) {
             throw new IllegalArgumentException("xiaokui.staticLibsPath参数未设置:" + null);
         }
         registry.addResourceHandler("/lib/**").addResourceLocations("file:" + staticLibsPath);
+        registry.addResourceHandler("/music/**").addResourceLocations("file:" + blogMusicPath);
+
     }
 
     @Override

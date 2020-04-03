@@ -24,7 +24,7 @@ public class MusicFileHelper extends BaseFileHelper {
 
     @Value("${xiaokui.blogMusicPath}")
     @Override
-    public void setBasePath(String blogMusicPath) {
+    protected void setBasePath(String blogMusicPath) {
         this.basePath = blogMusicPath;
         File file = new File(basePath);
         if (!file.exists()) {

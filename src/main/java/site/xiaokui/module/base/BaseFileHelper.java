@@ -19,12 +19,12 @@ public abstract class BaseFileHelper {
      * 根据不同的basePath，对不同的用户分级目录进行操作
      * @param basePath 一般是通过配置文件配置
      */
-    public abstract void setBasePath(String basePath);
+    protected abstract void setBasePath(String basePath);
 
     /**
      * 获取用户目录的File构造字符串
      */
-    private String getUserDir(Integer userId) {
+    public String getUserDir(Integer userId) {
         return basePath + userId;
     }
 

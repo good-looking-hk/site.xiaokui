@@ -1,11 +1,11 @@
 var list = [];
-$.post("/music/july", function (res) {
-    console.log(res);
-    for (var i in res) {
+$.post("/sys/music/1/july", function (res) {
+    // console.log(res);
+    for (var i in res.data) {
         var o = new Object();
-        o.name = res[i];
+        o.name = res.data[i];
         o.artist = 'July';
-        o.url = '/music/july/' + res[i];
+        o.url = '/music/1/july/' + res.data[i];
         o.cover = '/img/July' + (i % 2 === 0 ? 1 : 2) + '.jpg';
         list.push(o);
     }

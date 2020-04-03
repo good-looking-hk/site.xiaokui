@@ -1,5 +1,5 @@
 # 该属性置为true的时候，核心Logger（包含嵌入式容器、hibernate、spring）会输出更多内容，但是你自己应用的日志并不会输出为DEBUG级别
-debug: false
+debug: true
 
 beetl-beetlsql.dev: true
 beetlsql:

@@ -26,7 +26,7 @@ xiaokui:
   # 博客上传路径
   blogUploadPath: ${xiaokui.basePath}/upload/
   # 音乐保存目录
-  blogMusicPath: ${xiaokui.basePath}/musics/
+  blogMusicPath: ${xiaokui.basePath}/music/
   # 头像上传目录
   avatarUploadPath: ${xiaokui.basePath}/avatar/
   # 系统日志目的地

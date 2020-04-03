@@ -5,8 +5,10 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.controller.AbstractController;
@@ -14,14 +16,17 @@ import site.xiaokui.module.base.entity.ResultEntity;
 import site.xiaokui.module.sys.blog.BlogConstants;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
+ * TODO 有待后期完善
  * @author HK
  * @date 2019-06-08 20:41
  */
 @Slf4j
-@Controller
+@Controller("MusicController")
 @RequestMapping(BlogConstants.MUSIC_PREFIX)
 public class MusicController extends AbstractController {
 
@@ -31,6 +36,8 @@ public class MusicController extends AbstractController {
     @Autowired
     private MusicFileHelper musicFileHelper;
 
+    private List<String> list;
+
     /**
      * 默认为 /sys/music
      */
@@ -39,6 +46,24 @@ public class MusicController extends AbstractController {
     @Override
     protected String setPrefix() {
         return MUSIC_PREFIX;
+    }
+
+    @PostMapping("/{userId}/{dir}")
+    @ResponseBody
+    public ResultEntity list(@PathVariable Integer userId, @PathVariable String dir) {
+        if (this.list != null) {
+            return this.ok().put("data", list);
+        }
+        File musicDir = new File( musicFileHelper.getUserDir(userId) + "/" + dir);
+        List<String> list = new ArrayList<>(4);
+        if (musicDir.isDirectory()) {
+            File[] files = musicDir.listFiles();
+            for (File f : files) {
+                list.add(f.getName());
+            }
+        }
+        this.list = list;
+        return this.ok().put("data", list);
     }
 
     /**

@@ -27,7 +27,7 @@ public class BlogFileHelper extends BaseFileHelper {
      */
     @Value("${xiaokui.blogUploadPath}")
     @Override
-    public void setBasePath(String blogUploadPath) {
+    protected void setBasePath(String blogUploadPath) {
         this.basePath = blogUploadPath;
         File file = new File(basePath);
         if (!file.exists()) {

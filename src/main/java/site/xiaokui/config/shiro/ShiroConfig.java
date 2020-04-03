@@ -139,9 +139,9 @@ public class ShiroConfig {
         filterMap.put("/**/font/**", ANYBODY);
         filterMap.put("/img/**", ANYBODY);
         filterMap.put("/music/**", ANYBODY);
-
         filterMap.put("/**/*.js", ANYBODY);
         filterMap.put("/**/*.css", ANYBODY);
+        filterMap.put("/**/*.map", ANYBODY);
         filterMap.put("/**/*.png", ANYBODY);
         filterMap.put("/**/*.json", ANYBODY);
         filterMap.put("/unauthorized", ANYBODY);
@@ -155,10 +155,11 @@ public class ShiroConfig {
         filterMap.put("/register", ANYBODY);
         filterMap.put("/sys/login", ANYBODY);
         filterMap.put("/sys/register", ANYBODY);
+        filterMap.put("/sys/music/1/july", ANYBODY);
+        filterMap.put("/test", ANYBODY);
+
         // 放行博客访问链接
         filterMap.put("/blog/**", ANYBODY);
-        // 放行模拟秒杀链接
-        filterMap.put("/sys/seckill/**", ANYBODY);
 
         // 其余都需要验证
         filterMap.put("/user", REMEMBER_ME);
