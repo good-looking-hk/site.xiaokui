@@ -22,11 +22,16 @@
             </a>
         </ul>
         <div class="layui-form" id="nav-search">
-            <input type="text" name="key" id="key" autocomplete="off" placeholder="快速搜索 如多线程"
-                   class="layui-input" style="width:60%">
-            <button class="layui-btn layui-btn-primary" onclick="search()">
-                搜索
-            </button>
+<!--            <div class="search">-->
+<!--                <input type="text"/><button>搜索</button>-->
+<!--            </div>-->
+            <div style="display: inline-block;">
+                <input type="text" name="key" id="key" autocomplete="off" placeholder="快速搜索 如多线程"
+                       class="layui-input search" style="width:60%;">
+                <button class="layui-btn layui-btn-primary search" onclick="search()">
+                    搜索
+                </button>
+            </div>
         </div>
         <ul class="layui-nav fly-nav" id="nav-title">
             <li class="layui-nav-item"><a href="${ctxPath}/">首页</a></li>
