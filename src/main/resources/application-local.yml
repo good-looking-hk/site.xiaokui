@@ -1,5 +1,6 @@
 # 该属性置为true的时候，核心Logger（包含嵌入式容器、hibernate、spring）会输出更多内容，但是你自己应用的日志并不会输出为DEBUG级别
-debug: true
+#debug: true
+#trace: true
 
 beetl-beetlsql.dev: true
 beetlsql:
@@ -28,9 +29,12 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     # 注意这里的GMT+8，用于解决数据库时差8问题
-    url: jdbc:mysql://localhost:3306/newxiaokui?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=true
+#    url: jdbc:mysql://localhost:3306/newxiaokui?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=true
+#    username: root
+#    password: 199710
+    url: jdbc:mysql://120.79.20.49:3306/newxiaokui?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=false
     username: root
-    password: 199710
+    password: 1238127943Hk!
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
     host: localhost
@@ -43,5 +47,7 @@ spring:
 # 需要配合logback-spring.xml，默认只输出到控制台
 logging:
   level.root: info
-  level.site.xiaokui: debug
+  level.site.xiaokui: info
+  # 这个sb东西去不掉
+  file: temp.txt
 #  level.org.springframework.web: debug

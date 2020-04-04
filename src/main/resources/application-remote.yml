@@ -31,16 +31,12 @@ xiaokui:
   avatarUploadPath: ${xiaokui.basePath}/avatar/
   # 系统日志目的地
   logsPath: ${xiaokui.basePath}/logs/
+  # 日志文件名
+  logName: remote.log
 
 logging:
   level:
     root: info
     site.xiaokui: info
-  path: ${xiaokui.logsPath}
-  file: online.log #使用默认配置时，path和file只能选一个（如果同时有，那么只有file生效）
-  file.max-size: 6MB
-  file.max-history: 30
-  pattern:
-    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{32}- %msg%n"
-    level: "%5p"
-    file: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{32}- %msg%n"
+  # 这个sb东西去不掉
+  file: temp.log

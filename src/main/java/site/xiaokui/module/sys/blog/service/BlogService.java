@@ -143,21 +143,18 @@ public class BlogService extends BaseService<SysBlog> {
         }
         // 该文件地址是否已经已经存在，如果存在则替换
         File targetFile = BlogFileHelper.getInstance().locateFile(userId, blog.getDir(), blog.getName() + HTML_SUFFIX);
+        boolean isUpdate = targetFile.exists();
         // 数据库是否已存在记录
         SysBlog origin = findBlog(userId, blog.getDir(), blog.getName());
 
-        if (targetFile.exists() || origin != null) {
-            if (!targetFile.delete()) {
-                throw new RuntimeException("删除原有文件失败");
-            } else if (!file.renameTo(targetFile)) {
-                throw new RuntimeException("上传文件替换原有文件失败");
-            }
-
-            // 如果文件地址未被占用，则移动文件
-            if (!targetFile.exists() && !file.renameTo(targetFile)) {
-                throw new RuntimeException("转存文件文件失败：" + targetFile.getName());
-            }
-
+        if (isUpdate && !targetFile.delete()) {
+            throw new RuntimeException("删除原有文件失败");
+        }
+        // 如果文件地址未被占用，则移动文件
+        if (!targetFile.exists() && !file.renameTo(targetFile)) {
+            throw new RuntimeException("转存文件文件失败：" + targetFile.getName());
+        }
+        if (origin != null) {
             // 如果博客信息已经存在，需要在数据库更新信息，即使源文件已存在
             SysBlog temp = new SysBlog();
             temp.setId(origin.getId());
