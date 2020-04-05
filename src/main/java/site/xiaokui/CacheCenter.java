@@ -9,7 +9,10 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import site.xiaokui.module.base.entity.SysConfig;
+import site.xiaokui.module.sys.blog.service.BlogService;
 import site.xiaokui.module.sys.blog.util.BlogUtil;
+import site.xiaokui.module.sys.user.entity.SysUser;
+import site.xiaokui.module.sys.user.service.UserService;
 
 import java.util.List;
 import java.util.Map;
@@ -25,11 +28,24 @@ public class CacheCenter implements ApplicationRunner {
     @Autowired
     private SQLManager sqlManager;
 
+    @Autowired
+    private BlogService blogService;
+
+    @Autowired
+    private UserService userService;
+
     private SysConfigCache sysConfigCache;
 
+    /**
+     * Spring启动完成后，初始化缓存数据
+     */
     @Override
     public void run(ApplicationArguments args) {
         this.sysConfigCache = initCacheMap();
+        List<SysUser> list = userService.all();
+        for (SysUser user : list) {
+            blogService.setMostViewCache(user.getId());
+        }
     }
 
     public synchronized SysConfigCache getSysConfigCache() {

@@ -1,17 +1,15 @@
 package site.xiaokui.module.sys.blog.service;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.hutool.cron.task.Task;
 import lombok.extern.slf4j.Slf4j;
 import org.beetl.sql.core.SQLReady;
 import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Tuple;
-import site.xiaokui.ScheduleCenter;
-import site.xiaokui.common.aop.annotation.Log;
 import site.xiaokui.module.base.entity.ResultEntity;
 import site.xiaokui.module.base.service.BaseService;
 import site.xiaokui.module.base.service.EmailService;
@@ -23,11 +21,13 @@ import site.xiaokui.module.sys.blog.util.BlogFileHelper;
 import site.xiaokui.module.sys.blog.util.BlogUtil;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static site.xiaokui.module.base.BaseConstants.PROFILE_REMOTE;
+import static site.xiaokui.module.base.BaseConstants.PROFILE_TEST;
 import static site.xiaokui.module.sys.blog.BlogConstants.HTML_SUFFIX;
 
 /**
@@ -45,36 +45,26 @@ public class BlogService extends BaseService<SysBlog> {
     @Autowired
     private RedisService redisService;
 
-    public int getViewCount(Integer blogId) {
-        return blogCacheService.getViewCount(blogId);
+    @Value("${spring.profiles.active}")
+    private String profile;
+
+    public int getViewCountFromRedis(Integer userId, Integer blogId) {
+        return blogCacheService.getViewCount(userId ,blogId);
+    }
+
+    public void addViewCountIntoRedis(String ip, Integer userId, Integer blogId, Integer owner) {
+        blogCacheService.addViewCount(ip, userId, blogId, owner);
+    }
+
+    public LinkedHashMap<Integer, Integer> getMostViewTopN(Integer userId, int n) {
+        return blogCacheService.getMostViewTopN(userId, n);
     }
 
     /**
-     * 获取最多缓存，这个缓存属于热点缓存
-     * @param userId 用户id
-     * @param allBlogList 所有博客列表
-     * @return 做多访问博客列表，从大到小排序
+     * 一般由缓存调用
      */
-    public List<SysBlog> mostViewList(Integer userId, List<SysBlog> allBlogList) {
-        Map<String, Double> map = blogCacheService.getMostView(userId);
-        if (map == null || map.size() == 0) {
-            map = blogCacheService.setMostView(userId, allBlogList);
-        }
-        List<SysBlog> mostView = new ArrayList<>();
-        // 从内存运算读取性能远远好过数据库读，找到博客的具体信息
-        for (String i : map.keySet()) {
-            for (SysBlog b : allBlogList) {
-                if (b.getId().toString().equals(i)) {
-                    b.setViewCount(map.get(i).intValue());
-                    mostView.add(b);
-                }
-            }
-        }
-        return mostView;
-    }
-
-    public void addViewCount(String ip, Integer userId, Integer blogId, Integer owner) {
-        blogCacheService.addViewCount(ip, userId, blogId, owner);
+    public void setMostViewCache(Integer userId) {
+        blogCacheService.setMostView(userId, listBlogByUserId(userId));
     }
 
     public List<SysBlog> listBlogByUserId(Integer userId) {
@@ -181,73 +171,73 @@ public class BlogService extends BaseService<SysBlog> {
         return ResultEntity.ok("保存成功");
     }
 
-    /**
-     * 开始任务时，会事先准备好缓存数据
-     * 依赖于{@link ScheduleCenter}执行
-     * 每天23：59执行
-     */
-    @Log(name = "redis数据同步至数据库", writeToDB = true)
-    public Task redisTask() {
-        return new Task() {
-            @Override
-            public void execute() {
-                log.info("开始执行redis任务，更新博客相关记录");
-                long start = System.currentTimeMillis();
-                Jedis jedis = redisService.getRedis();
-                StringBuilder sb = new StringBuilder();
-                try {
-                    Map<String, String> map = jedis.hgetAll(RedisKey.KEY_BLACK_VIEW_IP);
-                    long total = 0;
-                    for (Map.Entry<String, String> entry : map.entrySet()) {
-                        sb.append("user_id/ip:").append(entry.getKey()).append(" contribute ").append(entry.getValue()).append(";");
-                        total += Integer.parseInt(entry.getValue());
-                    }
-                    // 清除ip阅读贡献量黑名单，返回删除条数，默认为1
-                    jedis.del(RedisKey.KEY_BLACK_VIEW_IP);
-                    long addViewCount = total;
-                    sb.append("清除ip阅读贡献量黑名单").append(total).append("条;");
-
-                    // 清除ip对某个博客的阅读贡献量
-                    Set<String> strs = jedis.keys("*" + RedisKey.HASH_IP_VIEWS_SUFFIX);
-                    if (strs != null && strs.size() > 0) {
-                        total = jedis.del(strs.toArray(new String[0]));
-                    }
-                    sb.append("清除ip对某个博客的阅读贡献量").append(total).append("条;");
-
-                    // redis记录更新至数据库
-                    Set<Tuple> sets = jedis.zrangeByScoreWithScores(RedisKey.ALL_HASH_BLOG_VIEW_COUNT, "-inf", "+inf");
-                    int count = 0;
-                    for (Tuple t : sets) {
-                        SysBlog blog = new SysBlog();
-                        blog.setId(Integer.valueOf(t.getElement()));
-                        double d = t.getScore();
-                        if (d < 1) {
-                            continue;
-                        }
-                        count++;
-                        int i = Double.valueOf(d).intValue();
-                        blog.setViewCount(i);
-                        BlogService.this.getSqlManager().executeUpdate(new SQLReady(
-                                "update sys_blog set yesterday = ? - view_count, view_count = ? where id = ?", i, i, blog.getId()
-                        ));
-                    }
-                    log.info("redis博客阅读量记录更新至数据库耗时{}ms，记录为{}条", System.currentTimeMillis() - start, count);
-                    sb.append("\n同步耗时").append(System.currentTimeMillis() - start).append("ms，更新博客访问记录")
-                            .append(count).append("条，共新增").append(addViewCount).append("个阅读量");
-                    log.info(sb.toString());
-//                        EmailService.sendToMe("redis博客阅读量记录更新至数据库耗时" + (System.currentTimeMillis() - start) + "ms，记录为" + count + "条");
-                } catch (Exception e) {
-                    if (log.isDebugEnabled()) {
-                        log.info("redis任务执行失败，异常信息如下：\n" + ExceptionUtil.stacktraceToString(e));
-                    } else {
-                        String msg = ExceptionUtil.stacktraceToString(e);
-                        log.info("redis任务执行失败，异常信息如下：\n" + msg);
-                        EmailService.sendToMe(msg);
-                    }
-                } finally {
-                    jedis.close();
-                }
+    public void syncRedisViewCountToDb() {
+        try (Jedis jedis = redisService.getRedis()) {
+            // 某篇博客的阅读贡献量
+            Set<String> strs = jedis.keys("*" + RedisKey.USER_OR_IP_TO_BLOG_CONTRIBUTE_VIEW_COUNT_SUFFIX);
+            if (strs != null && strs.size() > 0) {
+                total = jedis.del(strs.toArray(new String[0]));
             }
-        };
+            // redis记录更新至数据库
+        Set<Tuple> sets = jedis.zrangeByScoreWithScores(RedisKey.ALL_HASH_BLOG_VIEW_COUNT, "-inf", "+inf");
+        int count = 0;
+        for (Tuple t : sets) {
+            SysBlog blog = new SysBlog();
+            blog.setId(Integer.valueOf(t.getElement()));
+            double d = t.getScore();
+            if (d < 1) {
+                continue;
+            }
+            count++;
+            int i = Double.valueOf(d).intValue();
+            blog.setViewCount(i);
+            blogService.getSqlManager().executeUpdate(new SQLReady(
+                    "update sys_blog set yesterday = ? - view_count, view_count = ? where id = ?", i, i, blog.getId()
+            ));
+        }
+        // 记录ip的阅读总贡献量
+        jedis.hincrBy(RedisKey.USER_OR_IP_CONTRIBUTE_VIEW_COUNT_MAP, userIdOrIp, 1);
+        // 记录ip对该博客的的阅读贡献量
+        jedis.hincrBy(blogId + RedisKey.USER_OR_IP_TO_BLOG_CONTRIBUTE_VIEW_COUNT_SUFFIX, userIdOrIp, 1);
+
+        log.info("redis博客阅读量记录更新至数据库耗时{}ms，记录为{}条", System.currentTimeMillis() - start, count);
+        sb.append("\n同步耗时").append(System.currentTimeMillis() - start).append("ms，更新博客访问记录")
+                .append(count).append("条，共新增").append(addViewCount).append("个阅读量");
+        log.info(sb.toString());
+//                        EmailService.sendToMe("redis博客阅读量记录更新至数据库耗时" + (System.currentTimeMillis() - start) + "ms，记录为" + count + "条");
+    }
+
+    public void clearContributeBlackList() {
+        log.info("执行redis任务:清空博客贡献黑名单");
+        long start = System.currentTimeMillis();
+        try (Jedis jedis = redisService.getRedis()) {
+            StringBuilder sb = new StringBuilder();
+            // 用户或IP总贡献访问量
+            Map<String, String> map = jedis.hgetAll(RedisKey.USER_OR_IP_CONTRIBUTE_VIEW_COUNT_MAP);
+            long total = 0;
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                sb.append("user_id/ip:").append(entry.getKey()).append(" contribute ").append(entry.getValue()).append(";\n");
+                total += Integer.parseInt(entry.getValue());
+            }
+            // 清除ip阅读贡献量黑名单，返回删除条数，默认为1
+            jedis.del(RedisKey.USER_OR_IP_CONTRIBUTE_VIEW_COUNT_MAP);
+            sb.append("清除用户/IP对所有博客的阅读贡献量").append(total).append("条;\n");
+
+            // 清除用户或IP对某篇博客的阅读贡献量
+            Set<String> strs = jedis.keys("*" + RedisKey.USER_OR_IP_TO_BLOG_CONTRIBUTE_VIEW_COUNT_SUFFIX);
+            if (strs != null && strs.size() > 0) {
+                total = jedis.del(strs.toArray(new String[0]));
+            }
+            sb.append("清除用户/IP对单篇博客的阅读贡献量").append(total).append("条;\n");
+            log.info(sb.toString());
+        } catch (Exception e) {
+            if (PROFILE_REMOTE.equals(profile)) {
+                String msg = ExceptionUtil.stacktraceToString(e);
+                log.info("redis任务执行失败，异常信息如下：\n" + msg);
+                EmailService.sendToMe(msg);
+            } else {
+                log.info("redis任务执行失败，异常信息如下：\n" + ExceptionUtil.stacktraceToString(e));
+            }
+        }
     }
 }

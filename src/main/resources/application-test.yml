@@ -31,11 +31,11 @@ xiaokui:
   # 系统日志目的地
   logsPath: ${xiaokui.basePath}/logs/
   # 日志文件名
-  logName: remote.log
+  logName: test.log
 
 logging:
   level:
     root: info
     site.xiaokui: info
   # 这个sb东西去不掉
-  file: remote.log
+  file: test.log

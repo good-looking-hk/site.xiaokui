@@ -91,7 +91,6 @@ public class BlogUtil {
                 list = new BlogDetailList(blogList, blogSpace);
                 BLOG_CACHE.put(userId, list);
             }
-            log.info("blogSpace:{}从缓存获取数据", blogSpace);
         } else {
             list = new BlogDetailList(blogList, blogSpace);
         }

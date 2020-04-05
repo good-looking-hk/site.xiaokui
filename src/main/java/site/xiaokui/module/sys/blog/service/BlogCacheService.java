@@ -26,167 +26,149 @@ public class BlogCacheService {
     @Autowired
     private RedisService redisService;
 
-    @Value("${xiaokui.most-view}")
-    private Integer mostView;
+    @Value("${xiaokui.single-ip-contribute-blog}")
+    private Integer singleIpContributeBlog;
 
-    public int getViewCount(Integer blogId) {
-        Jedis jedis = redisService.getRedis();
-        try {
-            String result = jedis.hget(RedisKey.ALL_HASH_BLOG_VIEW_COUNT, blogId.toString());
-            if (result == null) {
+    @Value("${xiaokui.single-ip-contribute--all-blog}")
+    private Integer singleIpContributeAllBlog;
+
+    @Value("${xiaokui.single-user-contribute-blog}")
+    private Integer singleUserContributeBlog;
+
+    @Value("${xiaokui.single-user-contribute--all-blog}")
+    private Integer singleUserContributeAllBlog;
+
+    public int getViewCount(Integer userId, Integer blogId) {
+        try (Jedis jedis = redisService.getRedis()) {
+            // 对应redis里面有序集合，用户id键:博客id 访问数量
+            String key = userId + RedisKey.USER_BLOG_VIEW_COUNT_SORT_MAP_SUFFIX;
+            String member = Integer.toString(blogId);
+            // 如果key不存在或member不存在，则返回null
+            Double count = jedis.zscore(key, member);
+            if (count == null) {
+                jedis.zadd(key, 1.0, member);
                 return 1;
             }
-            int views = Integer.parseInt(result);
-            return views + 1;
+            // 包含本次访问
+            return (int) (count + 1);
         } catch (Exception e) {
             log.error("redis操作错误", e);
             throw e;
-        } finally {
-            jedis.close();
-        }
-    }
-
-    public void clearCache(Integer userId) {
-
-    }
-
-    /**
-     * 设置最多缓存
-     */
-    public Map<String, Double> setMostView(Integer userId, List<SysBlog> blogs) {
-        if (blogs == null || blogs.size() == 0) {
-            return Collections.emptyMap();
-        }
-        // 存入map再存入redis
-        Map<String, Double> map = new HashMap<>(64);
-        for (SysBlog b : blogs) {
-            if (b.getViewCount() == null) {
-                map.put(String.valueOf(b.getId()), 0.0);
-            } else {
-                map.put(String.valueOf(b.getId()), b.getViewCount().doubleValue());
-            }
-        }
-
-        Jedis jedis = redisService.getRedis();
-        try {
-            for (Map.Entry<String, Double> entry : map.entrySet()) {
-                // 所有博客的访问量
-                jedis.hincrBy(RedisKey.ALL_HASH_BLOG_VIEW_COUNT, entry.getKey(), entry.getValue().longValue());
-            }
-            jedis.zadd(userId + RedisKey.KEY_MOST_VIEW_SUFFIX, map);
-            Set<Tuple> sets = jedis.zrevrangeByScoreWithScores(userId + RedisKey.KEY_MOST_VIEW_SUFFIX,
-                    "+inf", "-inf", 1, mostView);
-            map = new LinkedHashMap<>(mostView);
-            for (Tuple p : sets) {
-                map.put(p.getElement(), p.getScore());
-            }
-            log.info("从数据库读取用户{}的博客id-访问量列表，并存至redis缓存，记录为{}条", userId, blogs.size());
-            return map;
-        } catch (Exception e) {
-            log.error("redis读取userId:{}博客top{}出错", userId, mostView);
-            throw e;
-        } finally {
-            jedis.close();
         }
     }
 
     /**
-     * 获取最多访问缓存
-     */
-    public Map<String, Double> getMostView(Integer userId) {
-        Jedis jedis = redisService.getRedis();
-        try {
-            // 取top10，不能用Double.MAX_VALUE或Double.MIN_VALUE
-            Set<Tuple> sets = jedis.zrevrangeByScoreWithScores(userId + RedisKey.KEY_MOST_VIEW_SUFFIX,
-                    "+inf", "-inf", 0, mostView);
-            if (sets == null || sets.size() == 0) {
-                return Collections.emptyMap();
-            }
-            Map<String, Double>  map = new LinkedHashMap<>(mostView);
-            for (Tuple p : sets) {
-                map.put(p.getElement(), p.getScore());
-            }
-            log.info("从数据库读取用户{}的博客id-访问量列表，并存至redis缓存，记录为{}条", userId, map.size());
-            return map;
-        } catch (Exception e) {
-            log.error("redis读取userId:{}博客top {}出错", userId, mostView);
-            throw e;
-        } finally {
-            jedis.close();
-        }
-    }
-
-    /**
-     * 一个ip对于一篇博客，不登录一天最多贡献2个访问量，登录最多贡献4个访问量，
+     * 一个ip对于一篇博客，不登录一天最多贡献10个访问量，登录最多贡献20个访问量，
      * 不登录每天至多贡献40个阅读量，登录后最多贡献80个阅读量
-     * 每晚12点整清空缓存存入数据库，Redis设计如下
-     * Hash键：blogId + 后缀，Field成员：ip，Value值：访问次数
-     * Hash键：BLACK_VIEW_IP，Field成员：userId/ip，Value值：总贡献阅读量
-     * 阅读量每天23：10更新至数据库
-     * TODO 可配置化？
+     * 两个限制条件不冲突
      */
-    public void addViewCount(String ip, Integer userId, Integer blogId, Integer onwerId) {
-        Jedis jedis = redisService.getRedis();
-        try {
+    public void addViewCount(String ip, Integer userId, Integer blogId, Integer ownerId) {
+        try (Jedis jedis = redisService.getRedis()) {
             if (userId == null) {
                 // 是否还有贡献阅读量能力
-                String sum = jedis.hget(RedisKey.KEY_BLACK_VIEW_IP, ip);
+                String sum = jedis.hget(RedisKey.USER_OR_IP_CONTRIBUTE_VIEW_COUNT_MAP, ip);
                 if (NumberUtil.isInteger(sum)) {
                     int s = Integer.parseInt(sum);
-                    if (s >= 40) {
+                    if (s >= singleIpContributeAllBlog) {
                         return;
                     }
                 }
                 // 是否还能为此篇博客贡献阅读量
-                sum = jedis.hget(blogId + RedisKey.HASH_IP_VIEWS_SUFFIX, ip);
+                sum = jedis.hget(blogId + RedisKey.USER_OR_IP_TO_BLOG_CONTRIBUTE_VIEW_COUNT_SUFFIX, ip);
                 if (NumberUtil.isInteger(sum)) {
                     int s = Integer.parseInt(sum);
-                    if (s >= 2) {
+                    if (s >= singleIpContributeBlog) {
                         return;
                     }
                 }
-
-                // 读者有能力贡献阅读量，更新数据，没有设置缓存过期时间，需要依赖定时任务统一时间清除缓存，下同
-                // 记录ip的阅读总贡献量
-                jedis.hincrBy(RedisKey.KEY_BLACK_VIEW_IP, ip, 1);
-                // 记录ip对该博客的的阅读贡献量
-                jedis.hincrBy(blogId + RedisKey.HASH_IP_VIEWS_SUFFIX, ip, 1);
-                // 记录博客的总阅读量
-                jedis.hincrBy(RedisKey.ALL_HASH_BLOG_VIEW_COUNT, String.valueOf(blogId), 1L);
-                // 记录用户博客的阅读量
-                jedis.zincrby(onwerId + RedisKey.KEY_MOST_VIEW_SUFFIX, 1.0, String.valueOf(blogId));
-                log.debug("ip({})为博客({})贡献一个阅读量", ip, blogId);
+                addViewCount(jedis, ip, ownerId, blogId);
+                log.info("ip({})为博客({})贡献一个阅读量", ip, blogId);
             } else {
-                String id = String.valueOf(userId);
-                String sum = jedis.hget(RedisKey.KEY_BLACK_VIEW_IP, id);
+                String userId0 = String.valueOf(userId);
+                String sum = jedis.hget(RedisKey.USER_OR_IP_CONTRIBUTE_VIEW_COUNT_MAP, userId0);
                 if (NumberUtil.isInteger(sum)) {
                     int s = Integer.parseInt(sum);
-                    if (s >= 80) {
+                    if (s >= singleUserContributeAllBlog) {
                         return;
                     }
                 }
-                sum = jedis.hget(blogId + RedisKey.HASH_IP_VIEWS_SUFFIX, id);
+                // 是否还能为此篇博客贡献阅读量
+                sum = jedis.hget(blogId + RedisKey.USER_OR_IP_TO_BLOG_CONTRIBUTE_VIEW_COUNT_SUFFIX, userId0);
                 if (NumberUtil.isInteger(sum)) {
                     int s = Integer.parseInt(sum);
-                    if (s >= 4) {
+                    if (s >= singleUserContributeBlog) {
                         return;
                     }
                 }
-                // 记录ip的阅读总贡献量
-                jedis.hincrBy(RedisKey.KEY_BLACK_VIEW_IP, id, 1);
-                // 记录ip对该博客的的阅读贡献量
-                jedis.hincrBy(blogId + RedisKey.HASH_IP_VIEWS_SUFFIX, id, 1);
-                // 记录博客的总阅读量
-                jedis.hincrBy(RedisKey.ALL_HASH_BLOG_VIEW_COUNT, String.valueOf(blogId), 1L);
-                // 记录用户博客的阅读量
-                jedis.zincrby(onwerId + RedisKey.KEY_MOST_VIEW_SUFFIX, 1.0, String.valueOf(blogId));
-                log.debug("用户({})为博客({})贡献一个阅读量", id, blogId);
+                addViewCount(jedis, userId0, ownerId, blogId);
+                log.info("用户({})为博客({})贡献一个阅读量", userId0, blogId);
             }
         } catch (Exception e) {
             log.error("redis添加访问量时出错ip={},userId={},blogId={},error={}", ip, userId, blogId, e.getMessage());
             throw e;
-        } finally {
-            jedis.close();
+        }
+    }
+
+    private void addViewCount(Jedis jedis, String userIdOrIp, Integer ownerId, Integer blogId) {
+        // 记录ip的阅读总贡献量
+        jedis.hincrBy(RedisKey.USER_OR_IP_CONTRIBUTE_VIEW_COUNT_MAP, userIdOrIp, 1);
+        // 记录ip对该博客的的阅读贡献量
+        jedis.hincrBy(blogId + RedisKey.USER_OR_IP_TO_BLOG_CONTRIBUTE_VIEW_COUNT_SUFFIX, userIdOrIp, 1);
+        // 增加用户博客的阅读量
+        jedis.zincrby(ownerId + RedisKey.USER_BLOG_VIEW_COUNT_SORT_MAP_SUFFIX, 1.0, String.valueOf(blogId));
+    }
+
+    /**
+     * 获取用户最多访问缓存,返回该用户的TopN访问，博客id 访问量返回如
+     * 1 10000
+     * 2 5000
+     * 3 200
+     * ....
+     */
+    public LinkedHashMap<Integer, Integer> getMostViewTopN(Integer userId, int n) {
+        try (Jedis jedis = redisService.getRedis()) {
+            // 取top10，从大往小取，不能用Double.MAX_VALUE或Double.MIN_VALUE
+            Set<Tuple> sets = jedis.zrevrangeByScoreWithScores(userId + RedisKey.USER_BLOG_VIEW_COUNT_SORT_MAP_SUFFIX,
+                    "+inf", "-inf", 0, n);
+            if (sets == null || sets.size() == 0) {
+                return new LinkedHashMap<>(0);
+            }
+            LinkedHashMap<Integer, Integer> map = new LinkedHashMap<>(Math.min(n, sets.size()));
+            for (Tuple p : sets) {
+                map.put(Integer.parseInt(p.getElement()), (int) p.getScore());
+            }
+            return map;
+        } catch (Exception e) {
+            log.error("redis操作错误", e);
+            throw e;
+        }
+    }
+
+    /**
+     * 设置用户最多访问缓存
+     */
+    public void setMostView(Integer userId, List<SysBlog> blogs) {
+        if (blogs == null || blogs.size() == 0) {
+            return;
+        }
+        try (Jedis jedis = redisService.getRedis()) {
+            String key = userId + RedisKey.USER_BLOG_VIEW_COUNT_SORT_MAP_SUFFIX;
+            if (jedis.exists(key)) {
+                jedis.del(key);
+            }
+            // 存入map再批量导入redis
+            Map<String, Double> map = new HashMap<>(blogs.size());
+            for (SysBlog b : blogs) {
+                if (b.getViewCount() == null) {
+                    map.put(String.valueOf(b.getId()), 0.0);
+                } else {
+                    map.put(String.valueOf(b.getId()), b.getViewCount().doubleValue());
+                }
+            }
+            jedis.zadd(key, map);
+        } catch (Exception e) {
+            log.error("redis操作错误", e);
+            throw e;
         }
     }
 }

@@ -165,14 +165,12 @@ public class ShiroConfig {
         filterMap.put("/user", REMEMBER_ME);
         filterMap.put("/swagger/**", REMEMBER_ME);
 
-        if (PROFILE_LOCAL.equals(profile)) {
+        if (!PROFILE_REMOTE.equals(profile)) {
             // 本地免登录
             filterMap.put("/**", StringUtil.addDot(onlineSessionFilter.getFilterName(), REMEMBER_ME));
-        } else if (PROFILE_REMOTE.equals(profile) || PROFILE_WIN.equals(profile)) {
+        } else {
             // 线上需要登录
             filterMap.put("/**", StringUtil.addDot(onlineSessionFilter.getFilterName(), LOGIN_USER));
-        } else {
-            throw new RuntimeException("profile值只能为local,online:" + profile);
         }
         shiroFilter.setFilterChainDefinitionMap(filterMap);
         return shiroFilter;

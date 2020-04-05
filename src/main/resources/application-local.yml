@@ -22,6 +22,8 @@ xiaokui:
   avatarUploadPath: ${xiaokui.basePath}/avatar/
   # 系统日志目的地
   logsPath: ${xiaokui.basePath}/logs/
+  # 日志文件名
+  logName: local.log
 
 spring:
   resources:
@@ -29,13 +31,9 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     # 注意这里的GMT+8，用于解决数据库时差8问题
-#    url: jdbc:mysql://localhost:3306/newxiaokui?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=true
-#    username: root
-#    password: 199710
-    url: jdbc:mysql://120.79.20.49:3306/newxiaokui?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=false
+    url: jdbc:mysql://localhost:3306/newxiaokui?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=true
     username: root
-    password: 1238127943Hk!
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    password: 199710
   redis:
     host: localhost
     port: 6379
@@ -49,5 +47,5 @@ logging:
   level.root: info
   level.site.xiaokui: info
   # 这个sb东西去不掉
-  file: temp.txt
+  file: local.log
 #  level.org.springframework.web: debug

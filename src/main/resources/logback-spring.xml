@@ -8,9 +8,9 @@
     <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
 
     <springProperty scope="context" name="filePath" source="xiaokui.logsPath"
-                    defaultValue="localhost"/>
+                    defaultValue="/xiaokui/logs"/>
     <springProperty scope="context" name="fileName" source="xiaokui.logName"
-                    defaultValue="localhost"/>
+                    defaultValue="online.log"/>
 
     <appender name="MY_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <File>${filePath}${fileName}</File>
@@ -36,6 +36,11 @@
     <springProfile name="remote">
         <root>
             <appender-ref ref="MY_FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+    <springProfile name="test">
+        <root>
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>

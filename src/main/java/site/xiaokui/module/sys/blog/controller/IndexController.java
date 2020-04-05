@@ -28,8 +28,7 @@ import site.xiaokui.module.sys.user.entity.SysUser;
 import site.xiaokui.module.sys.user.service.UserService;
 
 import java.io.File;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author HK
@@ -60,6 +59,9 @@ public class IndexController extends BaseController {
 
     @Value("${xiaokui.recommend-count}")
     private Integer recommendCount;
+
+    @Value("${xiaokui.most-view}")
+    private Integer mostView;
 
     /**
      * 默认首页为第一位注册的博客空间
@@ -105,10 +107,10 @@ public class IndexController extends BaseController {
             proCheckPass = true;
         }
         List<SysBlog> allBlogList = blogService.listBlogByUserId(user.getId());
-
+        // 解析所有公开、受保护的博客，这一步很关键，一般会用缓存
         BlogDetailList details = BlogUtil.resolveBlogList(allBlogList, user.getId(), blogSpace, true);
         BlogUser blogUser = new BlogUser(user);
-
+        // 设置关于 和 简历
         commonConfig(model);
         // 如果指定了layout布局
         String result = dealLayout(layout, type, model, proCheckPass, details, blogUser);
@@ -129,9 +131,12 @@ public class IndexController extends BaseController {
             return ERROR;
         } else {
             List<List<SysBlog>> dirLists = details.getPublicList();
+            // 最近上传和推荐阅读，这个是查数据库或Map缓存得来的
             List recentUploadList = details.getUploadTopN(this.recentUploadCount);
             List recommendList = details.getRecommendTopN(this.recommendCount);
-            List<SysBlog> mostViewList = blogService.mostViewList(user.getId(), allBlogList);
+            // 最多访问，这个需要查redis获取topN
+            LinkedHashMap<Integer, Integer> map = blogService.getMostViewTopN(user.getId(), mostView);
+            List<SysBlog> mostViewList = resolveMostViewList(details, map);
 
             blogUser.setBlogList(dirLists);
             blogUser.setPub(details.getPub());
@@ -189,7 +194,9 @@ public class IndexController extends BaseController {
             }
             List recentUploadList = details.getUploadTopN(this.recentUploadCount);
             List recommendList = details.getRecommendTopN(this.recommendCount);
-            List<SysBlog> mostViewList = blogService.mostViewList(blogUser.getId(), details.getAllBlogList());
+            // 最多访问，这个需要查redis获取topN
+            LinkedHashMap<Integer, Integer> map = blogService.getMostViewTopN(blogUser.getId(), mostView);
+            List<SysBlog> mostViewList = resolveMostViewList(details, map);
             model.addAttribute("upload", recentUploadList);
             model.addAttribute("recommend", recommendList);
             model.addAttribute("view", mostViewList);
@@ -241,9 +248,9 @@ public class IndexController extends BaseController {
             blog.setNextBlogTitle(nextBlog.getTitle());
         }
         blog.setFilePath(BlogUtil.getFilePath(user.getId(), blog.getDir(), blog.getName()));
-        blog.setViewCount(blogService.getViewCount(blog.getId()));
+        blog.setViewCount(blogService.getViewCountFromRedis(user.getId(), blog.getId()));
 
-        blogService.addViewCount(this.getIP(), this.getUserId(), blog.getId(), blog.getUserId());
+        blogService.addViewCountIntoRedis(this.getIP(), this.getUserId(), blog.getId(), blog.getUserId());
         BlogUser blogUser = new BlogUser(user);
         blogUser.setBlog(blog);
         model.addAttribute("user", blogUser);
@@ -270,7 +277,6 @@ public class IndexController extends BaseController {
         List<SysBlog> blogList = blogService.query(query);
         BlogDetailList details = BlogUtil.resolveBlogList(blogList, user.getId(), blogSpace, false);
         BlogUser blogUser = new BlogUser(user);
-
 
         blogUser.setPub(details.getPub());
         blogUser.setPro(details.getPro());
@@ -347,5 +353,21 @@ public class IndexController extends BaseController {
             }
         }
         return user;
+    }
+
+    private List<SysBlog> resolveMostViewList(BlogDetailList details, LinkedHashMap<Integer, Integer> map) {
+        List<SysBlog> list = new ArrayList<>(map.size());
+        List<SysBlog> allBlogList = details.getAllBlogList();
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            for (SysBlog blog : allBlogList) {
+                // 如果博客id相同
+                if (entry.getKey().equals(blog.getId())) {
+                    // 设置访问量
+                    blog.setViewCount(entry.getValue());
+                    list.add(blog);
+                }
+            }
+        }
+        return list;
     }
 }

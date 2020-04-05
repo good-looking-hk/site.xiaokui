@@ -7,27 +7,17 @@ package site.xiaokui.module.sys.blog;
 public class RedisKey {
 
     /**
-     * 最近访问后缀，key自动过期
+     * 单个用户博客最多访问有序集合后缀
      */
-    public static final String KEY_RECENT_UPLOAD_SUFFIX = "_krus";
+    public static final String USER_BLOG_VIEW_COUNT_SORT_MAP_SUFFIX = "_user_blog_view_count_sort_map";
 
     /**
-     * 最多访问后缀--单个用户博客，默认只取top10
+     * 用户或IP地址对所有博客贡献访问量MAP
      */
-    public static final String KEY_MOST_VIEW_SUFFIX = "_most_view_list";
+    public static final String USER_OR_IP_CONTRIBUTE_VIEW_COUNT_MAP  = "user_or_ip_contribute_view_count_map";
 
     /**
-     * 记录博客访问ip后缀，需要匹配删除
+     * 用户或IP对单篇博客的贡献访问量后缀
      */
-    public static final String HASH_IP_VIEWS_SUFFIX = "_blog_view_ip_list";
-
-    /**
-     * 博客访问次数--所有博客
-     */
-    public static final String ALL_HASH_BLOG_VIEW_COUNT = "all_blog_view_map";
-
-    /**
-     * 黑名单，不能增加阅读量，直接删除key即可
-     */
-    public static final String KEY_BLACK_VIEW_IP = "black_view_list";
+    public static final String USER_OR_IP_TO_BLOG_CONTRIBUTE_VIEW_COUNT_SUFFIX = "_user_or_ip_to_blog_contribute_view_count_map";
 }

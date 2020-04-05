@@ -25,6 +25,9 @@ public class BaseConstants {
 
     public static final String PROFILE_WIN = "win";
 
+    public static final String PROFILE_TEST = "test";
+
+
     // shiro常量
 
     /**
