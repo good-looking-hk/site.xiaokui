@@ -82,6 +82,7 @@ public class ScheduleCenter implements ApplicationRunner, DisposableBean {
      */
     @Override
     public void destroy() throws Exception {
+        syncRedisViewCountToDbTask().execute();
     }
 
     /**
