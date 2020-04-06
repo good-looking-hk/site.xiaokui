@@ -10,7 +10,7 @@ import cn.hutool.extra.mail.MailUtil;
 public class EmailService {
 
     private static final MailAccount account = new MailAccount();
-    private static final String ME = "467914950@qq.com";
+    private static final String ME = "3292028193@qq.com";
     static {
         account.setHost("smtp.163.com");
         account.setPort(25);
@@ -22,5 +22,9 @@ public class EmailService {
 
     public static void sendToMe(String content) {
         MailUtil.send(account, ME, "小葵博客消息", content, false);
+    }
+
+    public static void main(String[] args) {
+        sendToMe("hello");
     }
 }

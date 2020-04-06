@@ -41,6 +41,7 @@
     </springProfile>
     <springProfile name="test">
         <root>
+            <appender-ref ref="MY_FILE"/>
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>

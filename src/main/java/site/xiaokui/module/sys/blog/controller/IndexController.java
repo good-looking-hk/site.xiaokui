@@ -248,9 +248,12 @@ public class IndexController extends BaseController {
             blog.setNextBlogTitle(nextBlog.getTitle());
         }
         blog.setFilePath(BlogUtil.getFilePath(user.getId(), blog.getDir(), blog.getName()));
-        blog.setViewCount(blogService.getViewCountFromRedis(user.getId(), blog.getId()));
 
+        // 这里提前加了1
+        blog.setViewCount(blogService.getViewCountFromRedis(user.getId(), blog.getId()));
+        // 实时增加访问量
         blogService.addViewCountIntoRedis(this.getIP(), this.getUserId(), blog.getId(), blog.getUserId());
+
         BlogUser blogUser = new BlogUser(user);
         blogUser.setBlog(blog);
         model.addAttribute("user", blogUser);

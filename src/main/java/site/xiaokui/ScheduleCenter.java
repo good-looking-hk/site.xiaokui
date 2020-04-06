@@ -29,7 +29,7 @@ import java.util.Set;
 import static site.xiaokui.module.base.BaseConstants.PROFILE_REMOTE;
 
 /**
- * 具体cron表达是间http://www.cnblogs.com/peida/archive/2013/01/08/2850483.html
+ * 具体cron表达是间 http://www.cnblogs.com/peida/archive/2013/01/08/2850483.html
  *
  * @author HK
  * @date 2019-02-21 15:27
@@ -57,10 +57,15 @@ public class ScheduleCenter implements ApplicationRunner, DisposableBean {
             // 已经开始监听，不可再次开始
             return;
         }
+        Task taks1 = clearContributeBlackListTask();
+        Task task2 = syncRedisViewCountToDbTask();
         if (PROFILE_REMOTE.equals(profile)) {
-//            startTaskPerNightZeroClock("REDIS_TASK", blogService.redisTask());
+            startTaskPerNightZeroClock("清除黑名单任务",taks1);
+            startTaskPerFourHour("同步博客访问量任务", task2);
+        } else {
+            testTask(taks1);
+            testTask(task2);
         }
-//        testTask(blogService.redisTask());
     }
 
     /**
@@ -80,32 +85,42 @@ public class ScheduleCenter implements ApplicationRunner, DisposableBean {
     }
 
     /**
-     * 每天00 : 00分执行清空黑名单任务
-     * cron = 59 23 * * *
+     * 每天00 : 00分执行清空博客贡献访问量黑名单任务
+     * cron = 24 00 * * *
      */
     public void startTaskPerNightZeroClock(String taskName, Task task) {
         log.info("开始任务(每天24:00):" + taskName);
-        CronUtil.schedule(taskName, "59 23 * * *", task);
+        CronUtil.schedule(taskName, "00 24 * * *", task);
+    }
+
+    public void startTaskPerFourHour(String taskName, Task task) {
+        log.info("开始任务(每4小时):" + taskName);
+        CronUtil.schedule(taskName, "* */4 * * *", task);
     }
 
     public void testTask(Task task) {
         Date date = new Date();
         int hour = DateUtil.hour(date, true);
         int minute = DateUtil.minute(date);
-        CronUtil.schedule("TEST_TASK", (minute + 1) + " " + hour + " * * *", task);
+        CronUtil.schedule ((minute + 1) + " " + hour + " * * *", task);
         log.debug("测试任务将于" + hour + "时" + (minute + 1) + "分开始");
     }
 
-    /**
-     * 开始任务时，会事先准备好缓存数据
-     * 依赖于{@link ScheduleCenter}执行
-     * 每天23：59执行
-     */
-    @Log(name = "redis数据同步至数据库", writeToDB = true)
-    public Task redisTask() {
+    public Task clearContributeBlackListTask() {
         return new Task() {
             @Override
+            public void execute() {
+                blogService.clearContributeBlackList();
+            }
+        };
+    }
 
+    public Task syncRedisViewCountToDbTask() {
+        return new Task() {
+            @Override
+            public void execute() {
+                blogService.syncRedisViewCountToDb();
+            }
         };
     }
 }
