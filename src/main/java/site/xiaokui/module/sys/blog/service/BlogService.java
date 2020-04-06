@@ -204,7 +204,7 @@ public class BlogService extends BaseService<SysBlog> {
                     ));
                 }
             }
-            log.info("redis博客阅读量记录更新至数据库耗时{}ms，记录为{}条", TimeUnit.MILLISECONDS.toMillis(System.nanoTime() - start), count);
+            log.info("redis博客阅读量记录更新至数据库耗时{}ms，记录为{}条", TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start), count);
         } catch (Exception e) {
             if (PROFILE_REMOTE.equals(profile)) {
                 String msg = ExceptionUtil.stacktraceToString(e);

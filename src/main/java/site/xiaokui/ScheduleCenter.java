@@ -57,13 +57,13 @@ public class ScheduleCenter implements ApplicationRunner, DisposableBean {
             // 已经开始监听，不可再次开始
             return;
         }
-        Task taks1 = clearContributeBlackListTask();
+        Task task1 = clearContributeBlackListTask();
         Task task2 = syncRedisViewCountToDbTask();
         if (PROFILE_REMOTE.equals(profile)) {
-            startTaskPerNightZeroClock("清除黑名单任务",taks1);
+            startTaskPerNightZeroClock("清除黑名单任务",task1);
             startTaskPerFourHour("同步博客访问量任务", task2);
         } else {
-            testTask(taks1);
+            testTask(task1);
             testTask(task2);
         }
     }
@@ -91,14 +91,13 @@ public class ScheduleCenter implements ApplicationRunner, DisposableBean {
      */
     public void startTaskPerNightZeroClock(String taskName, Task task) {
         log.info("开始任务(每天24:00):" + taskName);
-        CronUtil.schedule(taskName, "00 24 * * *", task);
+        CronUtil.schedule(taskName, "00 00 * * *", task);
     }
 
     public void startTaskPerFourHour(String taskName, Task task) {
         log.info("开始任务(每4小时):" + taskName);
-        CronUtil.schedule(taskName, "* */4 * * *", task);
+        CronUtil.schedule(taskName, "01 */4 * * *", task);
     }
-
     public void testTask(Task task) {
         Date date = new Date();
         int hour = DateUtil.hour(date, true);

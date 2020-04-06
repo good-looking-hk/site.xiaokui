@@ -84,7 +84,6 @@ public class LogAspect {
         }
         if (sb3 != null) {
             sb3.insert(0, "执行");
-            log.info(sb3.toString());
         }
         if (writeToDb) {
             SysLog sysLog = new SysLog();
