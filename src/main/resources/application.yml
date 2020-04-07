@@ -33,12 +33,12 @@ xiaokui:
   # 推荐数量
   recommend-count: 16
   # 单个IP单日对单篇博客最大贡献访问量
-  single-ip-contribute-blog: 10
+  single-ip-contribute-blog: 5
   # 单个IP单日对所有博客最大贡献访问量
-  single-ip-contribute--all-blog: 40
+  single-ip-contribute--all-blog: 20
   # 单个用户单日对单篇博客最大贡献访问量
   single-user-contribute-blog: 20
   # 单个用户单日对所有博客最大贡献访问量，两个限制条件不冲突
-  single-user-contribute--all-blog: 80
+  single-user-contribute--all-blog: 40
   session-alive: 60 * 60 * 24
   session-check: 60 * 60 * 6

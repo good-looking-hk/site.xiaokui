@@ -189,7 +189,7 @@ public class BlogService extends BaseService<SysBlog> {
             }
             for (String key : keySet) {
                 // redis记录更新至数据库
-                Set<Tuple> sets = jedis.zrangeByScoreWithScores(key + RedisKey.USER_BLOG_VIEW_COUNT_SORT_MAP_SUFFIX, "-inf", "+inf");
+                Set<Tuple> sets = jedis.zrangeByScoreWithScores(key, "-inf", "+inf");
                 for (Tuple t : sets) {
                     SysBlog blog = new SysBlog();
                     blog.setId(Integer.valueOf(t.getElement()));
