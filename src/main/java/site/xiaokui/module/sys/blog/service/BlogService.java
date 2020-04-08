@@ -1,5 +1,6 @@
 package site.xiaokui.module.sys.blog.service;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.beetl.sql.core.SQLReady;
@@ -11,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Tuple;
 import site.xiaokui.common.aop.annotation.Log;
+import site.xiaokui.common.util.TimeUtil;
 import site.xiaokui.module.base.entity.ResultEntity;
 import site.xiaokui.module.base.service.BaseService;
 import site.xiaokui.module.base.service.EmailService;
@@ -22,10 +24,7 @@ import site.xiaokui.module.sys.blog.util.BlogFileHelper;
 import site.xiaokui.module.sys.blog.util.BlogUtil;
 
 import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static site.xiaokui.module.base.BaseConstants.PROFILE_REMOTE;
@@ -56,6 +55,26 @@ public class BlogService extends BaseService<SysBlog> {
     }
 
     public void addViewCountIntoRedis(String ip, Integer userId, Integer blogId, Integer owner) {
+        Date now = new Date();
+        int hours = DateUtil.hour(now, true);
+        int minute = DateUtil.minute(now);
+        if (userId == null) {
+            // 谷歌爬虫一般从23:20多一点开始，到1:00介绍
+            // 中午从12:10多一点开始，到12:30左右结束
+            if (hours > 23 && minute > 20) {
+                return;
+            }
+            if (hours < 6) {
+                return;
+            }
+            if (hours == 12 && 10 < minute && minute < 30) {
+                // 可能存在误杀
+                // 在不要求用户登录的情况下，想要不被谷歌爬虫刷一个访问量，只有两种办法
+                // 1.前端js判断是不是爬虫（可以判断是不是国外ip）,然后单独调增加访问量接口，但这样，接口会暴露
+                // 2.后端判断是不是爬虫，但可能需要ip库，白白增加了网络请求开销
+                // TODO
+            }
+        }
         blogCacheService.addViewCount(ip, userId, blogId, owner);
     }
 
