@@ -131,7 +131,7 @@ public class OnlineSessionFilter extends AccessControlFilter {
             out.flush();
             out.close();
         } catch (Exception e) {
-            System.err.println("KickoutSessionFilter.class 输出JSON异常，可以忽略。");
+            e.printStackTrace();
         }
     }
 

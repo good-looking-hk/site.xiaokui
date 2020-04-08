@@ -1,9 +1,12 @@
 package site.xiaokui.module.sys.user.service;
 
+import org.beetl.sql.core.query.Query;
 import org.springframework.stereotype.Service;
 import site.xiaokui.config.shiro.ShiroKit;
 import site.xiaokui.module.base.service.BaseService;
 import site.xiaokui.module.sys.user.entity.SysUser;
+
+import java.util.List;
 
 /**
  * @author HK
@@ -38,7 +41,12 @@ public class UserService extends BaseService<SysUser> {
 
     public boolean resetPwd(Integer id) {
         return resetPwd(id, "123456");
+    }
 
+    public List<SysUser> allBlogUser() {
+        Query<SysUser> query = this.createQuery();
+        query.andNotEq("blog_space", "").andIsNotNull("blog_space");
+        return this.query(query);
     }
 
     public boolean resetPwd(Integer id, String newPassword) {

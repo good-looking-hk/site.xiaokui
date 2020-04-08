@@ -42,7 +42,7 @@ public class CacheCenter implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         this.sysConfigCache = initCacheMap();
-        List<SysUser> list = userService.all();
+        List<SysUser> list = userService.allBlogUser();
         for (SysUser user : list) {
             blogService.setMostViewCache(user.getId());
         }

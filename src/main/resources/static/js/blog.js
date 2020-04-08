@@ -2,7 +2,6 @@
  * Created by HK on 2017/07/20.
  */
 $(function () {
-
     var count = 0;
     var content = "";
     $("#content h2").each(function () {
@@ -84,6 +83,59 @@ $(function () {
     //         $('#right-nav').css({top:'16%'});
     //     }
     // });
-
+    var obj = countChars();
+    $('#countChars').text('字数约 ' + obj.中英文单词数 + ' 字，阅读耗时约 ' + (parseInt(obj.中英文单词数) / 493).toFixed(1) + ' 分钟');
 });
+
+function countChars() {
+    var c = $("#content .panel-body");
+    var cvalue=c.text().replace(/\r\n/g,"\n");
+    var sarr=cvalue.split("");
+    var len_total=sarr.length;
+    var r = {
+        "wd":0,
+        "nwd":0,
+        "c":0,
+        "cb":0,
+        "r":0,
+        "en":0,
+        "cn":0,
+        "bl":0
+    };
+    var words=cvalue.match(/\b\w+\b/g)||[];
+    var cnwords=cvalue.match(/[\u4e00-\u9fa5]/g)||[];
+    r.nwd=words.length;
+    r.cn=cnwords.length;
+    for(var i=0;i<len_total;i++){
+        r.c++;
+        switch(true){
+            case /[a-zA-Z]/.test(sarr[i]):
+                r.en++;
+                break;
+            case /\S/.test(sarr[i]):
+                r.cb++;
+                break;
+            case /\s/.test(sarr[i]):
+                if(sarr[i]=="\n"||sarr[i]=="\r"){
+                    r.r++;
+                }else{
+                    r.bl++;
+                }
+        }
+    }
+    r.wd=r.nwd+r.cn;
+    // 面向中文编程，没见过吗？
+    // 哼，小菜鸟！
+    return {
+        '总字符数目': r.c-r.r,
+        '总字符(不含空白)数目': r.c-r.bl-r.r,
+        '空白字符数目': r.bl,
+        '英文字符数目': r.en,
+        '其它字符数目': r.c-r.en-r.bl-r.cn-r.r,
+        '中英文单词数': r.wd,
+        '中文字数': r.cn,
+        '英文单词数': r.nwd,
+        '行数': r.r+1
+    }
+}
 

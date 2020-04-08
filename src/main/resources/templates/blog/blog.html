@@ -12,7 +12,7 @@
                 @ minute = minute < 5 ? minute + 1 : minute;
                 @ minute = minute > 10 ? minute - 2 : minute;
                 @ minute = minute > 20 ? minute - 4 : minute;
-            <p style="font-size: 14px;color: #777777;">字数约 ${user.blog.characterCount} 字, 阅读耗时约 ${minute} 分钟</p>
+            <p id="countChars" style="font-size: 14px;color: #777777;"></p>
             @}
             @printFile("blog:" + user.blog.filePath + ".html");
             @if(isNotEmpty(user.blog.createTime) && isNotEmpty(user.blog.updateTime)) {

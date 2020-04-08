@@ -41,12 +41,8 @@ public class ScheduleCenter implements ApplicationRunner, DisposableBean {
     @Autowired
     private BlogService blogService;
 
-    @Autowired
-    private RedisService redisService;
-
     @Value("${spring.profiles.active}")
     private String profile;
-
 
     @Override
     public void run(ApplicationArguments args) {
