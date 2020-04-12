@@ -84,7 +84,21 @@ $(function () {
     //     }
     // });
     var obj = countChars();
-    $('#countChars').text('字数约 ' + obj.中英文单词数 + ' 字，阅读耗时约 ' + (parseInt(obj.中英文单词数) / 493).toFixed(1) + ' 分钟');
+    var minute = (parseInt(obj.中英文单词数) / 493).toFixed(1)
+    if (minute > 25) {
+        minute -= 5.5;
+    } else if (minute > 20) {
+        minute -= 3.5
+    } else if (minute > 15) {
+        minute -= 2
+    } else if (minute > 10) {
+        minute -= 1
+    } else if (minute > 5) {
+        minute -= 0.5
+    } else if (minute < 2) {
+        minute += 0.3
+    }
+    $('#countChars').text('字数约 ' + obj.中英文单词数 + ' 字，阅读耗时约 ' + minute + ' 分钟');
 });
 
 function countChars() {
@@ -126,6 +140,7 @@ function countChars() {
     r.wd=r.nwd+r.cn;
     // 面向中文编程，没见过吗？
     // 哼，小菜鸟！
+    // 联系邮箱 467914950@qq.com
     return {
         '总字符数目': r.c-r.r,
         '总字符(不含空白)数目': r.c-r.bl-r.r,

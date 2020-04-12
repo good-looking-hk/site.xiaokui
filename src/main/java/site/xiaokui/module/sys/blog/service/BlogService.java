@@ -39,7 +39,7 @@ import static site.xiaokui.module.sys.blog.BlogConstants.HTML_SUFFIX;
  */
 @Slf4j
 @Service
-public class BlogService extends BaseService<SysBlog> {
+public class BlogService extends BaseService<SysBlog>{
 
     @Autowired
     private BlogCacheService blogCacheService;
@@ -71,7 +71,7 @@ public class BlogService extends BaseService<SysBlog> {
                 // 可能存在误杀
                 // 在不要求用户登录的情况下，想要不被谷歌爬虫刷一个访问量，只有两种办法
                 // 1.前端js判断是不是爬虫（可以判断是不是国外ip）,然后单独调增加访问量接口，但这样，接口会暴露
-                // 2.后端判断是不是爬虫，但可能需要ip库，白白增加了网络请求开销
+                // 2.后端判断是不是爬虫，但可能需要访问远程ip库，白白增加了网络请求开销
                 // TODO
             }
         }

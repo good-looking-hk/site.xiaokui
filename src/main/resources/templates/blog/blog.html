@@ -7,13 +7,7 @@
             <span class="next-blog"><a href='${ctxPath}${user.blog.nextBlog!"#"}'>下一篇:${user.blog.nextBlogTitle!"本系列完"}</a></span>
         </div>
         <div class="panel-body">
-            @if (isNotEmpty(user.blog.characterCount)) {
-                @ var minute = parseInt(user.blog.characterCount / 1050) + 1;
-                @ minute = minute < 5 ? minute + 1 : minute;
-                @ minute = minute > 10 ? minute - 2 : minute;
-                @ minute = minute > 20 ? minute - 4 : minute;
             <p id="countChars" style="font-size: 14px;color: #777777;"></p>
-            @}
             @printFile("blog:" + user.blog.filePath + ".html");
             @if(isNotEmpty(user.blog.createTime) && isNotEmpty(user.blog.updateTime)) {
             <blockquote>

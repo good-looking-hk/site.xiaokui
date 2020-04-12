@@ -1,30 +1,19 @@
 package site.xiaokui;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
 import lombok.extern.slf4j.Slf4j;
-import org.beetl.sql.core.SQLReady;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Tuple;
-import site.xiaokui.common.aop.annotation.Log;
-import site.xiaokui.module.base.service.EmailService;
-import site.xiaokui.module.base.service.RedisService;
-import site.xiaokui.module.sys.blog.RedisKey;
-import site.xiaokui.module.sys.blog.entity.SysBlog;
 import site.xiaokui.module.sys.blog.service.BlogService;
 
 import java.util.Date;
-import java.util.Map;
-import java.util.Set;
 
 import static site.xiaokui.module.base.BaseConstants.PROFILE_REMOTE;
 
@@ -98,8 +87,8 @@ public class ScheduleCenter implements ApplicationRunner, DisposableBean {
         Date date = new Date();
         int hour = DateUtil.hour(date, true);
         int minute = DateUtil.minute(date);
-        CronUtil.schedule ((minute + 1) + " " + hour + " * * *", task);
-        log.debug("测试任务将于" + hour + "时" + (minute + 1) + "分开始");
+        CronUtil.schedule ((minute + 2) + " " + hour + " * * *", task);
+        log.debug("测试任务将于" + hour + "时" + (minute + 2) + "分开始");
     }
 
     public Task clearContributeBlackListTask() {
