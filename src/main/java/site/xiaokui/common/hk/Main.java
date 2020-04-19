@@ -2,6 +2,7 @@ package site.xiaokui.common.hk;
 
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.extra.mail.MailAccount;
+import site.xiaokui.config.shiro.ShiroKit;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -28,8 +29,11 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        A a = new A();
-        String result = ((B) a).getB();
+//        A a = new A();
+//        String result = ((B) a).getB();
+//        System.out.println(result);
+
+        String result = ShiroKit.getInstance().md5("金证-黄葵-199710-467", "zh6l4tq0f4");
         System.out.println(result);
     }
 }

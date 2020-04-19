@@ -3,16 +3,18 @@ package site.xiaokui.module.base.service;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.Protocol;
+import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.JedisException;
+import redis.clients.util.Pool;
 import site.xiaokui.common.util.SerializeUtil;
 
+import java.util.HashSet;
+
 /**
- * 使系统支持Redis支持普通K/V存储
  *
  * @author HK
  * @date 2018-10-06 21:25
@@ -21,9 +23,9 @@ import site.xiaokui.common.util.SerializeUtil;
 @Repository
 public class RedisService {
 
-    private final JedisPool jedisPool;
+    private Pool<Jedis> pool;
 
-    public static final int ONE_HOUR = 60 * 60, ONE_DAY = 24 * ONE_HOUR, ONE_WEEK = 7 * ONE_DAY, ONE_MONTH = 30 * ONE_DAY;
+    private static final int ONE_HOUR = 60 * 60, ONE_DAY = 24 * ONE_HOUR, ONE_WEEK = 7 * ONE_DAY, ONE_MONTH = 30 * ONE_DAY;
 
     public RedisService(@Value("${spring.redis.host}") String ip, @Value("${spring.redis.port}") int port, @Value("${spring.redis.password}") String password) {
         JedisPoolConfig config = new JedisPoolConfig();
@@ -35,13 +37,13 @@ public class RedisService {
         config.setMaxTotal(16);
 
         if (password == null || "".equals(password)) {
-            jedisPool = new JedisPool(config, ip, port);
+            pool = new JedisPool(config, ip, port);
         } else {
-            jedisPool = new JedisPool(config, ip, port, Protocol.DEFAULT_TIMEOUT, password,
+            pool = new JedisPool(config, ip, port, Protocol.DEFAULT_TIMEOUT, password,
                     Protocol.DEFAULT_DATABASE, null);
         }
         try {
-            Jedis jedis = jedisPool.getResource();
+            Jedis jedis = pool.getResource();
             jedis.close();
         } catch (JedisException e) {
             log.error("【RedisService】--连接redis失败(localhost：{}，port：{}，password：{})", ip, port, password);
@@ -51,14 +53,47 @@ public class RedisService {
     }
 
     /**
-     * 虽然暴露了Jedis对象，但必须记得关闭
+     * redis哨兵模式
+     */
+    public void initSentinelRedisService(@Value("${spring.redis.host}") String ip, @Value("${spring.redis.port}") int port, @Value("${spring.redis.password}") String password,
+            @Value("${spring.redis.master}") String master) {
+        JedisPoolConfig config = new JedisPoolConfig();
+        // 最大空闲连接数, 默认8个
+        config.setMaxIdle(16);
+        // 获取连接时的最大等待毫秒数(如果设置为阻塞时BlockWhenExhausted),如果超时就抛异常, 小于零:阻塞不确定的时间,  默认-1
+        config.setMaxWaitMillis(8000);
+        // 最大连接数, 默认8个
+        config.setMaxTotal(16);
+        // 设置闲置连接淘汰时间
+        config.setEvictorShutdownTimeoutMillis(6000);
+        HashSet<String> sets = new HashSet<>(4);
+        sets.add("127.0.0.1:7101");
+        sets.add("127.0.0.1:7102");
+        sets.add("127.0.0.1:7103");
+        if (password == null || "".equals(password)) {
+            pool = new JedisSentinelPool(master, sets, config);
+        } else {
+            pool = new JedisSentinelPool(master, sets, config, password);
+        }
+        try {
+            Jedis jedis = pool.getResource();
+            jedis.close();
+        } catch (JedisException e) {
+            log.error("【RedisService】--连接redis失败(localhost：{}，port：{}，password：{})", ip, port, password);
+            throw e;
+        }
+        log.info("【RedisService】--已成功连接到redis(localhost：{}，port：{}，password：{})", ip, port, password);
+    }
+
+    /**
+     * 虽然暴露了Jedis对象，但必须记得关闭以返回连接池资源
      */
     public Jedis getRedis() {
-        return jedisPool.getResource();
+        return pool.getResource();
     }
 
     public void set(String k, Object v, int secs) {
-        Jedis jedis = jedisPool.getResource();
+        Jedis jedis = pool.getResource();
         try {
             byte[] bytes = SerializeUtil.serialize(v);
             log.debug("将（{}）类型对象放入Redis缓存", v.getClass().getSimpleName());
@@ -72,7 +107,7 @@ public class RedisService {
     }
 
     public <T> T get(String k, Class<T> cls) {
-        Jedis jedis = jedisPool.getResource();
+        Jedis jedis = pool.getResource();
         try {
             byte[] bytes = jedis.get(k.getBytes());
             if (bytes != null) {
@@ -91,7 +126,7 @@ public class RedisService {
     }
 
     public void remove(String... keys) {
-        Jedis jedis = jedisPool.getResource();
+        Jedis jedis = pool.getResource();
         jedis.del(keys);
         jedis.close();
     }

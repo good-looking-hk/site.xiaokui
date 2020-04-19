@@ -1577,13 +1577,14 @@ header, .context-menu, .megamenu-content, footer {
 
 #right-nav {
     /*background: #F8F8F8;*/
-    width: 13%;
+    width: 14%;
     padding-top: 1%;
     padding-bottom: 1%;
     float: right;
     position: fixed;
     /*top: 18%;*/
-    top: 132px;
+    /*top: 132px;*/
+    top: 125px;
     right: 6%;
     border: solid #eeeeee 2px;
     /*border: solid green 1px;*/

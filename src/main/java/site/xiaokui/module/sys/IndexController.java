@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import redis.clients.jedis.Jedis;
 import site.xiaokui.CacheCenter;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.module.base.controller.BaseController;
 import site.xiaokui.module.base.entity.ResultEntity;
+import site.xiaokui.module.base.service.RedisService;
 import site.xiaokui.module.sys.user.UserConstants;
 import site.xiaokui.module.sys.user.entity.SysMenu;
 import site.xiaokui.module.sys.user.service.MenuService;
@@ -19,6 +21,7 @@ import site.xiaokui.module.sys.user.service.MenuService;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 项目根控制器，匹配 /*
@@ -91,11 +94,5 @@ public class IndexController extends BaseController {
     @GetMapping("/unauthorized")
     public String unauthorized() {
         return "/unauthorized";
-    }
-
-    @PostMapping("/test")
-    @ResponseBody
-    public ResultEntity list() {
-        return ResultEntity.ok();
     }
 }

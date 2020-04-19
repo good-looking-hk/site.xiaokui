@@ -49,7 +49,7 @@
             } else {
                 layer.prompt({
                     formType: 0,
-                    title: "请输入访问密码（公司名/三个字）",
+                    title: "仅对部分人开发，密码格式如华为-张三-199906-425",
                     success: function (layero, index) {
                         HK.bindLayerBtn();
                     },
@@ -89,6 +89,8 @@
     $(function () {
         if (HK.isPc() && window.innerWidth > 1465) {
             $('.hid').toggleClass('hid');
+        } else {
+            console.error("--------屏 幕 有 点 小 啊， 影 响 界 面 正 常 显 示-------");
         }
         $("#toTop").click(function () {
             $("html,body").finish().animate({"scrollTop": "0px"}, 500);

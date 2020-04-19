@@ -84,21 +84,21 @@ $(function () {
     //     }
     // });
     var obj = countChars();
-    var minute = (parseInt(obj.中英文单词数) / 493).toFixed(1)
+    var minute = (parseInt(obj.中英文单词数) / 493).toFixed(1);
     if (minute > 25) {
         minute -= 5.5;
     } else if (minute > 20) {
-        minute -= 3.5
+        minute -= 3.5;
     } else if (minute > 15) {
-        minute -= 2
+        minute -= 2;
     } else if (minute > 10) {
-        minute -= 1
+        minute -= 1;
     } else if (minute > 5) {
-        minute -= 0.5
+        minute -= 0.5;
     } else if (minute < 2) {
-        minute += 0.3
+        minute -= -0.3;
     }
-    $('#countChars').text('字数约 ' + obj.中英文单词数 + ' 字，阅读耗时约 ' + minute + ' 分钟');
+    $('#countChars').text('字数约 ' + obj.中英文单词数 + ' 字，阅读耗时约 ' + Number(minute).toFixed(1) + ' 分钟');
 });
 
 function countChars() {

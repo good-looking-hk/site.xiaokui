@@ -2,7 +2,7 @@
 #debug: true
 #trace: true
 
-beetl-beetlsql.dev: true
+beetl-beetlsql.dev: false
 beetlsql:
   dev: true #是否是开发环境，默认为true
   basePackage: site.xiaokui.module.sys
@@ -39,6 +39,7 @@ spring:
     host: localhost
     port: 6379
     password:
+    master: mymaster
 #  jackson:
 #    date-format: yyyy-MM-dd HH:mm:ss
 #    time-zone: GMT+8
@@ -48,5 +49,6 @@ logging:
   level.root: info
   level.site.xiaokui: info
   level.org.springframework.web: debug
+  level.redis: trace
   # 这个sb东西去不掉
   file: local.log
