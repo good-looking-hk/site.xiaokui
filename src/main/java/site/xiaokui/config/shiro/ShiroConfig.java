@@ -160,6 +160,7 @@ public class ShiroConfig {
 
         // 放行博客访问链接
         filterMap.put("/blog/**", ANYBODY);
+        filterMap.put("/wx/**", ANYBODY);
 
         // 其余都需要验证
         filterMap.put("/user", REMEMBER_ME);

@@ -84,6 +84,6 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ResultEntity exception(RuntimeException e, HttpServletRequest request) {
         e.printStackTrace();
-        return ResultEntity.error(e.getMessage() + " cause by " + e.getCause());
+        return ResultEntity.error(e.getMessage());
     }
 }

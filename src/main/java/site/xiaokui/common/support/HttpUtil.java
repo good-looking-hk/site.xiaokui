@@ -21,6 +21,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static cn.hutool.extra.servlet.ServletUtil.getClientIP;
+
 /**
  * 继承Hutool工具类，更多功能特性有待发现
  * @author HK

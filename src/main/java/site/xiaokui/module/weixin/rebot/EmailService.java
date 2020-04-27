@@ -1,4 +1,4 @@
-package site.xiaokui.module.base.service;
+package site.xiaokui.module.weixin.rebot;
 
 import cn.hutool.extra.mail.MailAccount;
 import cn.hutool.extra.mail.MailUtil;

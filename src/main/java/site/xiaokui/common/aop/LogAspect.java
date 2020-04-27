@@ -59,7 +59,11 @@ public class LogAspect {
 
     private Object dealLog(ProceedingJoinPoint point, Method method) throws Throwable{
         Object target = null;
-        Log annotation = method.getAnnotation(Log.class);
+        Object realObj = point.getTarget();
+        MethodSignature msig = (MethodSignature) point.getSignature();;
+        Method currentMethod = realObj.getClass().getMethod(msig.getName(), msig.getParameterTypes());
+        // Log annotation = method.getAnnotation(Log.class);
+        Log annotation = currentMethod.getAnnotation(Log.class);
         String name = annotation.name();
         boolean basic = annotation.basic();
         boolean statisticTime = annotation.statisticTime();
@@ -96,6 +100,8 @@ public class LogAspect {
                 sysLog.setRemark(sb3.toString());
             }
             sqlManager.insert(SysLog.class, sysLog);
+        } else {
+            log.info(sb3.toString());
         }
         return target;
     }

@@ -25,6 +25,18 @@ spring:
 #    username: guest
 #    password: guest
 
+wx:
+  mp:
+    configs:
+      - appId: wxda9a290c4b3e91fd
+        secret: 7f299f10bac94a0c7b2020e11327cf76
+        token: wxda9a290c4b3e91fd
+        aesKey: nIIVMI0VRsVD6DhSQ9H5G88TswVg1reXO0maaLuP0Yc
+      - appId: wxcf34437c569d6496
+        secret: eb9c4cbafbb9a5ea4ca1ded733e6c1d4
+        token: hk467914950
+        aesKey: nIIVMI0VRsVD6DhSQ9H5G88TswVg1reXO0maaLuP0Yc
+
 xiaokui:
   # 最对访问数量
   most-view: 8
