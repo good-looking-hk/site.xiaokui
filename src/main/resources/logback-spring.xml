@@ -39,7 +39,7 @@
             <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
-    <springProfile name="test">
+    <springProfile name="test" additivity="false">
         <root>
             <appender-ref ref="MY_FILE"/>
             <appender-ref ref="CONSOLE"/>
