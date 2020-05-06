@@ -3,9 +3,9 @@ package site.xiaokui.module.test.beetlsql;
 import cn.hutool.json.JSONObject;
 import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.query.Query;
-import site.xiaokui.module.sys.user.entity.SysMenu;
-import site.xiaokui.module.sys.user.entity.SysUser;
-import site.xiaokui.module.base.service.BaseService;
+import site.xiaokui.base.service.BaseService;
+import site.xiaokui.module.user.entity.SysMenu;
+import site.xiaokui.module.user.entity.SysUser;
 
 import java.util.Date;
 import java.util.HashMap;

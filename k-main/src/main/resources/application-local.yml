@@ -4,8 +4,8 @@
 
 beetl-beetlsql.dev: false
 beetlsql:
-  dev: true #是否是开发环境，默认为true
-  basePackage: site.xiaokui.module.sys
+  dev: true # 是否是开发环境，默认为true
+  basePackage: site.xiaokui
   daoSuffix: Dao
 
 # 需要对spring url内部规则进行重写，参见类 StaticResourceConfig

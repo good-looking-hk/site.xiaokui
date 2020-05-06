@@ -6,7 +6,7 @@ import lombok.ToString;
 
 /**
  * 系统日志实体类
- * @see site.xiaokui.aop.annotation.Log
+ * @see site.xiaokui.base.aop.annotation.Log
  * @author HK
  * @date 2019-10-07 12:42
  */

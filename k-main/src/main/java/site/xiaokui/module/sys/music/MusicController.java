@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import site.xiaokui.blog.BlogConstants;
 import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.module.base.controller.AbstractController;
+import site.xiaokui.controller.AbstractController;
 import site.xiaokui.entity.ResultEntity;
-import site.xiaokui.module.sys.blog.BlogConstants;
 
 import java.io.File;
 import java.util.ArrayList;

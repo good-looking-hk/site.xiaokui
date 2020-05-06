@@ -1,8 +1,8 @@
 package site.xiaokui.module.test.beetlsql;
 
 import org.beetl.sql.core.SQLManager;
-import site.xiaokui.module.sys.user.entity.SysUser;
-import site.xiaokui.module.sys.user.entity.wrapper.SysUserWrapper;
+import site.xiaokui.module.user.entity.SysUser;
+import site.xiaokui.module.user.entity.wrapper.SysUserWrapper;
 
 import java.util.List;
 

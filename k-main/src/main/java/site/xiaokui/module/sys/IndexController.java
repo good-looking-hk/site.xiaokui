@@ -7,12 +7,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import site.xiaokui.CacheCenter;
+import site.xiaokui.blog.CacheCenter;
 import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.module.base.controller.BaseController;
-import site.xiaokui.module.sys.user.UserConstants;
-import site.xiaokui.module.sys.user.entity.SysMenu;
-import site.xiaokui.module.sys.user.service.MenuService;
+import site.xiaokui.controller.BaseController;
+import site.xiaokui.module.user.UserConstants;
+import site.xiaokui.module.user.entity.SysMenu;
+import site.xiaokui.module.user.service.MenuService;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class IndexController extends BaseController {
     public String index() {
         String index = cacheCenter.getSysConfigCache().getIndex();
         if (StringUtil.isNotBlank(index)) {
-            return FORWARD + index;
+            return index;
         }
         return FORWARD + "/blog";
     }

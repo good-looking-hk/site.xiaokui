@@ -3,7 +3,7 @@ package site.xiaokui.module.sys.music;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import site.xiaokui.module.base.service.BaseService;
+import site.xiaokui.base.service.BaseService;
 
 import java.io.File;
 import java.io.InputStream;

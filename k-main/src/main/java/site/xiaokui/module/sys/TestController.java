@@ -5,7 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import redis.clients.jedis.Jedis;
-import site.xiaokui.module.base.service.RedisService;
+import site.xiaokui.base.service.RedisService;
 
 import java.util.Set;
 

@@ -3,9 +3,8 @@ package site.xiaokui.module.sys.music;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import site.xiaokui.module.base.BaseFileHelper;
-import site.xiaokui.module.base.SpringContextHolder;
-import site.xiaokui.module.sys.blog.util.BlogFileHelper;
+import site.xiaokui.base.service.BaseFileHelper;
+import site.xiaokui.base.service.SpringContextHolder;
 
 import java.io.File;
 

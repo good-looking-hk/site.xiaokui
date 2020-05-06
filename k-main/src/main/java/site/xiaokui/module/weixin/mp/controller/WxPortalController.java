@@ -8,7 +8,7 @@ import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import site.xiaokui.aop.annotation.Log;
+import site.xiaokui.base.aop.annotation.Log;
 
 /**
  * @author Binary Wang(https://github.com/binarywang)

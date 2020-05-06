@@ -1,6 +1,6 @@
 package site.xiaokui.module.sys.seckill;
 
-import static site.xiaokui.module.sys.user.UserConstants.SYS_PREFIX;
+import static site.xiaokui.module.user.UserConstants.SYS_PREFIX;
 
 /**
  * @author HK
