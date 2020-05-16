@@ -1,7 +1,7 @@
 beetl-beetlsql.dev: false
 beetlsql:
   dev: false #是否是开发环境，默认为true
-  basePackage: site.xiaokui.module.sys
+  basePackage: site.xiaokui
   daoSuffix: Dao
 
 spring:

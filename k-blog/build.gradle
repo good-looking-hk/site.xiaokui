@@ -1,29 +1,18 @@
-buildscript {
-    ext {
-//         springBootVersion = '2.0.2.RELEASE'
-        // 换最新的试下
-        springBootVersion = '2.2.6.RELEASE'
-    }
-    repositories {
-        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
-}
-
 apply plugin: 'java'
-apply plugin: 'war'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-group 'site.xiaokui'
-version '0.0.1-SNAPSHOT'
 
-sourceCompatibility = 1.8
+jar{
+    enabled = true
+}
+
+bootJar {
+    enabled = true
+}
 
 repositories {
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
     mavenCentral()
 }
 
