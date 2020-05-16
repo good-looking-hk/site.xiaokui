@@ -217,8 +217,10 @@ ul.list-group {
 
 .side-tool {
     position: fixed;
-    bottom: 40px;
-    right: 40px;
+    /*bottom: 40px;*/
+    /*right: 40px;*/
+    bottom: 3%;
+    right: 1.5%;
     z-index: 1040;
 }
 

@@ -26,9 +26,12 @@ public class MyInvocationHandler implements InvocationHandler {
     }
 
     public static void main(String[] args) {
-        UserService userService = new UserServiceImpl();
+        UserServiceImpl userService = new UserServiceImpl();
         MyInvocationHandler invocationHandler = new MyInvocationHandler(userService);
-        UserService proxy = (UserService)invocationHandler.getProxy();
-        proxy.testA();
+        Proxy proxy = (Proxy)invocationHandler.getProxy();
+        proxy.toString();
+        for (Method method : proxy.getClass().getDeclaredMethods()) {
+            System.out.println(method);
+        }
     }
 }

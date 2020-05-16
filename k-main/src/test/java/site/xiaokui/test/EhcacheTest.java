@@ -3,7 +3,7 @@ package site.xiaokui.test;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-import site.xiaokui.module.sys.user.entity.SysUser;
+import site.xiaokui.module.user.entity.SysUser;
 
 import java.net.URL;
 

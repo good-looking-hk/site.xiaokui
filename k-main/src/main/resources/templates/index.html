@@ -32,19 +32,18 @@
         .tooltip {
             position: relative;
             display: inline-block;
-            border-bottom: 1px dotted black;
+            border-bottom: 1px black;
         }
 
         .tooltip .tooltiptext {
             visibility: hidden;
             color: blue;
-            width: 180px;
+            width: 280px;
             height: 16px;
             font-size: 12px;
             font-weight: normal;
-            line-height: 18px;
+            line-height: 20px;
             background-color: white;
-            text-align: center;
             border-radius: 6px;
             padding: 4px 0;
             position: absolute;
@@ -54,35 +53,38 @@
             z-index: 1;
         }
 
-        .tooltip:hover .tooltiptext {
+        .layui-card-header:hover .tooltiptext {
             visibility: visible;
         }
     </style>
 </head>
 <body>
-<div class="layui-main" style="margin-top: 5%;">
+<div class="layui-main" style="margin-top: 3%;">
 
     <h1>您好！ 请问你对以下哪项最感兴趣：</h1>
     <hr>
     <div class="layui-row layui-col-space25">
         <div class="layui-col-md6">
-            <div class="layui-card tooltip" style="border: 1px solid grey;">
+            <div class="layui-card" style="border: 1px solid grey;">
                 <div class="layui-card-header">
-                    <a href="">个人博客</a>
-                    <a href="" class="tooltiptext">点击访问我的个人博客</a>
+                    <div class="tooltip">
+                        <a href="https://blog.xiaokui.site">个人博客</a>
+                        <a href="" class="tooltiptext">点击访问我的个人博客</a>
+                    </div>
                 </div>
                 <div class="layui-card-body">
                     <p>本人自2017年6月份写第一篇博客开始，至今已有近3年博客创作历史，
-                        里面包含了个人对于技术学习的记录、探讨、学习，每篇都经过反复的修改。
+                        里面包含了个人对于编程技术学习的记录、探讨、研究，每篇都经过反复的修改。
                     </p>
-                    <p>博客总数约 70 篇，不多，但代表了本人对于技术的学习、探讨和钻研，里面也不乏精华之作。</p>
-                    <p>如你所见的这个博客网站，后台并不是通过简单静态页面生成而成，它是一个完整的博客平台。现实情况下，我的整个创作流程大致如下：
-                        1、在deepin下使用typora写好md博客，登录博客平台并上传，后台会自动解析md并生成对应的无样式html文件
-                        2、当beetl在渲染html页面时，会根据特定语法格式去取这个html文件
-                        3、前端使用highlight.js完成页面代码的样式填充
+                    <p>博客总数约 70 篇，不多，但代表了本人对于技术的热衷，里面也不乏精华之作。如您所见的现在这个博客网站，后台并不是通过简单静态页面生成而成，它是一个完整的博客平台，这意味着任何人都可以在上面进行创作 。</p>
+                    <p>
+                        现实中，我的整个创作流程大致如下：
+                        1、选好需要研究的技术点，不断深入，在经过反反复复的学习、实践后，才有一篇博客行文思路的诞生。
+                        2、在deepin下使用typora写好md博客，登录博客平台并上传，后台会自动解析md并生成对应的无样式html文件
+                        3、当beetl在渲染html页面时，会根据特定语法格式去取这个html文件
+                        4、前端使用highlight.js完成页面代码的样式填充。
                     </p>
-                    <p>整个</p>
-                    <p>推荐阅读：<a href="">静态SPring</a>、<a href="">静态SPring</a>、<a href="">静态SPring</a>、<a
+                    <p>个人推荐几篇良心之作：<a href="">静态Spring</a>、<a href="">静态SPring</a>、<a href="">静态SPring</a>、<a
                             href="">静态SPring</a>、<a href="">静态SPring</a></p>
                 </div>
             </div>
@@ -90,8 +92,116 @@
         <div class="layui-col-md6">
             <div class="layui-card tooltip" style="border: 1px solid grey;">
                 <div class="layui-card-header">
-                    <a href="">精通Spring</a>
-                    <a href="" class="tooltiptext">点击访问在线运行的xiaokui-spring</a>
+                    <div class="tooltip">
+                        <a href="">精通Spring</a>
+                        <a href="" class="tooltiptext">点击访问在线运行的xiaokui-spring</a>
+                    </div>
+                </div>
+                <div class="layui-card-body">
+                    <p>本人自2017年12月份开始看Spring源码，至今仍在不断学习。中间断断停停，这一路下来过程也算比较崎岖，但幸运的是我坚持了下来。
+                    </p>
+                    <p>不谦虚的说，大于绝大多数Spring内部出现的问题，我都能够追根溯源地找出问题所在并解决。多说无益，show you the code！</p>
+                    <p>里面一个由我手写的高仿Spring项目，较为完整地体现了Spring内部处理的整个流程，而绝非一个简单迷你版Spring，代码行数17777行</p>
+                    <p>推荐阅读：<a href="">静态SPring</a>、<a href="">静态SPring</a>、<a href="">静态SPring</a>、<a
+                            href="">静态SPring</a>、<a href="">静态SPring</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space25">
+        <div class="layui-col-md6">
+            <div class="layui-card" style="border: 1px solid grey;">
+                <div class="layui-card-header">
+                    <div class="tooltip">
+                        <a href="">本网站架构</a>
+                        <a href="" class="tooltiptext">点击查看更多内容</a>
+                    </div>
+                </div>
+                <div class="layui-card-body">
+                    <p>本网站服务器购买于2017-03-12 16:24:17，至此历时已有3年有余，中间历经过多次技术迭代、代码重写。</p>
+                    <p>从最原始的Windows2008、到现在的CentOS。<p>
+                    <p>从最原始的Servlet、到后面的Spring MVC、再到现在的Spring Boot。<p>
+                    <p>从最原始的JSP、到后面的Thymeleaf、再到现在的Beetl。</p>
+                    <p>从最原始的JDBC、到后面的Mybatis、再到后面的JPA、再到现在的BeetlSql。</p>
+                    <p>从最原始的HashMap、到后面的Mysql、再到后面的EhCache、再到现在的Redis。</p>
+                    <p>从原来的单点服务，到现在的分布式服务，甚至是微服务，每个点都在本网站中有所体现。
+                        截止到此时此刻，本网站目前已完全实现分布式/高可用，这里简单的提下整体架构：
+                        <ul>
+                    <li>
+                        1、域名层分流：在DNS服务器上为单个域名分流到多个IP上，这是IP分流的第一步，大型网站必备。
+                    </li>
+                    <li>
+                        2、IP地址分流：顶级IP地址应该只起一个门户网站的作用，例如www.xiaokui.site，对于实际请求处理委托给相应的二级IP/内网IP。
+                    </li>
+                    <li>
+                        3、二级IP使用nginx代理，使用负载均衡合理在使用下级IP机器的服务。
+                    </li>
+                    <li>
+                        4、为预防单台机器挂点，可以进行主从、集群、异地、冷备等措施，以下为个人的一点思考：
+                        <ul>
+                            <li>
+                                1.mysql使用主从、集群
+                            </li>
+                            <li>
+                                2.redis使用主从、集群
+                            </li>
+                            <li>
+
+                            </li>
+                        </ul>
+                    </li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card tooltip" style="border: 1px solid grey;">
+                <div class="layui-card-header">
+                    <div class="tooltip">
+                        <a href="">微信公众号、迷你QQ、微信机器人在线体验</a>
+                    </div>
+                </div>
+                <div class="layui-card-body">
+                    <p>本人自2017年12月份开始看Spring源码，至今仍在不断学习。中间断断停停，这一路下来过程也算比较崎岖，但幸运的是我坚持了下来。
+                    </p>
+                    <p>不谦虚的说，大于绝大多数Spring内部出现的问题，我都能够追根溯源地找出问题所在并解决。多说无益，show you the code！</p>
+                    <p>里面一个由我手写的高仿Spring项目，里面较为完整了体现了Spring内部处理的整个流程，不依赖任何第三方架包</p>
+                    <p>推荐阅读：<a href="">静态SPring</a>、<a href="">静态SPring</a>、<a href="">静态SPring</a>、<a
+                            href="">静态SPring</a>、<a href="">静态SPring</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space25">
+        <div class="layui-col-md6">
+            <div class="layui-card" style="border: 1px solid grey;">
+                <div class="layui-card-header">
+                    <div class="tooltip">
+                        <a href="">工作总结</a>
+                        <a href="" class="tooltiptext">点击访问我的个人博客</a>
+                    </div>
+                </div>
+                <div class="layui-card-body">
+                    <p>本网站购买于2017-03-12 16:24:17，至此历时已有3年有余，中间历经过多次技术迭代、代码重写。</p>
+                    <p>从最原始的Windows2008、到现在的CentOS。<p>
+                    <p>从最原始的Servlet、到后面的Spring MVC、再到现在的Spring Boot。<p>
+                    <p>从最原始的JSP、到后面的Thymeleaf、再到现在的Beetl。</p>
+                    <p>从最原始的JDBC、到后面的Mybatis、再到后面的JPA、再到现在的BeetlSql。</p>
+                    <p>从最原始的HashMap、到后面的Mysql、再到后面的EhCache、再到现在的Redis。</p>
+                    <p>每次对于技术的引进、迭代，都是个人对于新技术的一次学习并付诸于实践。</p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card tooltip" style="border: 1px solid grey;">
+                <div class="layui-card-header">
+                    <div class="tooltip">
+                        <a href="">关于我</a>
+                        <a href="" class="tooltiptext">点击访问在线运行的xiaokui-spring</a>
+                    </div>
                 </div>
                 <div class="layui-card-body">
                     <p>本人自2017年12月份开始看Spring源码，至今仍在不断学习。中间断断停停，这一路下来过程也算比较崎岖，但幸运的是我坚持了下来。

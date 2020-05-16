@@ -37,5 +37,3 @@ logging:
   level:
     root: info
     site.xiaokui: info
-  # 这个sb东西去不掉
-  file: remote.log

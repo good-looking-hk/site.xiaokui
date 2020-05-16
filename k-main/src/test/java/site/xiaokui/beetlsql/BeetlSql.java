@@ -4,7 +4,7 @@ import org.beetl.sql.core.*;
 import org.beetl.sql.core.db.DBStyle;
 import org.beetl.sql.core.db.MySqlStyle;
 import org.beetl.sql.ext.DebugInterceptor;
-import site.xiaokui.module.sys.user.entity.SysMenu;
+import site.xiaokui.module.user.entity.SysMenu;
 
 import java.util.List;
 

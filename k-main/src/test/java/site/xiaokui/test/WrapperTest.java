@@ -5,8 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import site.xiaokui.module.sys.user.entity.SysUser;
-import site.xiaokui.module.sys.user.entity.wrapper.SysUserWrapper;
+import site.xiaokui.module.user.entity.SysUser;
+import site.xiaokui.module.user.entity.wrapper.SysUserWrapper;
 
 import java.util.List;
 

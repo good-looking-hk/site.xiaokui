@@ -67,22 +67,9 @@ $(function () {
     var needLocate = $(window).height() / 4 * 3 < $('#right-nav').height();
     if (needLocate) {
         $('#right-nav').css({top: top - 20});
-        $('#right-nav').css({"padding-top": 0});
-        $('#right-nav').css({"padding-bottom": 0});
+        $('#right-nav').css({"padding": '15px 10px'});
     }
-    // $(window).scroll(function () {
-    //     if (!needLocate) {
-    //         return;
-    //     }
-    //     var currentScroll = $(window).scrollTop();
-    //     var top = ($(window).height() - $('#right-nav').height())/2;
-    //     if(currentScroll > 54 + 48) {
-    //         $('#right-nav').css({top:top - 20});
-    //         $('#right-nav').css({"padding-top": 0});
-    //     } else if (currentScroll <= 54 + 48){
-    //         $('#right-nav').css({top:'16%'});
-    //     }
-    // });
+
     var obj = countChars();
     var minute = (parseInt(obj.中英文单词数) / 493).toFixed(1);
     if (minute > 25) {
@@ -100,6 +87,23 @@ $(function () {
     }
     $('#countChars').text('字数约 ' + obj.中英文单词数 + ' 字，阅读耗时约 ' + Number(minute).toFixed(1) + ' 分钟');
 });
+
+$(function () {
+    setTimeout(function () {
+        var url = document.location.href
+        var index = url.indexOf('#')
+        if (index > -1) {
+            var jumpText = decodeURI(url.substring(index + 1))
+            $('#right-nav ul li a').each(function () {
+                var text = $(this).text()
+                if (text === jumpText || text.endsWith(jumpText)) {
+                    $(this).click()
+                    return;
+                }
+            })
+        }
+    }, 0)
+})
 
 function countChars() {
     var c = $("#content .panel-body");
