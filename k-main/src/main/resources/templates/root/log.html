@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>网站日志</title>
+    <link href="${ctxPath}/css/rainbow.css" rel="stylesheet"/>
+</head>
+<body>
+@if (isNotEmpty(log)) {
+<pre><code class="language-java">@printFile("file:" + log);
+</code></pre>
+@}
+</body>
+<script src="${ctxPath}/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</html>

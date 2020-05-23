@@ -8,9 +8,13 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.beetl.sql.core.SQLManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import site.xiaokui.base.aop.annotation.Log;
+import site.xiaokui.common.support.HttpUtil;
 import site.xiaokui.entity.SysLog;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Date;
@@ -56,35 +60,40 @@ public class LogAspect {
 
         String remark = annotation.remark();
         boolean statisticTime = annotation.statisticTime();
-        boolean recodeMethod = annotation.recodeMethod();
-        boolean recodeMethodParams = annotation.recodeMethodParams();
-        boolean recodeReturn = annotation.recodeReturn();
+        boolean recordMethod = annotation.recordMethod();
+        boolean recordMethodParams = annotation.recordMethodParams();
+        boolean recordReturn = annotation.recordReturn();
 
         boolean writeToDb = annotation.writeToDB();
         boolean inputToLog = annotation.inputToLog();
+        boolean recordIp = annotation.recordIp();
 
         long startTime = System.currentTimeMillis();
         // 执行方法
         target = point.proceed();
         long duration = System.currentTimeMillis() - startTime;
-
-        StringBuilder sb = new StringBuilder("执行方法");
-        if (recodeMethod) {
+        
+        String ip = "";
+        if (recordIp) {
+            ip = HttpUtil.getIP() + " ";
+        }
+        StringBuilder sb = new StringBuilder(ip + remark +  " 执行方法");
+        if (recordMethod) {
             sb.append(method);
         } else {
             sb.append(method.getName());
         }
 
-        if (recodeMethodParams) {
+        if (recordMethodParams) {
             sb.append("[").append(Arrays.toString(point.getArgs())).append("]");
         }
 
-        if (recodeReturn) {
+        if (recordReturn) {
             sb.append("返回结果").append(target);
         }
 
         if (statisticTime) {
-            sb.append(",耗时").append(duration).append("ms");
+            sb.append("，耗时").append(duration).append("ms");
         }
 
         if (inputToLog) {

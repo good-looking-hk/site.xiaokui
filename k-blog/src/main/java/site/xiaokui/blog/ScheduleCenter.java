@@ -86,9 +86,16 @@ public class ScheduleCenter implements ApplicationRunner, DisposableBean {
     public void testTask(Task task) {
         Date date = new Date();
         int hour = DateUtil.hour(date, true);
-        int minute = DateUtil.minute(date);
-        CronUtil.schedule ((minute + 2) + " " + hour + " * * *", task);
-        log.debug("测试任务将于" + hour + "时" + (minute + 2) + "分开始");
+        int minute = DateUtil.minute(date) + 2;
+        if (minute > 59) {
+            minute = 1;
+            hour += 1;
+        }
+        if (hour > 23) {
+            hour = 0;
+        }
+        CronUtil.schedule (minute + " " + hour + " * * *", task);
+        log.debug("测试任务将于" + hour + "时" + minute + "分开始");
     }
 
     public Task clearContributeBlackListTask() {

@@ -32,20 +32,25 @@ public @interface  Log {
      * public final void java.lang.Object.wait(long,int) throws java.lang.InterruptedException
      * wait
      */
-    boolean recodeMethod() default false;
+    boolean recordMethod() default false;
 
     /**
      * 记录方法入参
      */
-    boolean recodeMethodParams() default false;
+    boolean recordMethodParams() default false;
 
     /**
      * 记录方法返回值
      */
-    boolean recodeReturn() default false;
+    boolean recordReturn() default false;
 
     /**
      * 写到数据库
      */
     boolean writeToDB() default false;
+
+    /**
+     * 是否记录ip，如果有的话
+     */
+    boolean recordIp() default false;
 }

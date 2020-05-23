@@ -1,55 +1,25 @@
-package site.xiaokui.module.sys;
+package site.xiaokui.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import site.xiaokui.blog.CacheCenter;
-import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.controller.BaseController;
-import site.xiaokui.module.user.UserConstants;
 import site.xiaokui.module.user.entity.SysMenu;
 import site.xiaokui.module.user.service.MenuService;
 
 import java.util.List;
 
-/**
- * 项目根控制器，匹配 /*
- * @author HK
- * @date 2018-05-23 23:20
- */
-@Controller("INDEX")
-public class IndexController extends BaseController {
+import static site.xiaokui.module.user.UserConstants.SYS_PREFIX;
 
-    @Autowired
-    private CacheCenter cacheCenter;
+/**
+ * @author HK
+ * @date 2020-05-23 14:39
+ */
+@Controller("rootLoginController")
+public class LoginController extends BaseController{
 
     @Autowired
     private MenuService menuService;
-
-    /**
-     * SYS_PREFIX字段默认为 /sys
-     */
-    private static final String SYS_PREFIX = UserConstants.SYS_PREFIX;
-
-    @GetMapping({"/", "/index"})
-    public String index() {
-        String index = cacheCenter.getSysConfigCache().getIndex();
-        if (StringUtil.isNotBlank(index)) {
-            return index;
-        }
-        return FORWARD + "/blog";
-    }
-
-    @RequestMapping(value = "/clearCache", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseBody
-    public String clearCache() {
-        cacheCenter.clearSysConfigCache();
-        return "重新载入配置成功";
-    }
 
     /**
      * 跳转到登录页面

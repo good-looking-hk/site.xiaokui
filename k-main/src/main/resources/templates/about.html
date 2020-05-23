@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p>博客总数约 70 篇，不多，但代表了本人对于技术的热衷，里面也不乏精华之作。
+
+    如您所见的现在这个博客网站，后台并不是通过简单静态页面生成而成，它是一个完整的博客平台，这意味着任何人都可以在上面进行创作 。</p>
+<p>
+    现实中，我的整个创作流程大致如下：
+    1、选好需要研究的技术点，不断深入，在经过反反复复的学习、实践后，才有一篇博客行文思路的诞生。
+    2、在deepin下使用typora写好md博客，登录博客平台并上传，后台会自动解析md并生成对应的无样式html文件
+    3、当beetl在渲染html页面时，会根据特定语法格式去取这个html文件
+    4、前端使用highlight.js完成页面代码的样式填充。
+</p>
+<p>个人推荐几篇良心之作：<a href="">静态Spring</a>、<a href="">静态SPring</a>、<a href="">静态SPring</a>、<a
+        href="">静态SPring</a>、<a href="">静态SPring</a></p>
+
+<p>本网站服务器购买于2017-03-12 16:24:17，至此历时已有3年有余，中间历经过多次技术迭代、代码重写。</p>
+<p>从最原始的Windows2008、到现在的CentOS。<p>
+<p>从最原始的Servlet、到后面的Spring MVC、再到现在的Spring Boot。<p>
+<p>从最原始的JSP、到后面的Thymeleaf、再到现在的Beetl。</p>
+<p>从最原始的JDBC、到后面的Mybatis、再到后面的JPA、再到现在的BeetlSql。</p>
+<p>从最原始的HashMap、到后面的Mysql、再到后面的EhCache、再到现在的Redis。</p>
+<p>从原来的单点服务，到现在的分布式服务，甚至是微服务，每个点都在本网站中有所体现。
+    截止到此时此刻，本网站目前已完全实现分布式/高可用，这里简单的提下整体架构：
+<ul>
+    <li>
+        1、域名层分流：在DNS服务器上为单个域名分流到多个IP上，这是IP分流的第一步，大型网站必备。
+    </li>
+    <li>
+        2、IP地址分流：顶级IP地址应该只起一个门户网站的作用，例如www.xiaokui.site，对于实际请求处理委托给相应的二级IP/内网IP。
+    </li>
+    <li>
+        3、二级IP使用nginx代理，使用负载均衡合理在使用下级IP机器的服务。
+    </li>
+    <li>
+        4、为预防单台机器挂点，可以进行主从、集群、异地、冷备等措施，以下为个人的一点思考：
+        <ul>
+            <li>
+                1.mysql使用主从、集群
+            </li>
+            <li>
+                2.redis使用主从、集群
+            </li>
+        </ul>
+    </li>
+</ul>
+</p>
+<p>本网站购买于2017-03-12 16:24:17，至此历时已有3年有余，中间历经过多次技术迭代、代码重写。</p>
+<p>从最原始的Windows2008、到现在的CentOS。<p>
+<p>从最原始的Servlet、到后面的Spring MVC、再到现在的Spring Boot。<p>
+<p>从最原始的JSP、到后面的Thymeleaf、再到现在的Beetl。</p>
+<p>从最原始的JDBC、到后面的Mybatis、再到后面的JPA、再到现在的BeetlSql。</p>
+<p>从最原始的HashMap、到后面的Mysql、再到后面的EhCache、再到现在的Redis。</p>
+<p>每次对于技术的引进、迭代，都是个人对于新技术的一次学习并付诸于实践。</p>
+</body>
+</html>

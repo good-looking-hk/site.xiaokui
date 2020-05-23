@@ -1,4 +1,4 @@
-package site.xiaokui.module.sys;
+package site.xiaokui.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -102,7 +102,7 @@ public class IndexController extends BaseController {
             return ERROR;
         }
         boolean proCheckPass = false;
-        if (passwd != null && ShiroKit.getInstance().md5(passwd, user.getSalt()).equals(user.getProPassword())) {
+        if (passwd != null && StringUtil.isNotEmpty(user.getPassword()) && ShiroKit.getInstance().md5(passwd, user.getSalt()).equals(user.getProPassword())) {
             log.info("受保护访问通过，userId为{}，passwd为{}", user.getId(), passwd);
             proCheckPass = true;
         }
@@ -148,6 +148,7 @@ public class IndexController extends BaseController {
             model.addAttribute("view", mostViewList);
         }
         model.addAttribute("user", blogUser);
+        model.addAttribute("title", "个人博客首页");
         return BLOG_INDEX ;
     }
 
@@ -201,6 +202,7 @@ public class IndexController extends BaseController {
             model.addAttribute("recommend", recommendList);
             model.addAttribute("view", mostViewList);
             model.addAttribute("user", blogUser);
+            model.addAttribute("title", "个人博客首页");
             return BLOG_INDEX + "1";
         }
         return null;
@@ -257,6 +259,7 @@ public class IndexController extends BaseController {
         BlogUser blogUser = new BlogUser(user);
         blogUser.setBlog(blog);
         model.addAttribute("user", blogUser);
+        model.addAttribute("title", blog.getTitle());
         commonConfig(model);
         return SHOW_BLOG;
     }

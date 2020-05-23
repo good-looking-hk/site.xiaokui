@@ -17,6 +17,8 @@ import site.xiaokui.module.user.service.UserService;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author HK
@@ -37,6 +39,11 @@ public class CacheCenter implements ApplicationRunner {
     private SysConfigCache sysConfigCache;
 
     /**
+     * 避免刷新缓存时的线程竞争
+     */
+    private ReadWriteLock readWriteLock = new ReentrantReadWriteLock(false);
+
+    /**
      * Spring启动完成后，初始化缓存数据
      */
     @Override
@@ -48,13 +55,23 @@ public class CacheCenter implements ApplicationRunner {
         }
     }
 
-    public synchronized SysConfigCache getSysConfigCache() {
-        return this.sysConfigCache;
+    public SysConfigCache getSysConfigCache() {
+        readWriteLock.readLock().lock();
+        try {
+            return this.sysConfigCache;
+        } finally {
+            readWriteLock.readLock().unlock();
+        }
     }
 
-    public synchronized void clearSysConfigCache() {
-        this.clearBlogCache();
-        this.sysConfigCache = initCacheMap();
+    public void clearSysConfigCache() {
+        readWriteLock.writeLock().lock();
+        try {
+            this.clearBlogCache();
+            this.sysConfigCache = initCacheMap();
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
     }
 
     public void clearBlogCache() {
@@ -104,6 +121,14 @@ public class CacheCenter implements ApplicationRunner {
 
         public boolean showAbout() {
             return "true".equals(this.cacheMap.get("showAbout"));
+        }
+
+        public String getNginxAccessLogPath() {
+            return this.cacheMap.get("nginxAccessLogPath");
+        }
+
+        public String getNginxErrorLogPath() {
+            return this.cacheMap.get("nginxErrorLogPath");
         }
     }
 }

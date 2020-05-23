@@ -44,10 +44,12 @@ public class BeetlConfig {
         ClasspathResourceLoader classpathResourceLoader = new ClasspathResourceLoader(classLoader, "templates");
 
         // 自定义的模板加载器，linux环境下默认为/xiaokui/upload/
-        FileResourceLoader fileResourceLoader = new FileResourceLoader(blogUploadPath);
+        FileResourceLoader blogFileResourceLoader = new FileResourceLoader(blogUploadPath);
+        FileResourceLoader fileResourceLoader = new FileResourceLoader("");
 
         CompositeResourceLoader compositeResourceLoader = new CompositeResourceLoader();
-        compositeResourceLoader.addResourceLoader(new StartsWithMatcher(BLOG_START_FLAG), fileResourceLoader);
+        compositeResourceLoader.addResourceLoader(new StartsWithMatcher("blog:"), blogFileResourceLoader);
+        compositeResourceLoader.addResourceLoader(new StartsWithMatcher("file:"), fileResourceLoader);
         compositeResourceLoader.addResourceLoader(new AllowAllMatcher(), classpathResourceLoader);
 
         beetlGroupUtilConfiguration.setResourceLoader(compositeResourceLoader);
