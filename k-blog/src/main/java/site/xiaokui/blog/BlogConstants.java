@@ -25,8 +25,12 @@ public class BlogConstants {
      */
     public static final String MUSIC_PREFIX = "/sys/music";
 
-
+    /**
+     * beetl对于博客文件的前缀标识
+     */
     public static final String BLOG_START_FLAG = "blog:";
+
+    public static final String FILE_START_FLAG = "file:";
 
     public static final String HTML_SUFFIX = ".html";
 

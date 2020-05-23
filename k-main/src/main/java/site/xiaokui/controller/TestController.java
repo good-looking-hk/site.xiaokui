@@ -1,6 +1,7 @@
 package site.xiaokui.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -11,9 +12,10 @@ import java.util.Set;
 
 /**
  * @author HK
- * @date 2020-04-17 14:02
+ * @date 2019-04-17 14:02
  */
-@Controller("TEST")
+@Profile("local")
+@Controller("testController")
 public class TestController {
 
     @Autowired
@@ -27,4 +29,6 @@ public class TestController {
         String str = sets.toString();
         return str;
     }
+
+
 }

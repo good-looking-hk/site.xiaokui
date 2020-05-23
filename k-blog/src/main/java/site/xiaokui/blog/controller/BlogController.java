@@ -94,16 +94,15 @@ public class BlogController extends AbstractController {
     }
 
     @RequiresPermissions(BLOG_PREFIX + ADD)
-    @GetMapping("/week")
-    public String week() {
-        // 周报上传
-        return BLOG_PREFIX + "/week";
+    @GetMapping("/work")
+    public String work() {
+        return BLOG_PREFIX + "/work";
     }
 
     @RequiresPermissions(BLOG_PREFIX + ADD)
-    @PostMapping("/weekTemp")
+    @PostMapping("/workTemp")
     @ResponseBody
-    public ResultEntity weekTemp(MultipartFile file) {
+    public ResultEntity workTemp(MultipartFile file) {
         return temp(file, false);
     }
 

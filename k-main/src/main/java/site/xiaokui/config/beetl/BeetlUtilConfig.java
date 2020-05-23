@@ -12,6 +12,6 @@ public class BeetlUtilConfig extends BeetlGroupUtilConfiguration {
     @Override
     public void initOther() {
         groupTemplate.registerFunctionPackage("shiro", ShiroKit.getInstance());
-        groupTemplate.registerFunction("printFile", new PrintFile());
+//        groupTemplate.registerFunction("printFile", new PrintFile());
     }
 }

@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * 留作纪念
+ * 留作纪念，这个issue是我向作者提的，作者当晚就改好了，很赞
  * @author HK
  * @date 2018-06-26 23:54
  */

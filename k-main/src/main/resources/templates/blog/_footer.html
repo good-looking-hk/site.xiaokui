@@ -87,7 +87,8 @@
     }
 
     $(function () {
-        if (HK.isPc() && window.innerWidth > 1465) {
+        // 考虑到面试官的电脑屏幕有可能过小，我就花点时间适配以下吧
+        if (HK.isPc() && window.innerWidth > 1465 || window.innerWidth > 0) {
             $('.hid').toggleClass('hid');
         } else {
             console.error("--------屏 幕 有 点 小 啊， 影 响 界 面 正 常 显 示-------");

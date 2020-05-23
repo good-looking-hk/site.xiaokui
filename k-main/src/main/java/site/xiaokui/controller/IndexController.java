@@ -23,9 +23,6 @@ public class IndexController extends BaseController {
     @Autowired
     private CacheCenter cacheCenter;
 
-    @Value("${xiaokui.logsPath}" + "${xiaokui.logName}")
-    private String appLogPath;
-
     @Log(remark = "访问主页", recordIp = true)
     @GetMapping({"/", "/index"})
     public String index() {
@@ -34,30 +31,6 @@ public class IndexController extends BaseController {
             return index;
         }
         return FORWARD + "/index";
-    }
-
-    @Log(remark = "查看nginx日志", recordMethodParams = true)
-    @GetMapping("/nginx")
-    public String nginx(Model model, String type) {
-        String accessLogPath = cacheCenter.getSysConfigCache().getNginxAccessLogPath();
-        String errorLogPath = cacheCenter.getSysConfigCache().getNginxErrorLogPath();
-        if ("error".equals(type)) {
-            model.addAttribute("error", errorLogPath);
-        } else {
-            model.addAttribute("access", accessLogPath);
-        }
-        return "root/nginx";
-    }
-
-    @Log(remark = "查看系统日志", recordMethodParams = true)
-    @GetMapping("/web/log")
-    public String log(Model model, String key) {
-        if ("199710".equals(key)) {
-            model.addAttribute("log", appLogPath);
-            System.out.println(appLogPath);
-            return "root/log";
-        }
-        return ERROR;
     }
 
     @Log(remark = "清除缓存", writeToDB = true)

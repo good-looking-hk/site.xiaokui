@@ -21,19 +21,11 @@ dependencies {
     compile project(':k-blog')
     compile project(':k-wx')
 
+//    compile 'com.alibaba.spring.boot:dubbo-spring-boot-starter:2.0.0'
+
     compile 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.2'
 
     compile 'org.apache.curator:curator-recipes:4.2.0'
-
-    compile('org.springframework.boot:spring-boot-starter-amqp')
-    compile('org.springframework.boot:spring-boot-starter-cache')
-    compile('org.springframework.boot:spring-boot-starter-aop')
-    compile('org.springframework.boot:spring-boot-starter-jdbc')
-    compile('org.springframework.boot:spring-boot-starter-mail')
-    compile('org.springframework.boot:spring-boot-starter-web')
-
-    compile 'io.github.biezhi:wechat-api:1.0.6'
-    compile 'io.jsonwebtoken:jjwt:0.9.1'
 
     compile 'org.apache.shiro:shiro-spring-boot-starter:1.4.0'
 

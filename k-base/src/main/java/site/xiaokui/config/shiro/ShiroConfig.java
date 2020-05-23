@@ -113,7 +113,8 @@ public class ShiroConfig {
      */
     @Bean
     public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, OnlineSessionFilter onlineSessionFilter,
-                                                    @Value("${spring.profiles.active}") String profile) {
+                                                    @Value("${spring.profiles.active}") String profile,
+                                                    @Value("${xiaokui.enable-shiro}") boolean enableShiro) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
         // 登陆访问url,默认为/login.jsp(一般情况下建议主动修改)
@@ -129,7 +130,6 @@ public class ShiroConfig {
         Map<String, String> filterMap = new LinkedHashMap<>();
 
         // 静态资源的过滤，采用nginx?
-        // TODO
         filterMap.put("/lib/**", ANYBODY);
         filterMap.put("/plugins/**", ANYBODY);
         filterMap.put("/font-awesome/**", ANYBODY);
@@ -171,6 +171,10 @@ public class ShiroConfig {
         } else {
             // 线上需要登录
             filterMap.put("/**", StringUtil.addDot(onlineSessionFilter.getFilterName(), LOGIN_USER));
+        }
+        if (!enableShiro) {
+            filterMap.clear();
+            filterMap.put("/**/*", ANYBODY);
         }
         shiroFilter.setFilterChainDefinitionMap(filterMap);
         return shiroFilter;

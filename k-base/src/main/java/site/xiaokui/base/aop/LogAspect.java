@@ -89,11 +89,11 @@ public class LogAspect {
         }
 
         if (recordReturn) {
-            sb.append("返回结果").append(target);
+            sb.append(" 返回结果").append(target);
         }
 
         if (statisticTime) {
-            sb.append("，耗时").append(duration).append("ms");
+            sb.append(" 耗时").append(duration).append("ms");
         }
 
         if (inputToLog) {

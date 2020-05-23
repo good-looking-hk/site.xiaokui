@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import site.xiaokui.base.aop.annotation.Log;
 import site.xiaokui.base.constant.BaseConstants;
 import site.xiaokui.blog.CacheCenter;
 import site.xiaokui.common.util.StringUtil;
@@ -66,6 +67,7 @@ public class IndexController extends BaseController {
     /**
      * 默认首页为第一位注册的博客空间
      */
+    @Log(remark = "访问博客首页", recordReturn = true, recordIp = true)
     @GetMapping({EMPTY, INDEX})
     public String index() {
         // 如果数据库设置了首页

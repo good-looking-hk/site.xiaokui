@@ -206,7 +206,7 @@ public class BlogUtil {
         // 去除后缀
         fullName = fullName.substring(0, index);
 
-        // 如果是周报上传文件
+        // 如果是不是博客，那么大致形如这个样子 20180808-我最帅.html/md
         if (!isBlog) {
             String[] arr = fullName.split("-");
             if (arr.length != 2 || arr[0].length() != 8 || !NumberUtil.isInteger(arr[0])) {

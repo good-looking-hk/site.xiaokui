@@ -13,7 +13,7 @@ import static site.xiaokui.module.user.UserConstants.SYS_PREFIX;
 
 /**
  * @author HK
- * @date 2020-05-23 14:39
+ * @date 2018-05-23 14:39
  */
 @Controller("rootLoginController")
 public class LoginController extends BaseController{

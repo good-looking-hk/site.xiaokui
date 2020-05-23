@@ -24,16 +24,14 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-mail')
     compile('org.springframework.boot:spring-boot-starter-web')
 
-    compile 'io.github.biezhi:wechat-api:1.0.6'
-    compile 'io.jsonwebtoken:jjwt:0.9.1'
-
     compile 'org.apache.shiro:shiro-spring-boot-starter:1.4.0'
 
     compile 'cn.hutool:hutool-all:5.3.1'
     compile 'com.github.penggle:kaptcha:2.3.2'
 
     // 1.1.54,55有bug，单单换成52，项目编译没问题
-    compile 'com.ibeetl:beetl-framework-starter:1.1.63.RELEASE'
+//    compile 'com.ibeetl:beetl-framework-starter:1.1.63.RELEASE'
+    compile 'com.ibeetl:beetl-framework-starter:1.2.28.RELEASE'
 
     compile 'org.apache.shiro:shiro-ehcache:1.4.0'
     compile 'net.sf.ehcache:ehcache:2.10.5'

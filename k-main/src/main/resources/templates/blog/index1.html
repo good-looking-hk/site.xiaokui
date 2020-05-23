@@ -1,6 +1,6 @@
 @include("/blog/_header.html"){}
 
-<div class="layui-main" style="padding: 15px 60px;margin-top: 26px;margin-left: 23%;width:62%;">
+<div class="layui-main" style="padding: 15px 60px;margin-top: 26px;margin-left: 22.5%;width:62%;">
     <center>本页共 ${user.pageTotal} 篇，分为 ${user.dirCount} 个系列展示</center>
 
     @if (isNotEmpty(lists) && isNotEmpty(titles)) {
@@ -15,10 +15,6 @@
         @}
     @}
     </ul>
-    <div style="padding-top: 20px;clear: both">
-        <center>公开博客 ${user.pub} 篇，非公开博客 ${user.pro} 篇，Since 2017-2020，All Right Reserved</center>
-        <center><a href="http://www.beian.miit.gov.cn">湘ICP备17005816号</a></center>
-    </div>
     @} else {
     <center style="margin: 60px;"><h3>空空如也</h3></center>
     @}
@@ -29,10 +25,10 @@
     <ul>
         @for (r in view) {
         <li>
-            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.viewCount}次</span>
+            <span class="layui-bg-gray sp1">${r.viewCount}次</span>
 
             <a target="_blank" href="${ctxPath + r.blogPath}"
-               class="layui-col-xs10 p1">${rLP.index}.${r.dir}:${r.title}</a>
+               class="p1">${rLP.index}.${r.dir}:${r.title}</a>
         </li>
         @}
         <!--<li>-->
@@ -48,9 +44,9 @@
     <ul>
         @for (r in upload) {
         <li>
-            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${r.createTime, "yyyyMMdd"}</span>
+            <span class="layui-bg-gray sp1">${r.createTime, "yyyyMMdd"}</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
-               class="layui-col-xs9 p1">${rLP.index}.${r.dir}:${r.title}</a>
+               class="p1">${rLP.index}.${r.dir}:${r.title}</a>
         </li>
         @}
     </ul>
@@ -62,15 +58,19 @@
     <ul>
         @for (r in recommend) {
         <li>
-            <span class="layui-bg-gray" style="float: right;font-size: 13px;">${'热度' + r.recommendValue}</span>
+            <span class="layui-bg-gray sp1">${'热度' + r.recommendValue}</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
-               class="layui-col-xs9 p1">${rLP.index}.${r.dir}:${r.title}</a>
+               class="p1">${rLP.index}.${r.dir}:${r.title}</a>
         </li>
         @}
     </ul>
 </div>
 @}
 <div id="aplayer"></div>
+<div style="padding-top: 20px;padding-bottom:10px;clear: both">
+    <center>公开博客 ${user.pub} 篇，非公开博客 ${user.pro} 篇，Since 2017-2020，All Right Reserved</center>
+    <center><a href="http://www.beian.miit.gov.cn">湘ICP备17005816号</a></center>
+</div>
 <script src="${ctxPath}/lib/jquery/jquery.min.js"></script>
 <script src="${ctxPath}/lib/layui/layui.js"></script>
 <script src="${ctxPath}/js/common/HK.js"></script>
