@@ -19,7 +19,7 @@ repositories {
 dependencies {
     compile project(':k-base')
     compile project(':k-blog')
-    compile project(':k-wx')
+//    compile project(':k-wx')
 
 //    compile 'com.alibaba.spring.boot:dubbo-spring-boot-starter:2.0.0'
 

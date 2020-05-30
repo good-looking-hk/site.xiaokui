@@ -1,6 +1,6 @@
 rootProject.name = 'newxiaokui'
 include 'k-base'
-include 'k-wx'
+//include 'k-wx'
 include 'k-blog'
 include 'k-main'
 
