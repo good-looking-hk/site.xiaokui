@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import redis.clients.jedis.*;
 import redis.clients.jedis.exceptions.JedisException;
-import redis.clients.util.Pool;
+import redis.clients.jedis.util.Pool;
 
 import java.util.HashSet;
 

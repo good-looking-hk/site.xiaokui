@@ -6,7 +6,7 @@
         <li>
             <span class="layui-bg-gray sp1">${r.viewCount}次</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
-               class="p1">${rLP.index}.${r.dir}:${r.title}</a>
+               class="p1" title="${r.title}">${rLP.index}.${r.dir}:${r.title}</a>
         </li>
         @}
         <!--<li>-->
@@ -24,7 +24,7 @@
         <li>
             <span class="layui-bg-gray sp1">${r.createTime, "yyyyMMdd"}</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
-               class="p1">${rLP.index}.${r.dir}:${r.title}</a>
+               class="p1" title="${r.title}">${rLP.index}.${r.dir}:${r.title}</a>
         </li>
         @}
     </ul>
@@ -38,7 +38,7 @@
         <li>
             <span class="layui-bg-gray sp1">${r.updateTime!r.createTime, "yyyyMMdd"}</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
-               class="p1">${rLP.index}.${r.dir}:${r.title}</a>
+               class="p1" title="${r.title}">${rLP.index}.${r.dir}:${r.title}</a>
         </li>
         @}
     </ul>
@@ -52,7 +52,7 @@
         <li>
             <span class="layui-bg-gray sp1">${'热度' + r.recommendValue}</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
-               class="p1">${rLP.index}.${r.dir}:${r.title}</a>
+               class="p1" title="${r.title}">${rLP.index}.${r.dir}:${r.title}</a>
         </li>
         @}
     </ul>

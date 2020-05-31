@@ -107,9 +107,12 @@ public class IndexController extends BaseController {
             return ERROR;
         }
         boolean proCheckPass = false;
-        if (passwd != null && StringUtil.isNotEmpty(user.getPassword()) && ShiroKit.getInstance().md5(passwd, user.getSalt()).equals(user.getProPassword())) {
-            log.info("受保护访问通过，userId为{}，passwd为{}", user.getId(), passwd);
-            proCheckPass = true;
+        if (passwd != null) {
+            // 最好走第一个逻辑吧
+            if (user.getProPassword().equals(passwd) || StringUtil.isNotEmpty(user.getPassword()) && ShiroKit.getInstance().md5(passwd, user.getSalt()).equals(user.getProPassword())) {
+                log.info("受保护访问通过，userId为{}，passwd为{}", user.getId(), passwd);
+                proCheckPass = true;
+            }
         }
         List<SysBlog> allBlogList = blogService.listBlogByUserId(user.getId());
         // 解析所有公开、受保护的博客，这一步很关键，一般会用缓存

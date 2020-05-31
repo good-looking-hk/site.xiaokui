@@ -23,9 +23,9 @@ dependencies {
 
 //    compile 'com.alibaba.spring.boot:dubbo-spring-boot-starter:2.0.0'
 
-    compile 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.2'
+//    compile 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.2'
 
-    compile 'org.apache.curator:curator-recipes:4.2.0'
+//    compile 'org.apache.curator:curator-recipes:4.2.0'
 
     compile 'org.apache.shiro:shiro-spring-boot-starter:1.4.0'
 
@@ -41,7 +41,6 @@ dependencies {
     compile 'net.sf.ehcache:ehcache:2.10.5'
 //    compile 'net.sf.ehcache.internal:ehcache:2.10.5'
 
-    compile 'redis.clients:jedis:2.9.0'
     compile 'io.protostuff:protostuff-runtime:1.6.0'
     compile 'io.protostuff:protostuff-core:1.6.0'
 

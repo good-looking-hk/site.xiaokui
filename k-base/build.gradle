@@ -36,7 +36,9 @@ dependencies {
     compile 'org.apache.shiro:shiro-ehcache:1.4.0'
     compile 'net.sf.ehcache:ehcache:2.10.5'
 
-    compile 'redis.clients:jedis:2.9.0'
+    // compile 'redis.clients:jedis:2.9.0'，留作教训，重构一时爽，一直重构一直爽
+     compile 'redis.clients:jedis'
+
     compile 'io.protostuff:protostuff-runtime:1.6.0'
     compile 'io.protostuff:protostuff-core:1.6.0'
 
