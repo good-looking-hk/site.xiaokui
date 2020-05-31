@@ -55,8 +55,12 @@ public class IndexController extends BaseController {
     @Autowired
     private CacheCenter cacheCenter;
 
-    @Value("${xiaokui.recent-upload}")
-    private Integer recentUploadCount;
+// 暂时去掉，后续再看
+//    @Value("${xiaokui.recent-upload}")
+//    private Integer recentUploadCount;
+
+    @Value("${xiaokui.recent-update}")
+    private Integer recentUpdateCount;
 
     @Value("${xiaokui.recommend-count}")
     private Integer recommendCount;
@@ -80,7 +84,6 @@ public class IndexController extends BaseController {
         if (user == null) {
             return FORWARD_ERROR;
         }
-        // 这里多了一次数据库查询
         if (this.isNotEmpty(user.getBlogSpace())) {
             return REDIRECT + BLOG_PREFIX + "/" + user.getBlogSpace();
         }
@@ -134,7 +137,8 @@ public class IndexController extends BaseController {
         } else {
             List<List<SysBlog>> dirLists = details.getPublicList();
             // 最近上传和推荐阅读，这个是查数据库或Map缓存得来的
-            List recentUploadList = details.getUploadTopN(this.recentUploadCount);
+//            List recentUploadList = details.getUploadTopN(this.recentUploadCount);
+            List recentUpdateList = details.getModifyTopN(this.recentUpdateCount);
             List recommendList = details.getRecommendTopN(this.recommendCount);
             // 最多访问，这个需要查redis获取topN
             LinkedHashMap<Integer, Integer> map = blogService.getMostViewTopN(user.getId(), mostView);
@@ -145,7 +149,8 @@ public class IndexController extends BaseController {
             blogUser.setPro(details.getPro());
             blogUser.setPageTotal(details.getPub());
             blogUser.setDirCount(dirLists.size());
-            model.addAttribute("upload", recentUploadList);
+            /// model.addAttribute("upload", recentUploadList);
+            model.addAttribute("update", recentUpdateList);
             model.addAttribute("recommend", recommendList);
             model.addAttribute("view", mostViewList);
         }
@@ -195,12 +200,15 @@ public class IndexController extends BaseController {
                 blogUser.setPageTotal(details.getPub());
                 blogUser.setDirCount(details.getPubDir().size());
             }
-            List recentUploadList = details.getUploadTopN(this.recentUploadCount);
+///            List recentUploadList = details.getUploadTopN(this.recentUploadCount);
             List recommendList = details.getRecommendTopN(this.recommendCount);
+            List recentUpdateList = details.getModifyTopN(this.recentUpdateCount);
+
             // 最多访问，这个需要查redis获取topN
             LinkedHashMap<Integer, Integer> map = blogService.getMostViewTopN(blogUser.getId(), mostView);
             List<SysBlog> mostViewList = resolveMostViewList(details, map);
-            model.addAttribute("upload", recentUploadList);
+///            model.addAttribute("upload", recentUploadList);
+           model.addAttribute("update", recentUpdateList);
             model.addAttribute("recommend", recommendList);
             model.addAttribute("view", mostViewList);
             model.addAttribute("user", blogUser);
@@ -277,10 +285,11 @@ public class IndexController extends BaseController {
         }
         Query<SysBlog> query = blogService.createQuery();
         if (NumberUtil.isInteger(key) && key.length() == 4) {
-            query.andEq("user_id", user.getId()).andLike("create_time", "%" + key + "%");
+            query.andEq("user_id", user.getId()).andLike("create_time", "%" + key + "%").desc("create_time");
         } else {
-            query.andEq("user_id", user.getId())
-                    .and(query.condition().orLike("dir", "%" + key + "%").orLike("name", "%" + key + "%"));
+            query.andEq("user_id", user.getId()).and(query.condition()
+                    .orLike("dir", "%" + key + "%")
+                    .orLike("name", "%" + key + "%"));
         }
         List<SysBlog> blogList = blogService.query(query);
         BlogDetailList details = BlogUtil.resolveBlogList(blogList, user.getId(), blogSpace, false);

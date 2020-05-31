@@ -54,13 +54,9 @@ body {
 #nav-search {
     height: 54px;
     line-height: 54px;
-    width: 30%;
-    margin: auto;
+    width: 380px;
+    margin: 0 auto;
     vertical-align: middle;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
 }
 
 #nav-search input {

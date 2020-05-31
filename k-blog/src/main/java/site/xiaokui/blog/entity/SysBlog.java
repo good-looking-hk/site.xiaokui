@@ -130,11 +130,19 @@ public class SysBlog extends ParentEntity {
                 }
                 return o2.id.compareTo(o1.id);
             } else {
-                int r = o2.updateTime.compareTo(o1.updateTime);
-                if (r != 0) {
-                    return r;
+                Date updateTime1, updateTime2;
+                if (o1.updateTime == null) {
+                    updateTime1 = o1.createTime;
+                } else {
+                    updateTime1 = o1.updateTime;
                 }
-                return o2.id.compareTo(o1.id);
+                if (o2.updateTime == null) {
+                    updateTime2 = o2.createTime;
+                } else {
+                    updateTime2 = o2.updateTime;
+                }
+
+                return updateTime2.compareTo(updateTime1);
             }
         }
     }
@@ -201,13 +209,13 @@ public class SysBlog extends ParentEntity {
         if (this.getCharacterCount() != null) {
             characterValue = (double) this.characterCount / 650 + 2;
         }
-//         System.out.println("1250-" + createTimeValue + "-" + updateTimeValue * 57 + "+" + yesterdayValue + "+" + viewCountValue + "+" + characterValue);
         double value = 1150 - createTimeValue  - (updateTimeValue * 49) + yesterdayValue + viewCountValue + characterValue;
-        if (this.name.contains("*") || this.title.contains("*")) {
-            value += 400;
+        if (this.name.contains("**") || this.title.contains("**")) {
+            value += 500;
+        } else if (this.name.contains("*") || this.title.contains("*")) {
+            value += 200;
         }
         this.recommendValue = (int) value;
-//         System.out.println(this.getDir() + ":" + this.getName() + ":" + this.recommendValue);
         return this.recommendValue;
     }
 }

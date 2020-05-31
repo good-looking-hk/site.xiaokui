@@ -182,6 +182,7 @@ public class BlogController extends AbstractController {
         blog.setOrderNum(orderNum);
         blog.setStatus(code);
         blog.setCreateTime(date);
+        blog.setUpdateTime(new Date());
         boolean success = blogService.updateByIdIgnoreNull(blog);
         return returnResult(success);
     }

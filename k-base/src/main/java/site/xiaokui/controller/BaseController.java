@@ -70,10 +70,16 @@ public class BaseController implements ConstantController{
     }
 
     protected String getUsername() {
+        if (getUser() == null) {
+            return null;
+        }
         return SHIRO.getUser().getUsername();
     }
 
     protected Integer getRoleId() {
+        if (getUser() == null) {
+            return null;
+        }
         return SHIRO.getUser().getRoleId();
     }
 

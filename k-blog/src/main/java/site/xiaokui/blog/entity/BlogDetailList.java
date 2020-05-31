@@ -160,7 +160,8 @@ public class BlogDetailList {
             // 自定义比较器
             blogList.sort(new SysBlog.DateComparator(true));
             this.uploadTopNList.addAll(blogList);
-            // 暂时去掉按更新时间排序blogList.sort(new SysBlog.DateComparator(false));//
+            blogList.sort(new SysBlog.DateComparator(false));
+            this.modifyTopNList.addAll(blogList);
             blogList.sort(new SysBlog.RecommendComparator());
             this.recommendTopNList.addAll(blogList);
         }
