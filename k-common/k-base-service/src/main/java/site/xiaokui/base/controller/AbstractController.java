@@ -22,10 +22,4 @@ public abstract class AbstractController extends BaseController {
     protected final String TO_EDIT = PREFIX + EDIT;
 
     protected final String TO_REMOVE = PREFIX + REMOVE;
-
-    /**
-     * 获取当前登录用户信息
-     * @return 登录用户信息，没有则返回null
-     */
-    protected abstract Object getCurrentUser();
 }
