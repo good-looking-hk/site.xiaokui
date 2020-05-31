@@ -20,9 +20,5 @@ public class UnsafeTest {
         constructor.setAccessible(true);
         unsafe = constructor.newInstance(null);
         // 通道Unsafe实例后，下面将模拟一个场景，三个线程轮流打印123 456 789
-        long time = System.currentTimeMillis();
-        System.out.println(Long.toHexString(time));
-
-        System.out.println(Integer.toHexString((int) time));
     }
 }

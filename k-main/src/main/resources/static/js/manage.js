@@ -217,45 +217,18 @@ layui.use(['form', 'layer', 'upload'], function () {
             layer.msg("本地上传失败", {icon: 2});
         }
     });
-    var uploadResume = upload.render({
-        elem: '#uploadResume', //绑定元素
+    var user = upload.render({
+        elem: '#user', //绑定元素
         url: '/sys/blog/user', //上传接口
         accept: 'file',
         auto: true,
         multipart: false,
-        size: 512,
+        size: 1024,
         before: function (obj) {
             //预读本地文件示例，不支持ie8
             obj.preview(function (index, file, result) {
                 fileName = file.name;
-                if (fileName.indexOf("简历") === -1) {
-                    this.error()
-                }
-            });
-        },
-        done: function (res) {
-            if (res.code === 200) {
-                layer.msg("上传成功", {icon: 1});
-            } else {
-                layer.msg(res.msg, {icon: 2});
-            }
-        },
-        error: function () {
-            layer.msg("文件格式不正确", {icon: 2});
-        }
-    });
-    var uploadAbout = upload.render({
-        elem: '#uploadAbout', //绑定元素
-        url: '/sys/blog/user', //上传接口
-        accept: 'file',
-        auto: true,
-        multipart: false,
-        size: 512,
-        before: function (obj) {
-            //预读本地文件示例，不支持ie8
-            obj.preview(function (index, file, result) {
-                fileName = file.name;
-                if (fileName.indexOf("关于") === -1) {
+                if (fileName.indexOf("-") === -1) {
                     this.error()
                 }
             });

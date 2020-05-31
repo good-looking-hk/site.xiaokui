@@ -1,6 +1,7 @@
 package site.xiaokui.blog.controller;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.beetl.sql.core.query.Query;
@@ -204,8 +205,10 @@ public class BlogController extends AbstractController {
     }
 
     /**
+     * TODO
      * 用户自定义扩展界面接口--后续有待完善
-     * html文件名形如：关于-20171022.html
+     * html、md文件名形如：关于-20171022.html/md
+     * html、md文件名形如：20171022-关于.html/md
      */
     @RequiresPermissions(BLOG_PREFIX + ADD)
     @PostMapping("/user")
@@ -227,17 +230,29 @@ public class BlogController extends AbstractController {
             return this.error("文件上传失败:" + blog);
         }
 
-        // 移动到用户根目录下
-        String name = fileName.substring(index + 1, fileName.lastIndexOf('.'));
-        if (!"关于".equals(name) && !"简历".equals(name)) {
-            return this.error("不支持的文件名:" + name);
+        int i = fileName.lastIndexOf(".");
+        // 去除后缀
+        String noSuffixName = fileName.substring(0, i);
+        String[] arr = noSuffixName.split("-");
+        if (arr.length != 2) {
+            return this.error("不支持的文件名:" + fileName);
         }
-        String time = fileName.substring(0, index);
+
+        String name, date;
+        if (arr[0].length() == 8 && NumberUtil.isInteger(arr[0])) {
+            name = arr[1];
+            date = arr[0];
+        } else if (arr[1].length() == 8 && NumberUtil.isInteger(arr[1])) {
+            name = arr[0];
+            date = arr[1];
+        } else {
+            return this.error("不支持的文件名:" + fileName);
+        }
         File target = new File(upload.getParentFile().getParent() + "/" +  name + ".html");
         boolean result = upload.renameTo(target);
         if (result) {
-            target.setLastModified(DateUtil.parse(time).getTime());
-            log.info("用户{}存储了自定义key[name={},time={}]", this.getUserId(), fileName, time);
+            target.setLastModified(DateUtil.parse(date).getTime());
+            log.info("用户{}存储了自定义key[name={},time={}]", this.getUserId(), fileName, date);
         }
         return this.returnResult(result, "上传失败",  "上传成功");
     }
