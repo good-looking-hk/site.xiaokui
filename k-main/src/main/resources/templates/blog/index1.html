@@ -1,7 +1,7 @@
 @include("/blog/_header.html"){}
 
 <div class="layui-main" style="padding: 15px 60px;margin-top: 26px;margin-left: 22.5%;width:62%;">
-    <center>本页共 ${user.pageTotal} 篇，分为 ${user.dirCount} 个系列展示</center>
+    <center>本页共 ${site.xiaokui.user.pageTotal} 篇，分为 ${site.xiaokui.user.dirCount} 个系列展示</center>
 
     @if (isNotEmpty(lists) && isNotEmpty(titles)) {
     <ul>

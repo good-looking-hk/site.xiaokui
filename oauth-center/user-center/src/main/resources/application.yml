@@ -1,0 +1,71 @@
+server:
+  port: 9090
+  servlet:
+    context-path: /
+
+spring:
+  profiles:
+    #需要激活的profile local或remote
+    active: remote
+  application:
+    name: main-cosumer
+  dubbo:
+    server: true
+    registry:
+      address: zookeeper://localhost:2181
+  mvc:
+    view:
+      prefix: /
+    pathmatch:
+      use-suffix-pattern: true #忽略小数点后缀，如/test.tss仍然是匹配/test
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+  aop:
+    proxy-target-class: true #false为启用jdk默认动态代理(面向接口),true为cglib动态代理(面向继承)
+
+#  rabbitmq:
+#    host: 127.0.0.1
+#    port: 5672
+#    username: guest
+#    password: guest
+
+wx:
+  mp:
+    configs:
+      - appId: wxda9a290c4b3e91fd
+        secret: 7f299f10bac94a0c7b2020e11327cf76
+        token: wxda9a290c4b3e91fd
+        aesKey: nIIVMI0VRsVD6DhSQ9H5G88TswVg1reXO0maaLuP0Yc
+      - appId: wxcf34437c569d6496
+        secret: eb9c4cbafbb9a5ea4ca1ded733e6c1d4
+        token: hk467914950
+        aesKey: nIIVMI0VRsVD6DhSQ9H5G88TswVg1reXO0maaLuP0Yc
+
+xiaokui:
+  # 最多访问数量
+  most-view: 8
+  # 最近上传数量
+  recent-upload: 0
+  # 最近上传数量
+  recent-update: 8
+  # 推荐数量
+  recommend-count: 16
+  # 单个IP单日对单篇博客最大贡献访问量
+  single-ip-contribute-blog: 5
+  # 单个IP单日对所有博客最大贡献访问量
+  single-ip-contribute--all-blog: 20
+  # 单个用户单日对单篇博客最大贡献访问量
+  single-user-contribute-blog: 20
+  # 单个用户单日对所有博客最大贡献访问量，两个限制条件不冲突
+  single-user-contribute--all-blog: 40
+  # 是否启用shiro，关闭后系统所有权限控制将会失效
+  enable-shiro: true
+  session-alive: 60 * 60 * 24
+  session-check: 60 * 60 * 6
+

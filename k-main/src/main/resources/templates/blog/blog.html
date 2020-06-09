@@ -2,9 +2,9 @@
 <div id="content">
     <div class="panel panel-default content-body markdown-body">
         <div class="panel-heading content-title">
-            <span class="pre-blog"><a href='${ctxPath}${user.blog.preBlog!"#"}'>上一篇:${user.blog.preBlogTitle!"无"}</a></span>
+            <span class="pre-blog"><a href='${ctxPath}${user.blog.preBlog!"#"}'>上一篇:${site.xiaokui.user.blog.preBlogTitle!"无"}</a></span>
             ${user.blog.title!"咦，竟然没有标题"}
-            <span class="next-blog"><a href='${ctxPath}${user.blog.nextBlog!"#"}'>下一篇:${user.blog.nextBlogTitle!"本系列完"}</a></span>
+            <span class="next-blog"><a href='${ctxPath}${user.blog.nextBlog!"#"}'>下一篇:${site.xiaokui.user.blog.nextBlogTitle!"本系列完"}</a></span>
         </div>
         <div class="panel-body">
             <p id="countChars" style="font-size: 14px;color: #777777;"></p>
@@ -12,13 +12,16 @@
             @if(isNotEmpty(user.blog.createTime) && isNotEmpty(user.blog.updateTime)) {
             <blockquote>
                 <small>
-                    Views ${user.blog.viewCount!"1"} times and Created by ${user.name} on ${user.blog.createTime, "yyyy-MM-dd"} and Updated on ${user.blog.updateTime, "yyyy-MM-dd"}
+                    Views ${site.xiaokui.user.blog.viewCount!"1"} times and Created by ${site.xiaokui.user.name} on
+                    ${site.xiaokui.user.blog.createTime, "yyyy-MM-dd"} and Updated on
+                    ${site.xiaokui.user.blog.updateTime, "yyyy-MM-dd"}
                 </small>
             </blockquote>
             @} else if (isNotEmpty(user.blog.createTime)) {
             <blockquote>
                 <small>
-                    Views ${user.blog.viewCount!"1"} times and Created by ${user.name} on ${user.blog.createTime, dateFormat="yyyy-MM-dd"}
+                    Views ${site.xiaokui.user.blog.viewCount!"1"} times and Created by ${site.xiaokui.user.name} on
+                    ${site.xiaokui.user.blog.createTime, dateFormat="yyyy-MM-dd"}
                 </small>
             </blockquote>
             @}

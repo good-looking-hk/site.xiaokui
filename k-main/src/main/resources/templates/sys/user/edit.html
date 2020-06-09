@@ -1,7 +1,7 @@
 @layout("/beetl/box_container.html"){
 <div class="layui-row box-content">
     <form class="layui-form" lay-filter="setValue">
-        <input id="id" value="${user.id}" hidden/>
+        <input id="id" value="${site.xiaokui.user.id}" hidden/>
         <#input title="用户名称" id="name" placeholder="例如 一般般帅"/>
         <#input title="邮箱" id="email" placeholder="用于找回密码" required="email"/>
         @values = ["男","女","保密"];

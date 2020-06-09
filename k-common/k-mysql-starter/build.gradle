@@ -1,0 +1,7 @@
+ext {
+    mysqlVersion = '8.0.9-rc'
+}
+
+dependencies {
+    compile "mysql:mysql-connector-java:${mysqlVersion}"
+}

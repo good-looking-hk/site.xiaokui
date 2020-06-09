@@ -31,7 +31,7 @@
             </a>
             <div class="head-info">
                 <span id="showWelcome"></span>
-                <span>上次登录时间：${user.lastLoginTime, "yyyy-MM-dd HH:mm:ss"}</span>
+                <span>上次登录时间：${site.xiaokui.user.lastLoginTime, "yyyy-MM-dd HH:mm:ss"}</span>
             </div>
             <!-- Navbar Right Menu -->
             <div class="navbar-custom-menu">
@@ -127,22 +127,23 @@
                     <li class="dropdown user user-menu">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <img src="${ctxPath}${user.avatar}" class="user-image headImg" alt="用户头像">
-                            <span class="hidden-xs username">${user.username}</span>
+                            <span class="hidden-xs username">${site.xiaokui.user.username}</span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- User image -->
                             <li class="user-header">
                                 <img src="${user.avatar}" class="img-circle headImg" alt="用户头像">
-                                <p style="margin-top:4px;"><small>账号创建于 ${user.createTime, "yyyy-MM-dd HH:mm:ss"}</small></p>
-                                <p style="margin-top:4px;"><small>当前登录IP：${user.currentIp}</small></p>
-                                <p style="margin-top:4px;"><small>上次登录IP：${user.lastLoginIp}</small></p>
+                                <p style="margin-top:4px;"><small>账号创建于
+                                    ${site.xiaokui.user.createTime, "yyyy-MM-dd HH:mm:ss"}</small></p>
+                                <p style="margin-top:4px;"><small>当前登录IP：${site.xiaokui.user.currentIp}</small></p>
+                                <p style="margin-top:4px;"><small>上次登录IP：${site.xiaokui.user.lastLoginIp}</small></p>
                             </li>
                             <!-- Menu Body -->
                             <li class="user-body">
                                 <div class="text-center">
-                                    <p class="selfDescription" href="#">个性签名：${user.selfDescription}</p>
-                                    <p class="selfDescription" href="#">博客空间：${user.blogSpace}</p>
-                                    <p class="selfDescription" href="#">当前角色：${user.roleName}</p>
+                                    <p class="selfDescription" href="#">个性签名：${site.xiaokui.user.selfDescription}</p>
+                                    <p class="selfDescription" href="#">博客空间：${site.xiaokui.user.blogSpace}</p>
+                                    <p class="selfDescription" href="#">当前角色：${site.xiaokui.user.roleName}</p>
                                 </div>
                             </li>
                             <!-- Menu Footer-->
@@ -175,7 +176,7 @@
                     <img src="${ctxPath}${user.avatar}" class="img-circle headImg" alt="用户头像">
                 </div>
                 <div class="pull-left info">
-                    <p class="username">${user.username}</p>
+                    <p class="username">${site.xiaokui.user.username}</p>
                     <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
                 </div>
             </div><!-- /.user-panel -->
