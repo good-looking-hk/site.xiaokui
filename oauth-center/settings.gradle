@@ -1,8 +1,4 @@
 include 'auth-center'
 include 'user-center'
-// 引入平级模块，还可以引入平级模块下的子模块，如 'k-base:k-base-util'
 includeFlat 'k-base'
 includeFlat 'k-common:k-swagger-starter'
-
-//includeFlat 'A'
-//include 'A:A1'

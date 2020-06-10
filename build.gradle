@@ -1,23 +1,20 @@
-buildscript {
-    ext {
-        springBootVersion = '2.2.6.RELEASE'
-    }
-    repositories {
-        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-    }
+plugins {
+    id 'org.springframework.boot' version '2.3.0.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+    id 'java'
 }
-
 group = 'site.xiaokui'
 version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
 
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
 repositories {
     maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
     mavenCentral()
-    maven { url "https://repo.spring.io/milestone" }
 }
 
 subprojects {
@@ -26,12 +23,17 @@ subprojects {
     apply plugin: 'idea'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
+    ext {
+        springBootVersion = '2.3.0.RELEASE'
+        springCloudVersion = 'Hoxton.SR5'
+    }
     repositories {
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
         mavenCentral()
     }
-    ext {
-        springBootVersion = '2.2.6.RELEASE'
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
     }
 }
-

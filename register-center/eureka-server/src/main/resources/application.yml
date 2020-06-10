@@ -1,0 +1,8 @@
+spring:
+  profiles:
+    active: master
+
+logging:
+  level:
+    root: info
+    org.springframework.web: info
