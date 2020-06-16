@@ -20,7 +20,7 @@ import site.xiaokui.blog.util.BlogUtil;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.common.util.TimeUtil;
 import site.xiaokui.entity.ResultEntity;
-import site.xiaokui.controller.AbstractController;
+import site.xiaokui.user.controller.AbstractController;
 
 import java.io.File;
 import java.util.Date;

@@ -21,7 +21,7 @@ import site.xiaokui.config.spring.TestSpringMVC;
  *
  * 如果你看到这里，说明是有缘人，在此，请允许我郑重向你推荐几个有水平的类
  * {@link TestSpringMVC}里面包含一些对于Spring MVC的理解
- * {@link site.xiaokui.config.shiro.ShiroConfig}里面包含一些对于Shiro的理解
+ * {@link site.xiaokui.user.config.shiro.ShiroConfig}里面包含一些对于Shiro的理解
  *
  * 本项目开始自2017年，下面是对于项目功能的一些说明：
  * 1、Spring Boot、Beetl、BeetlSql、Shiro的使用和配置，这里的东西贯穿全称，很有多东西

@@ -1,7 +1,7 @@
 package site.xiaokui.config.beetl;
 
 import org.beetl.ext.spring.BeetlGroupUtilConfiguration;
-import site.xiaokui.config.shiro.ShiroKit;
+import site.xiaokui.user.config.shiro.ShiroKit;
 
 /**
  * @author HK

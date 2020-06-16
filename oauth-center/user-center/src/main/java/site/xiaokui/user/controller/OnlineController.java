@@ -9,15 +9,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import site.xiaokui.config.shiro.ShiroUser;
-import site.xiaokui.module.user.UserConstants;
-import site.xiaokui.module.user.entity.OnlineUser;
+import site.xiaokui.user.config.shiro.ShiroUser;
+import site.xiaokui.user.UserConstants;
+import site.xiaokui.user.entity.OnlineUser;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import static site.xiaokui.config.shiro.ShiroConstants.SHIRO_USER_SESSION_KEY;
+import static site.xiaokui.user.config.shiro.ShiroConstants.SHIRO_USER_SESSION_KEY;
 
 /**
  * @author HK

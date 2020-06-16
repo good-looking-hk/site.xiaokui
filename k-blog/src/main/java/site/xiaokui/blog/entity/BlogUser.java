@@ -2,7 +2,7 @@ package site.xiaokui.blog.entity;
 
 import lombok.Data;
 import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.module.user.entity.SysUser;
+import site.xiaokui.user.entity.SysUser;
 
 import java.util.List;
 

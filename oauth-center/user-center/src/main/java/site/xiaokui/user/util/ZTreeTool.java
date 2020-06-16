@@ -2,7 +2,7 @@ package site.xiaokui.user.util;
 
 import site.xiaokui.entity.BaseEntity;
 import site.xiaokui.entity.ZTreeNode;
-import site.xiaokui.module.user.entity.SysMenu;
+import site.xiaokui.user.entity.SysMenu;
 
 import java.util.LinkedList;
 import java.util.List;

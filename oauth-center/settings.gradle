@@ -1,4 +1,4 @@
 include 'auth-center'
 include 'user-center'
-includeFlat 'k-base'
 includeFlat 'k-common:k-swagger-starter'
+includeFlat 'k-common:k-base-service'

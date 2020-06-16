@@ -12,12 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.xiaokui.common.exception.TooMuchPasswordRetryException;
 import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.controller.BaseController;
 import site.xiaokui.entity.ResultEntity;
-import site.xiaokui.module.user.entity.SysUser;
-import site.xiaokui.module.user.service.UserService;
+import site.xiaokui.user.entity.SysUser;
+import site.xiaokui.user.service.UserService;
 
-import static site.xiaokui.module.user.UserConstants.REMEMBER_FLAG;
+import static site.xiaokui.user.UserConstants.REMEMBER_FLAG;
 
 /**
  * @author HK

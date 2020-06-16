@@ -10,17 +10,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.config.shiro.ShiroUser;
-import site.xiaokui.controller.AbstractController;
+import site.xiaokui.user.config.shiro.ShiroUser;
 import site.xiaokui.entity.ResultEntity;
-import site.xiaokui.module.user.UserConstants;
-import site.xiaokui.module.user.entity.SysRole;
-import site.xiaokui.module.user.entity.SysUser;
-import site.xiaokui.module.user.entity.enums.SexTypeEnum;
-import site.xiaokui.module.user.entity.wrapper.SysUserWrapper;
-import site.xiaokui.module.user.service.RoleService;
-import site.xiaokui.module.user.service.ServiceFactory;
-import site.xiaokui.module.user.service.UserService;
+import site.xiaokui.user.UserConstants;
+import site.xiaokui.user.entity.SysRole;
+import site.xiaokui.user.entity.SysUser;
+import site.xiaokui.user.entity.enums.SexTypeEnum;
+import site.xiaokui.user.entity.wrapper.SysUserWrapper;
+import site.xiaokui.user.service.RoleService;
+import site.xiaokui.user.service.ServiceFactory;
+import site.xiaokui.user.service.UserService;
 
 import java.util.List;
 

@@ -2,8 +2,8 @@ package site.xiaokui.user.entity.wrapper;
 
 import cn.hutool.core.date.DateUtil;
 import site.xiaokui.entity.wrapper.BaseEntityWrapper;
-import site.xiaokui.module.user.entity.SysUser;
-import site.xiaokui.module.user.service.ServiceFactory;
+import site.xiaokui.user.entity.SysUser;
+import site.xiaokui.user.service.ServiceFactory;
 
 import java.util.Date;
 import java.util.List;

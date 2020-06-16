@@ -1,0 +1,13 @@
+dependencies {
+    compile 'cn.hutool:hutool-all:5.3.1'
+    compile 'javax.mail:mail:1.4.7'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.springframework.boot:spring-boot-starter-aop'
+    compile 'org.springframework.boot:spring-boot-starter-jdbc'
+
+    compile 'mysql:mysql-connector-java:8.0.9-rc'
+    compile 'com.zaxxer:HikariCP:3.4.5'
+    compile 'com.ibeetl:beetl-framework-starter:1.2.28.RELEASE'
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}

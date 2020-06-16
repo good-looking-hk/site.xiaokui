@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.xiaokui.base.service.BaseService;
 import site.xiaokui.entity.enums.MenuTypeEnum;
-import site.xiaokui.module.user.dao.MenuDao;
-import site.xiaokui.module.user.dao.RoleMenuDao;
-import site.xiaokui.module.user.entity.SysMenu;
-import site.xiaokui.module.user.entity.SysRoleMenu;
-import site.xiaokui.module.user.entity.enums.MenuStatusEnum;
+import site.xiaokui.user.dao.MenuDao;
+import site.xiaokui.user.dao.RoleMenuDao;
+import site.xiaokui.user.entity.SysMenu;
+import site.xiaokui.user.entity.SysRoleMenu;
+import site.xiaokui.user.entity.enums.MenuStatusEnum;
 
 import java.util.*;
 

@@ -31,6 +31,10 @@ subprojects {
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
         mavenCentral()
     }
+    dependencies {
+        compileOnly 'org.projectlombok:lombok'
+
+    }
     dependencyManagement {
         imports {
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"

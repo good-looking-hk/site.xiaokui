@@ -3,8 +3,8 @@ package site.xiaokui.user.service;
 import org.beetl.sql.core.query.Query;
 import org.springframework.stereotype.Service;
 import site.xiaokui.base.service.BaseService;
-import site.xiaokui.config.shiro.ShiroKit;
-import site.xiaokui.module.user.entity.SysUser;
+import site.xiaokui.user.config.shiro.ShiroKit;
+import site.xiaokui.user.entity.SysUser;
 
 import java.util.List;
 

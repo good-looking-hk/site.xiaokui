@@ -1,1 +1,2 @@
 include 'eureka-server'
+includeFlat 'k-common:k-base-service'

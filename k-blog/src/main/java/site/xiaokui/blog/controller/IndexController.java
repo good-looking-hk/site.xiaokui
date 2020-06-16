@@ -16,7 +16,7 @@ import site.xiaokui.base.aop.annotation.Log;
 import site.xiaokui.base.constant.BaseConstants;
 import site.xiaokui.blog.CacheCenter;
 import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.config.shiro.ShiroKit;
+import site.xiaokui.user.config.shiro.ShiroKit;
 import site.xiaokui.controller.BaseController;
 import site.xiaokui.blog.BlogConstants;
 import site.xiaokui.blog.entity.BlogDetailList;

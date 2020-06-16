@@ -3,7 +3,7 @@ package site.xiaokui.user.dao;
 import org.beetl.sql.core.annotatoin.Param;
 import org.beetl.sql.core.annotatoin.SqlResource;
 import org.beetl.sql.core.mapper.BaseMapper;
-import site.xiaokui.module.user.entity.SysMenu;
+import site.xiaokui.user.entity.SysMenu;
 
 import java.util.List;
 

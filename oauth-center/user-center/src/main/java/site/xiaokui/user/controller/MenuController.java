@@ -6,19 +6,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.controller.AbstractController;
 import site.xiaokui.entity.ResultEntity;
 import site.xiaokui.entity.ZTreeNode;
 import site.xiaokui.entity.enums.MenuTypeEnum;
-import site.xiaokui.module.user.UserConstants;
-import site.xiaokui.module.user.entity.SysMenu;
-import site.xiaokui.module.user.entity.enums.MenuStatusEnum;
-import site.xiaokui.module.user.service.MenuService;
-import site.xiaokui.module.user.util.ZTreeTool;
+import site.xiaokui.user.UserConstants;
+import site.xiaokui.user.entity.SysMenu;
+import site.xiaokui.user.entity.enums.MenuStatusEnum;
+import site.xiaokui.user.service.MenuService;
+import site.xiaokui.user.util.ZTreeTool;
 
 import java.util.*;
 
-import static site.xiaokui.module.user.UserConstants.ICON_START_FLAG;
+import static site.xiaokui.user.UserConstants.ICON_START_FLAG;
 
 
 /**

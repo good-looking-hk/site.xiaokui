@@ -3,7 +3,7 @@ package site.xiaokui.user.dao;
 import org.beetl.sql.core.annotatoin.Param;
 import org.beetl.sql.core.annotatoin.SqlResource;
 import org.beetl.sql.core.mapper.BaseMapper;
-import site.xiaokui.module.user.entity.SysUser;
+import site.xiaokui.user.entity.SysUser;
 
 
 /**

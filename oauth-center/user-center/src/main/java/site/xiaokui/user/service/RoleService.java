@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.xiaokui.base.service.BaseService;
-import site.xiaokui.module.user.dao.RoleMenuDao;
-import site.xiaokui.module.user.entity.SysRole;
-import site.xiaokui.module.user.entity.SysRoleMenu;
+import site.xiaokui.user.dao.RoleMenuDao;
+import site.xiaokui.user.entity.SysRole;
+import site.xiaokui.user.entity.SysRoleMenu;
 
 /**
  * @author HK

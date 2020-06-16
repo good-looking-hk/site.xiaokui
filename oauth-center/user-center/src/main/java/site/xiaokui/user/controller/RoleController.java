@@ -8,24 +8,23 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.controller.AbstractController;
 import site.xiaokui.entity.ResultEntity;
 import site.xiaokui.entity.ZTreeNode;
 import site.xiaokui.entity.enums.RoleTypeEnum;
-import site.xiaokui.module.user.UserConstants;
-import site.xiaokui.module.user.entity.SysMenu;
-import site.xiaokui.module.user.entity.SysRole;
-import site.xiaokui.module.user.entity.wrapper.SysRoleWrapper;
-import site.xiaokui.module.user.service.MenuService;
-import site.xiaokui.module.user.service.RoleService;
-import site.xiaokui.module.user.service.ServiceFactory;
-import site.xiaokui.module.user.service.UserService;
-import site.xiaokui.module.user.util.ZTreeTool;
+import site.xiaokui.user.UserConstants;
+import site.xiaokui.user.entity.SysMenu;
+import site.xiaokui.user.entity.SysRole;
+import site.xiaokui.user.entity.wrapper.SysRoleWrapper;
+import site.xiaokui.user.service.MenuService;
+import site.xiaokui.user.service.RoleService;
+import site.xiaokui.user.service.ServiceFactory;
+import site.xiaokui.user.service.UserService;
+import site.xiaokui.user.util.ZTreeTool;
 
 import java.util.Date;
 import java.util.List;
 
-import static site.xiaokui.module.user.UserConstants.SET_AUTHORITY;
+import static site.xiaokui.user.UserConstants.SET_AUTHORITY;
 
 
 /**

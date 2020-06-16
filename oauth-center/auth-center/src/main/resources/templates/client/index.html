@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>第三方客户端管理界面</title>
+</head>
+<body>
+<form action="/client/create">
+    <input name="id" hidden/>
+    第三方客户端ID<input name="clientId"/><br/>
+    第三方客户端名称<input name="clientName"/><br/>
+    第三方客户端秘钥<input name="clientSecret"/><br/>
+    <button type="submit">添加第三方客户端</button>
+</form>
+<table>
+    <thead>
+    <tr>
+        <th>客户端名</th>
+        <th>客户端ID</th>
+        <th>客户端安全KEY</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    @print(list);
+    @if (isNotEmpty(list)) {
+        @for (client in list) {
+        @print(client);
+        <tr>
+            <td>${client.id!"222"}</td>
+            <td>${client.clientId}</td>
+            <td>${client.clientName}</td>
+            <td>${client.clientSecret}</td>
+            <td>
+                <a href="/client/${client.id}/delete">删除</a>
+            </td>
+        </tr>
+        @}
+    @}
+    </tbody>
+</table>
+<div>
+</div>
+</body>
+</html>

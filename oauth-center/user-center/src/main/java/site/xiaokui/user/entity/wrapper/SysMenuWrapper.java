@@ -1,8 +1,8 @@
 package site.xiaokui.user.entity.wrapper;
 
 import site.xiaokui.entity.wrapper.BaseEntityWrapper;
-import site.xiaokui.module.user.entity.SysMenu;
-import site.xiaokui.module.user.service.ServiceFactory;
+import site.xiaokui.user.entity.SysMenu;
+import site.xiaokui.user.service.ServiceFactory;
 
 import java.util.List;
 
