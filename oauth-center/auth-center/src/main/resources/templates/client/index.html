@@ -4,30 +4,40 @@
     <meta charset="UTF-8">
     <title>第三方客户端管理界面</title>
 </head>
+<style>
+    .tableData {
+        margin-top: 20px;
+        text-align: left;
+    }
+    .tableData th {
+        padding-left: 12px;
+    }
+    .tableData td {
+        padding-left: 12px;
+    }
+</style>
 <body>
-<form action="/client/create">
+<div class="message">${msg!""}</div>
+<form action="/client/create" method="post">
     <input name="id" hidden/>
-    第三方客户端ID<input name="clientId"/><br/>
-    第三方客户端名称<input name="clientName"/><br/>
-    第三方客户端秘钥<input name="clientSecret"/><br/>
-    <button type="submit">添加第三方客户端</button>
+    第三方客户端名称：<input name="clientName"/><br/>
+    <button type="submit" style="margin-top: 10px">添加客户端</button>
 </form>
-<table>
+<table class="tableData">
     <thead>
     <tr>
-        <th>客户端名</th>
-        <th>客户端ID</th>
-        <th>客户端安全KEY</th>
+        <th>id</th>
+        <th>clientId</th>
+        <th>clientName</th>
+        <th>clientSecret</th>
         <th>操作</th>
     </tr>
     </thead>
     <tbody>
-    @print(list);
     @if (isNotEmpty(list)) {
         @for (client in list) {
-        @print(client);
         <tr>
-            <td>${client.id!"222"}</td>
+            <td>${client.id}</td>
             <td>${client.clientId}</td>
             <td>${client.clientName}</td>
             <td>${client.clientSecret}</td>

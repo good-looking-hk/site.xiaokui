@@ -28,20 +28,18 @@ public class ClientController {
     public String list(Model model) {
         model.addAttribute("list", clientService.findAll());
         List<Client> list = clientService.findAll();
-        System.out.println(list.get(0));
-        System.out.println(list.get(0).getId());
         return "/client/index";
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     @ApiOperation(value = "新增客户端")
-    public String create(Client client, RedirectAttributes redirectAttributes) {
-        clientService.createClient(client);
+    public String create(String clientName, RedirectAttributes redirectAttributes) {
+        clientService.createClient(clientName);
         redirectAttributes.addFlashAttribute("msg", "新增成功");
         return "redirect:/client";
     }
 
-    @RequestMapping(value = "/{id}/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}/delete", method = RequestMethod.GET)
     @ApiOperation(value = "删除客户端")
     public String delete(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
         clientService.deleteClient(id);

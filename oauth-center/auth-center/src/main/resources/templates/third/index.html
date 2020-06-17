@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>迷你自走棋</title>
+</head>
+<body>
+<h2>迷你自走棋 登录界面</h2>
+<h4>我是第三方应用 迷你自走棋，允许用户使用 微信账号 登录</h4>
+<p>Client账号：${client}</p>
+
+<a href="/thirdLogin?client_id=${client.clientId}&redirect_uri=/third/user&response_type=code&scope=SCOPE&state=STATE" target="_blank">微信登录</a>
+<p>请求链接为：/thirdLogin?client_id=${client.clientId}&redirect_uri=/third/user&response_type=code&scope=SCOPE&state=STATE</p>
+</body>
+</html>

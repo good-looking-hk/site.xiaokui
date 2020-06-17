@@ -19,7 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import site.xiaokui.base.aop.annotation.Log;
 import site.xiaokui.oauth2.Constants;
+import site.xiaokui.oauth2.entity.ShiroUser;
+import site.xiaokui.oauth2.entity.SysUser;
 import site.xiaokui.oauth2.service.OAuthService;
+import site.xiaokui.oauth2.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,6 +40,9 @@ public class UserInfoController {
 
     @Autowired
     private OAuthService oAuthService;
+
+    @Autowired
+    private UserService userService;
 
     @RequestMapping("/userInfo")
     @ApiOperation(value = "第三方客户端以token换用户信息")
@@ -63,8 +69,10 @@ public class UserInfoController {
             }
             // 返回用户名
             String username = oAuthService.getUsernameByAccessToken(accessToken);
-            return new ResponseEntity<>(username, HttpStatus.OK);
+            ShiroUser user = userService.wrapShiroUser(userService.getUserByName(username));
+            return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (OAuthProblemException e) {
+            e.printStackTrace();
             // 检查是否设置了错误码
             String errorCode = e.getError();
             if (OAuthUtils.isEmpty(errorCode)) {

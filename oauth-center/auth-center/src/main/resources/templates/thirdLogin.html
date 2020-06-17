@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>第三方登录授权界面</title>
+</head>
+<body>
+<h2>第三方登录授权界面，登录成功后第三方应用将获取你的个人信息</h2>
+<form action="/authorize?${query}" method="post">
+    用户名：<input name="username"/><br/>
+    密码：<input name="password"/><br/>
+    <button type="submit" style="margin-top: 10px" id="submit">登录</button>
+</form>
+<p>请求链接为：/authorize?${query}</p>
+</body>
+</html>

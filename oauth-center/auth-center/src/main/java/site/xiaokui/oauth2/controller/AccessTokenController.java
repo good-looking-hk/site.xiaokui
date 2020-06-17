@@ -41,9 +41,6 @@ public class AccessTokenController {
     @Autowired
     private OAuthService oAuthService;
 
-    @Autowired
-    private UserService userService;
-
     @RequestMapping("/accessToken")
     @ApiOperation(value = "第三方客户端以code凭证换token")
     @Log(module = "auth-center", remark="code换token")
@@ -91,6 +88,7 @@ public class AccessTokenController {
             return new ResponseEntity<>(response.getBody(), HttpStatus.valueOf(response.getResponseStatus()));
 
         } catch (OAuthProblemException e) {
+            e.printStackTrace();
             // 构建错误响应
             OAuthResponse res = OAuthASResponse.errorResponse(HttpServletResponse.SC_BAD_REQUEST).error(e)
                     .buildJSONMessage();

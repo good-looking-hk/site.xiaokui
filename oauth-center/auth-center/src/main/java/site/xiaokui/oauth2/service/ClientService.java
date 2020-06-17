@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface ClientService {
 
-    Client createClient(Client client);
+    Client createClient(String clientName);
 
     void updateClient(Client client);
 

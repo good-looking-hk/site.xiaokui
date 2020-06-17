@@ -1,76 +1,54 @@
 package site.xiaokui.oauth2.config;
 
-import org.apache.shiro.authc.*;
-import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.authz.SimpleAuthorizationInfo;
-import org.apache.shiro.realm.AuthorizingRealm;
-import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.util.ByteSource;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-import site.xiaokui.oauth2.entity.ShiroUser;
-import site.xiaokui.oauth2.entity.SysUser;
-import site.xiaokui.oauth2.service.UserService;
+
+import javax.servlet.Filter;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @author hk
  */
-@Component(value="authorizer")
-public class ShiroConfig extends AuthorizingRealm {
+@Slf4j
+@Configuration
+public class ShiroConfig {
 
-    @Autowired
-    private UserService userService;
+    /**
+     * 配置shiro拦截器链
+     * anon:所有url都都可以匿名访问
+     * authc: 需要认证才能进行访问
+     * user:配置记住我（通过cookie）或认证通过可以访问
+     * 顺序从上到下,优先级依次降低
+     * 当应用开启了rememberMe时,用户下次访问时可以是一个user,但不会是authc,因为authc是需要重新认证的
+     * 1. /**的意思是所有文件夹及里面的子文件夹(包含文件夹里面的子文件)
+     * 2. /*是所有文件夹，不含子文件夹
+     * @param securityManager shiro的核心，默认使用{@link DefaultWebSecurityManager}
+     * @return shiro过滤链（以FactoryBean）
+     */
+    @Bean
+    public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager) {
+        ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
+        shiroFilter.setSecurityManager(securityManager);
+        // 登陆访问url,默认为/login.jsp(一般情况下建议主动修改)
+        shiroFilter.setLoginUrl("/login");
+        // 没有权限跳转的url
+        shiroFilter.setUnauthorizedUrl("/error");
 
-    @Override
-    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        // 忽略权限信息
-        return null;
+        Map<String, String> filterMap = new LinkedHashMap<>();
+        filterMap.put("/*/**", "anon");
+        shiroFilter.setFilterChainDefinitionMap(filterMap);
+        return shiroFilter;
     }
 
-    @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        String username = (String)token.getPrincipal();
-        SysUser user = userService.getUserByName(username);
-        if(user == null) {
-            throw new UnknownAccountException();
-        }
-
-        ShiroUser shiroUser = userService.wrapShiroUser(user);
-
-        return new SimpleAuthenticationInfo(
-                shiroUser,
-                user.getPassword(),
-                ByteSource.Util.bytes(user.getSalt()),
-                this.getName()
-        );
-    }
-
-    @Override
-    public void clearCachedAuthorizationInfo(PrincipalCollection principals) {
-        super.clearCachedAuthorizationInfo(principals);
-    }
-
-    @Override
-    public void clearCachedAuthenticationInfo(PrincipalCollection principals) {
-        super.clearCachedAuthenticationInfo(principals);
-    }
-
-    @Override
-    public void clearCache(PrincipalCollection principals) {
-        super.clearCache(principals);
-    }
-
-    public void clearAllCachedAuthorizationInfo() {
-        getAuthorizationCache().clear();
-    }
-
-    public void clearAllCachedAuthenticationInfo() {
-        getAuthenticationCache().clear();
-    }
-
-    public void clearAllCache() {
-        clearAllCachedAuthenticationInfo();
-        clearAllCachedAuthorizationInfo();
+    @Bean
+    public DefaultWebSecurityManager securityManager(ShiroRealm shiroRealm) {
+        DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
+        securityManager.setRealm(shiroRealm);
+        return securityManager;
     }
 }

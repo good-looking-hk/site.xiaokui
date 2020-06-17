@@ -15,9 +15,11 @@ import java.util.UUID;
 public class ClientServiceImpl extends BaseService<Client> implements ClientService {
 
     @Override
-    public Client createClient(Client client) {
-        client.setClientId(UUID.randomUUID().toString());
-        client.setClientSecret(UUID.randomUUID().toString());
+    public Client createClient(String clientName) {
+        Client client = new Client();
+        client.setClientName(clientName);
+        client.setClientId(UUID.randomUUID().toString().replace("-", ""));
+        client.setClientSecret(UUID.randomUUID().toString().replace("-", ""));
         super.insertReturnKey(client);
         return client;
     }

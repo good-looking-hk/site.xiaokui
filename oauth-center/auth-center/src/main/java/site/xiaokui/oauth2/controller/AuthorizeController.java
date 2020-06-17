@@ -26,6 +26,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import site.xiaokui.base.aop.annotation.Log;
 import site.xiaokui.oauth2.Constants;
+import site.xiaokui.oauth2.entity.ShiroUser;
 import site.xiaokui.oauth2.service.ClientService;
 import site.xiaokui.oauth2.service.OAuthService;
 
@@ -33,6 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Map;
 
 /**
  * 这个接口主要是以下步骤的体现，主要目的是获取凭证code
@@ -58,9 +61,14 @@ public class AuthorizeController {
     @ApiOperation(value = "第三方客户端获取凭证code")
     @Log(module = "auth-center", remark="获取code")
     public Object authorize(Model model, HttpServletRequest request) throws URISyntaxException, OAuthSystemException {
+        Map<String, String[]> map = request.getParameterMap();
+        map.forEach((k, v) -> {
+            System.out.println(k + Arrays.toString(v));
+        });
         try {
             // 构建OAuth 授权请求
             OAuthAuthzRequest oauthRequest = new OAuthAuthzRequest(request);
+            System.out.println("oauthRequest: " + oauthRequest);
 
             // 检查传入的客户端id是否正确，注意这里并不会包含秘钥
             if (!oAuthService.checkClientId(oauthRequest.getClientId())) {
@@ -78,12 +86,11 @@ public class AuthorizeController {
                 // 尝试登录操作
                 if(!login(subject, request)) {
                     // 登录失败时跳转到登陆页面
-                    model.addAttribute("client", clientService.findByClientId(oauthRequest.getClientId()));
-                    return "oauth2login";
+                    return "/thirdLogin";
                 }
             }
 
-            String username = (String)subject.getPrincipal();
+            ShiroUser shiroUser = (ShiroUser)subject.getPrincipal();
             // 生成授权码
             String authorizationCode = null;
             // responseType目前仅支持CODE，另外还有TOKEN
@@ -91,7 +98,7 @@ public class AuthorizeController {
             if (responseType.equals(ResponseType.CODE.toString())) {
                 OAuthIssuerImpl oauthIssuerImpl = new OAuthIssuerImpl(new MD5Generator());
                 authorizationCode = oauthIssuerImpl.authorizationCode();
-                oAuthService.addAuthCode(authorizationCode, username);
+                oAuthService.addAuthCode(authorizationCode, shiroUser.getUsername());
             }
 
             // 进行OAuth响应构建
@@ -101,6 +108,7 @@ public class AuthorizeController {
             builder.setCode(authorizationCode);
             // 得到到客户端重定向地址
             String redirectUrl = oauthRequest.getParam(OAuth.OAUTH_REDIRECT_URI);
+            System.out.println("重定向：" + redirectUrl);
 
             // 构建响应
             final OAuthResponse response = builder.location(redirectUrl).buildQueryMessage();
@@ -110,6 +118,7 @@ public class AuthorizeController {
             headers.setLocation(new URI(response.getLocationUri()));
             return new ResponseEntity(headers, HttpStatus.valueOf(response.getResponseStatus()));
         } catch (OAuthProblemException e) {
+            e.printStackTrace();
             // 出错处理
             String redirectUri = e.getRedirectUri();
             if (OAuthUtils.isEmpty(redirectUri)) {
@@ -143,7 +152,7 @@ public class AuthorizeController {
             subject.login(token);
             return true;
         } catch (Exception e) {
-            request.setAttribute("error", "登录失败:" + e.getClass().getName());
+            e.printStackTrace();
             return false;
         }
     }

@@ -31,11 +31,6 @@ public class SysUser extends BaseEntity {
 
     private Integer sex;
 
-    /**
-     * 不可序列化字段，用于承载sex对应字段
-     */
-    private transient String ssex;
-
     private Integer roleId;
 
 
