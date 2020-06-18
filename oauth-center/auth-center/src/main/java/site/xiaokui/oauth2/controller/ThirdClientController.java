@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import site.xiaokui.base.aop.annotation.Log;
 import site.xiaokui.oauth2.entity.Client;
 import site.xiaokui.oauth2.service.ClientService;
 
@@ -56,6 +57,7 @@ public class ThirdClientController {
      * token换用户信息链接：http://localhost:8000/userInfo?access_token=1111111&scope=SCOPE&state=STATE
      */
     @GetMapping({"/user"})
+    @Log(module = "third-client-app", remark="获取用户授权信息")
     public String user(Model model, String code) {
         String port = environment.getProperty("server.port");
         String context = environment.getProperty("server.servlet.context-path");

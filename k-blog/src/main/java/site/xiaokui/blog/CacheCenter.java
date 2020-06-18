@@ -8,11 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import site.xiaokui.base.entity.BaseUser;
+import site.xiaokui.base.entity.SysConfig;
+import site.xiaokui.blog.entity.SysUser;
 import site.xiaokui.blog.service.BlogService;
+import site.xiaokui.blog.service.UserService;
 import site.xiaokui.blog.util.BlogUtil;
-import site.xiaokui.entity.SysConfig;
-import site.xiaokui.module.user.entity.SysUser;
-import site.xiaokui.module.user.service.UserService;
 
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class CacheCenter implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         this.sysConfigCache = initCacheMap();
         List<SysUser> list = userService.allBlogUser();
-        for (SysUser user : list) {
+        for (BaseUser user : list) {
             blogService.setMostViewCache(user.getId());
         }
     }

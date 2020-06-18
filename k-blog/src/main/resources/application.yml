@@ -69,3 +69,5 @@ xiaokui:
   session-alive: 60 * 60 * 24
   session-check: 60 * 60 * 6
 
+oauth2:
+  loginUrl: https://www.xiaokui.site/aabb

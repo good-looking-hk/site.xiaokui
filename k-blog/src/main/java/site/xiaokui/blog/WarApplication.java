@@ -1,7 +1,8 @@
-package site.xiaokui;
+package site.xiaokui.blog;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import site.xiaokui.BlogApp;
 
 /**
  * @author HK

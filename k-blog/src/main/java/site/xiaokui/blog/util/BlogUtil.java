@@ -5,11 +5,10 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
+import site.xiaokui.base.util.StringUtil;
 import site.xiaokui.blog.entity.BlogDetailList;
 import site.xiaokui.blog.entity.SysBlog;
 import site.xiaokui.blog.entity.UploadBlog;
-import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.common.util.TimeUtil;
 
 import java.io.*;
 import java.util.Date;
@@ -17,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static site.xiaokui.blog.BlogConstants.*;
+import static site.xiaokui.blog.Constants.*;
 
 
 /**
@@ -29,12 +28,12 @@ public class BlogUtil {
 
     private static final String BLOG_PREFIX = PREFIX + "/";
 
-    private static final Map<Integer, BlogDetailList> BLOG_CACHE = new HashMap<>(4);
+    private static final Map<Long, BlogDetailList> BLOG_CACHE = new HashMap<>(4);
 
     /**
      * 清除缓存
      */
-    public static void clearBlogCache(Integer userId) {
+    public static void clearBlogCache(Long userId) {
         if (userId == null) {
             BLOG_CACHE.clear();
         } else {
@@ -63,7 +62,7 @@ public class BlogUtil {
     /**
      * 获取博客实体对象对应的服务器本地html文件路径
      */
-    public static String getFilePath(Integer userId, String blogDir, String blogName) {
+    public static String getFilePath(Long userId, String blogDir, String blogName) {
         if (userId <= 0 || StringUtil.isEmpty(blogName)) {
             throw new IllegalArgumentException("参数错误[" + userId + "," + blogDir + "," + blogName + "]");
         }
@@ -81,7 +80,7 @@ public class BlogUtil {
      * 排序操作也可在数据库进行，在数据量大时可以做比较选择
      * 需要注意清空map缓存
      */
-    public static BlogDetailList resolveBlogList(List<SysBlog> blogList, Integer userId, String blogSpace, boolean useCache) {
+    public static BlogDetailList resolveBlogList(List<SysBlog> blogList, Long userId, String blogSpace, boolean useCache) {
         BlogDetailList list;
         if (useCache) {
             list = BLOG_CACHE.get(userId);
@@ -98,7 +97,7 @@ public class BlogUtil {
     /**
      * 解析Typora生成的html/md文件
      */
-    public static UploadBlog resolveUploadFile(MultipartFile upload, Integer userId, boolean isBlog) {
+    public static UploadBlog resolveUploadFile(MultipartFile upload, Long userId, boolean isBlog) {
         String fullName = upload.getOriginalFilename();
         // 解析文件名
         UploadBlog blog = resolveFileName(fullName, isBlog);
@@ -269,7 +268,7 @@ public class BlogUtil {
         if (str.length() == 8 && str.startsWith("20")) {
             Date date;
             try {
-                date = TimeUtil.parse(str, DatePattern.PURE_DATE_PATTERN);
+                date = DateUtil.parse(str, DatePattern.PURE_DATE_PATTERN);
             } catch (Exception e) {
                 blog.setErrorInfo("非法日期：" + str);
                 return;

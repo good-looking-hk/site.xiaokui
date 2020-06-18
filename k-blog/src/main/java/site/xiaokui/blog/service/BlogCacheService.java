@@ -38,11 +38,11 @@ public class BlogCacheService {
     @Value("${xiaokui.single-user-contribute--all-blog}")
     private Integer singleUserContributeAllBlog;
 
-    public int getViewCount(Integer userId, Integer blogId) {
+    public int getViewCount(Long userId, Long blogId) {
         try (Jedis jedis = redisService.getRedis()) {
             // 对应redis里面有序集合，用户id键:博客id 访问数量
             String key = userId + RedisKey.USER_BLOG_VIEW_COUNT_SORT_MAP_SUFFIX;
-            String member = Integer.toString(blogId);
+            String member = Long.toString(blogId);
             // 如果key不存在或member不存在，则返回null
             Double count = jedis.zscore(key, member);
             if (count == null) {
@@ -62,7 +62,7 @@ public class BlogCacheService {
      * 不登录每天至多贡献40个阅读量，登录后最多贡献80个阅读量
      * 两个限制条件不冲突
      */
-    public void addViewCount(String ip, Integer userId, Integer blogId, Integer ownerId) {
+    public void addViewCount(String ip, Long userId, Long blogId, Long ownerId) {
         try (Jedis jedis = redisService.getRedis()) {
             if (userId == null) {
                 // 是否还有贡献阅读量能力
@@ -109,7 +109,7 @@ public class BlogCacheService {
         }
     }
 
-    private void addViewCount(Jedis jedis, String userIdOrIp, Integer ownerId, Integer blogId) {
+    private void addViewCount(Jedis jedis, String userIdOrIp, Long ownerId, Long blogId) {
         // 记录ip的阅读总贡献量
         jedis.hincrBy(RedisKey.USER_OR_IP_CONTRIBUTE_VIEW_COUNT_MAP, userIdOrIp, 1);
         // 记录ip对该博客的的阅读贡献量
@@ -125,7 +125,7 @@ public class BlogCacheService {
      * 3 200
      * ....
      */
-    public LinkedHashMap<Integer, Integer> getMostViewTopN(Integer userId, int n) {
+    public LinkedHashMap<Long, Integer> getMostViewTopN(Long userId, int n) {
         try (Jedis jedis = redisService.getRedis()) {
             // 取top10，从大往小取，不能用Double.MAX_VALUE或Double.MIN_VALUE
             Set<Tuple> sets = jedis.zrevrangeByScoreWithScores(userId + RedisKey.USER_BLOG_VIEW_COUNT_SORT_MAP_SUFFIX,
@@ -133,9 +133,9 @@ public class BlogCacheService {
             if (sets == null || sets.size() == 0) {
                 return new LinkedHashMap<>(0);
             }
-            LinkedHashMap<Integer, Integer> map = new LinkedHashMap<>(Math.min(n, sets.size()));
+            LinkedHashMap<Long, Integer> map = new LinkedHashMap<>(Math.min(n, sets.size()));
             for (Tuple p : sets) {
-                map.put(Integer.parseInt(p.getElement()), (int) p.getScore());
+                map.put(Long.parseLong(p.getElement()), (int) p.getScore());
             }
             return map;
         } catch (Exception e) {
@@ -147,7 +147,7 @@ public class BlogCacheService {
     /**
      * 设置用户最多访问缓存
      */
-    public void setMostView(Integer userId, List<SysBlog> blogs) {
+    public void setMostView(Long userId, List<SysBlog> blogs) {
         if (blogs == null || blogs.size() == 0) {
             return;
         }

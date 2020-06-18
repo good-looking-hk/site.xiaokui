@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import site.xiaokui.blog.BlogConstants;
+import site.xiaokui.blog.Constants;
 import site.xiaokui.common.util.StringUtil;
 import site.xiaokui.controller.AbstractController;
 import site.xiaokui.entity.ResultEntity;
@@ -27,7 +27,7 @@ import java.util.List;
  */
 @Slf4j
 @Controller("MusicController")
-@RequestMapping(BlogConstants.MUSIC_PREFIX)
+@RequestMapping(Constants.MUSIC_PREFIX)
 public class MusicController extends AbstractController {
 
     @Autowired
@@ -41,7 +41,7 @@ public class MusicController extends AbstractController {
     /**
      * 默认为 /sys/music
      */
-    private static final String MUSIC_PREFIX = BlogConstants.MUSIC_PREFIX;
+    private static final String MUSIC_PREFIX = Constants.MUSIC_PREFIX;
 
     @Override
     protected String setPrefix() {

@@ -13,20 +13,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import site.xiaokui.base.aop.annotation.Log;
-import site.xiaokui.base.constant.BaseConstants;
+import site.xiaokui.base.controller.BaseController;
+import site.xiaokui.base.util.StringUtil;
 import site.xiaokui.blog.CacheCenter;
-import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.user.config.shiro.ShiroKit;
-import site.xiaokui.controller.BaseController;
-import site.xiaokui.blog.BlogConstants;
+import site.xiaokui.blog.Constants;
+import site.xiaokui.blog.config.shiro.ShiroKit;
 import site.xiaokui.blog.entity.BlogDetailList;
 import site.xiaokui.blog.entity.BlogUser;
 import site.xiaokui.blog.entity.SysBlog;
+import site.xiaokui.blog.entity.SysUser;
 import site.xiaokui.blog.service.BlogService;
+import site.xiaokui.blog.service.UserService;
 import site.xiaokui.blog.util.BlogFileHelper;
 import site.xiaokui.blog.util.BlogUtil;
-import site.xiaokui.module.user.entity.SysUser;
-import site.xiaokui.module.user.service.UserService;
 
 import java.io.File;
 import java.util.*;
@@ -36,11 +35,11 @@ import java.util.*;
  * @date 2018-06-25 14:16
  */
 @Slf4j
-@Controller("BLOG:INDEX")
-@RequestMapping(BlogConstants.PREFIX)
+@Controller
+@RequestMapping(Constants.PREFIX)
 public class IndexController extends BaseController {
 
-    private static final String BLOG_PREFIX = BlogConstants.PREFIX;
+    private static final String BLOG_PREFIX = Constants.PREFIX;
 
     private static final String BLOG_INDEX = BLOG_PREFIX + INDEX;
 
@@ -127,14 +126,14 @@ public class IndexController extends BaseController {
         }
 
         // 没有指定layout布局
-        if (BlogConstants.BLOG_TYPE_PRO.equals(type) && proCheckPass) {
+        if (Constants.BLOG_TYPE_PRO.equals(type) && proCheckPass) {
             List<List<SysBlog>> protectedList = details.getProtectedList();
             blogUser.setBlogList(protectedList);
             blogUser.setPro(details.getPro());
             blogUser.setPub(details.getPub());
             blogUser.setPageTotal(details.getPro());
             blogUser.setDirCount(protectedList.size());
-        } else if (BlogConstants.BLOG_TYPE_PRI.equals(type)) {
+        } else if (Constants.BLOG_TYPE_PRI.equals(type)) {
             // TODO
             return ERROR;
         } else {
@@ -144,7 +143,7 @@ public class IndexController extends BaseController {
             List recentUpdateList = details.getModifyTopN(this.recentUpdateCount);
             List recommendList = details.getRecommendTopN(this.recommendCount);
             // 最多访问，这个需要查redis获取topN
-            LinkedHashMap<Integer, Integer> map = blogService.getMostViewTopN(user.getId(), mostView);
+            LinkedHashMap<Long, Integer> map = blogService.getMostViewTopN(user.getId(), mostView);
             List<SysBlog> mostViewList = resolveMostViewList(details, map);
 
             blogUser.setBlogList(dirLists);
@@ -166,13 +165,13 @@ public class IndexController extends BaseController {
         blogUser.setPub(details.getPub());
         blogUser.setPro(details.getPro());
         // 日期布局
-        if (BlogConstants.BLOG_LAYOUT_TIME.equals(layout)) {
-            if (BlogConstants.BLOG_TYPE_PRI.equals(type)) {
+        if (Constants.BLOG_LAYOUT_TIME.equals(layout)) {
+            if (Constants.BLOG_TYPE_PRI.equals(type)) {
                 model.addAttribute("titles", details.getPriCreateYears());
                 model.addAttribute("lists", details.getPriCreateTimeList());
                 blogUser.setPageTotal(details.getPri());
                 blogUser.setDirCount(details.getPriCreateYears().size());
-            } else if (BlogConstants.BLOG_TYPE_PRO.equals(type) && proCheckPass) {
+            } else if (Constants.BLOG_TYPE_PRO.equals(type) && proCheckPass) {
                 model.addAttribute("titles", details.getProCreateYears());
                 model.addAttribute("lists", details.getProCreateTimeList());
                 blogUser.setPageTotal(details.getPro());
@@ -185,14 +184,14 @@ public class IndexController extends BaseController {
             }
             model.addAttribute("user", blogUser);
             return BLOG_INDEX + "1";
-        } else if (BlogConstants.BLOG_LAYOUT_DIR.equals(layout)) {
+        } else if (Constants.BLOG_LAYOUT_DIR.equals(layout)) {
             // 目录布局
-            if (BlogConstants.BLOG_TYPE_PRI.equals(type)) {
+            if (Constants.BLOG_TYPE_PRI.equals(type)) {
                 model.addAttribute("titles", details.getPriDir());
                 model.addAttribute("lists", details.getPrivateList());
                 blogUser.setPageTotal(details.getPro());
                 blogUser.setDirCount(details.getPriDir().size());
-            } else if (BlogConstants.BLOG_TYPE_PRO.equals(type) && proCheckPass) {
+            } else if (Constants.BLOG_TYPE_PRO.equals(type) && proCheckPass) {
                 model.addAttribute("titles", details.getProDir());
                 model.addAttribute("lists", details.getProtectedList());
                 blogUser.setPageTotal(details.getPro());
@@ -208,7 +207,7 @@ public class IndexController extends BaseController {
             List recentUpdateList = details.getModifyTopN(this.recentUpdateCount);
 
             // 最多访问，这个需要查redis获取topN
-            LinkedHashMap<Integer, Integer> map = blogService.getMostViewTopN(blogUser.getId(), mostView);
+            LinkedHashMap<Long, Integer> map = blogService.getMostViewTopN(blogUser.getId(), mostView);
             List<SysBlog> mostViewList = resolveMostViewList(details, map);
 ///            model.addAttribute("upload", recentUploadList);
            model.addAttribute("update", recentUpdateList);
@@ -225,7 +224,7 @@ public class IndexController extends BaseController {
      * 根据id查找博客
      */
     @GetMapping("/{blogSpace}/{id}")
-    public String showBlog(@PathVariable String blogSpace, @PathVariable Integer id, Model model) {
+    public String showBlog(@PathVariable String blogSpace, @PathVariable Long id, Model model) {
         SysUser user = trueUser(blogSpace);
         if (user == null) {
             return ERROR;
@@ -267,7 +266,7 @@ public class IndexController extends BaseController {
         // 这里提前加了1
         blog.setViewCount(blogService.getViewCountFromRedis(user.getId(), blog.getId()));
         // 实时增加访问量
-        blogService.addViewCountIntoRedis(this.getIP(), this.getUserId(), blog.getId(), blog.getUserId());
+        blogService.addViewCountIntoRedis(this.getIP(), user.getId(), blog.getId(), blog.getUserId());
 
         BlogUser blogUser = new BlogUser(user);
         blogUser.setBlog(blog);
@@ -319,7 +318,7 @@ public class IndexController extends BaseController {
         }
         SysBlog blog = new SysBlog();
         blog.setTitle("这是预览文件，记得点击保存哟，亲^_^");
-        blog.setFilePath(user.getId() + BaseConstants.TEMP_DIR + blogName);
+        blog.setFilePath(user.getId() + BlogFileHelper.getTempDir() + blogName);
         blog.setCreateTime(new Date());
 
         BlogUser blogUser = new BlogUser(user);
@@ -369,16 +368,16 @@ public class IndexController extends BaseController {
         SysUser user = userService.getUserByBlogSpace(blogSpace);
         if (user == null) {
             if (NumberUtil.isInteger(blogSpace)) {
-                user = userService.getById(Integer.valueOf(blogSpace));
+                user = userService.getById(Long.valueOf(blogSpace));
             }
         }
         return user;
     }
 
-    private List<SysBlog> resolveMostViewList(BlogDetailList details, LinkedHashMap<Integer, Integer> map) {
+    private List<SysBlog> resolveMostViewList(BlogDetailList details, LinkedHashMap<Long, Integer> map) {
         List<SysBlog> list = new ArrayList<>(map.size());
         List<SysBlog> allBlogList = details.getAllBlogList();
-        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+        for (Map.Entry<Long, Integer> entry : map.entrySet()) {
             for (SysBlog blog : allBlogList) {
                 // 如果博客id相同
                 if (entry.getKey().equals(blog.getId())) {

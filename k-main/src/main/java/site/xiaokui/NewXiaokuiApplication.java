@@ -35,6 +35,6 @@ import site.xiaokui.config.spring.TestSpringMVC;
 public class NewXiaokuiApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(NewXiaokuiApplication.class, args);
+        SpringApplication.run(BlogApp.class, args);
     }
 }

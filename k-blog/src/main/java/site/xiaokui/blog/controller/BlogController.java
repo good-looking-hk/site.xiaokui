@@ -10,38 +10,38 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import site.xiaokui.blog.BlogConstants;
+import site.xiaokui.base.controller.AbstractController;
+import site.xiaokui.base.entity.ResultEntity;
+import site.xiaokui.base.util.StringUtil;
+import site.xiaokui.blog.Constants;
 import site.xiaokui.blog.CacheCenter;
+import site.xiaokui.blog.config.shiro.ShiroKit;
 import site.xiaokui.blog.entity.BlogStatusEnum;
 import site.xiaokui.blog.entity.SysBlog;
+import site.xiaokui.blog.entity.SysUser;
 import site.xiaokui.blog.entity.UploadBlog;
 import site.xiaokui.blog.service.BlogService;
 import site.xiaokui.blog.util.BlogUtil;
-import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.common.util.TimeUtil;
-import site.xiaokui.entity.ResultEntity;
-import site.xiaokui.user.controller.AbstractController;
 
 import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-import static site.xiaokui.blog.BlogConstants.*;
-
+import static site.xiaokui.blog.Constants.*;
 
 /**
  * @author HK
  * @date 2018-06-24 21:33
  */
 @Slf4j
-@Controller("BLOG:BLOG")
-@RequestMapping(BlogConstants.BLOG_PREFIX)
+@Controller
+@RequestMapping(Constants.BLOG_PREFIX)
 public class BlogController extends AbstractController {
 
     /**
      * 默认为 /sys/blog
      */
-    private static final String BLOG_PREFIX = BlogConstants.BLOG_PREFIX;
+    private static final String BLOG_PREFIX = Constants.BLOG_PREFIX;
 
     @Autowired
     private BlogService blogService;
@@ -54,6 +54,11 @@ public class BlogController extends AbstractController {
         return BLOG_PREFIX;
     }
 
+    @Override
+    protected SysUser getCurrentUser() {
+        return (SysUser) ShiroKit.getInstance().getUser();
+    }
+
     @RequiresPermissions(BLOG_PREFIX)
     @PostMapping(LIST)
     @ResponseBody
@@ -62,11 +67,11 @@ public class BlogController extends AbstractController {
                               @RequestParam(required = false) String endTime) {
         if (StringUtil.isAllEmpty(name, dir, beginTime, endTime)) {
             SysBlog blog = new SysBlog();
-            blog.setUserId(this.getUserId());
+            blog.setUserId(this.getCurrentUser().getId());
             return blogService.match(blog);
         }
         Query<SysBlog> query = blogService.createQuery();
-        query.andEq("user_id", this.getUserId());
+        query.andEq("user_id", this.getCurrentUser().getId());
         if (this.isNotEmpty(name)) {
             query.andLike("title", "%" + name + "%");
         }
@@ -116,14 +121,14 @@ public class BlogController extends AbstractController {
             return checkResult;
         }
 
-        UploadBlog blog = blogService.saveTemp(file, this.getUserId(), isBlog);
+        UploadBlog blog = blogService.saveTemp(file, this.getCurrentUser().getId(), isBlog);
         if (blog.getErrorInfo() != null) {
             return this.error(blog.getErrorInfo());
         }
         if (!isBlog) {
             blog.setDir(cacheCenter.getSysConfigCache().getCompany());
         }
-        blog.setBlogSpace(this.getUser().getBlogSpace());
+        blog.setBlogSpace(this.getCurrentUser().getBlogSpace());
         return this.ok().put("upload", blog);
     }
 
@@ -132,11 +137,11 @@ public class BlogController extends AbstractController {
             return this.paramError(dir, name);
         }
         SysBlog blog = new SysBlog();
-        blog.setUserId(this.getUserId());
+        blog.setUserId(this.getCurrentUser().getId());
         blog.setName(name);
         blog.setTitle(name);
         blog.setDir(dir);
-        blog.setCreateTime(TimeUtil.parseDate(createTime));
+        blog.setCreateTime(DateUtil.parseDate(createTime));
         blog.setUpdateTime(new Date());
         blog.setCharacterCount(characterCount);
         if (orderNum != null) {
@@ -155,8 +160,7 @@ public class BlogController extends AbstractController {
 
     @RequiresPermissions(BLOG_PREFIX + EDIT)
     @GetMapping(EDIT + "/{id}")
-    @Override
-    public String edit(@PathVariable Integer id, Model model) {
+    public String edit(@PathVariable Long id, Model model) {
         SysBlog blog = blogService.getById(id);
         if (blog == null) {
             return ERROR;
@@ -168,7 +172,7 @@ public class BlogController extends AbstractController {
     @RequiresPermissions(BLOG_PREFIX + EDIT)
     @PostMapping(EDIT)
     @ResponseBody
-    public ResultEntity edit(Integer id, String title, Integer orderNum, String status, String createTime) {
+    public ResultEntity edit(Long id, String title, Integer orderNum, String status, String createTime) {
         if (StringUtil.hasEmpty(title, status, createTime)) {
             return this.paramError(title, status);
         }
@@ -193,7 +197,6 @@ public class BlogController extends AbstractController {
      */
     @PostMapping(REMOVE)
     @ResponseBody
-    @Override
     public ResultEntity remove(Integer id) {
         boolean success = blogService.deleteById(id);
         return returnResult(success);
@@ -224,7 +227,7 @@ public class BlogController extends AbstractController {
             return this.error("格式形如:20171022-关于.html");
         }
 
-        UploadBlog blog = BlogUtil.resolveUploadFile(file, this.getUserId(), false);
+        UploadBlog blog = BlogUtil.resolveUploadFile(file, this.getCurrentUser().getId(), false);
         File upload = blog.getUploadFile();
         if (upload == null || !upload.exists()) {
             return this.error("文件上传失败:" + blog);
@@ -252,7 +255,7 @@ public class BlogController extends AbstractController {
         boolean result = upload.renameTo(target);
         if (result) {
             target.setLastModified(DateUtil.parse(date).getTime());
-            log.info("用户{}存储了自定义key[name={},time={}]", this.getUserId(), fileName, date);
+            log.info("用户{}存储了自定义key[name={},time={}]", this.getCurrentUser().getId(), fileName, date);
         }
         return this.returnResult(result, "上传失败",  "上传成功");
     }

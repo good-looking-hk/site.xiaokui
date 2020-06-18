@@ -1,4 +1,2 @@
-rootProject.name = 'k-blog'
-
-include 'k-base'
+include 'k-common:k-base-service'
 

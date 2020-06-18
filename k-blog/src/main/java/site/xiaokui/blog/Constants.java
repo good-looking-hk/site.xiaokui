@@ -4,7 +4,7 @@ package site.xiaokui.blog;
  * @author HK
  * @date 2018-06-30 13:45
  */
-public class BlogConstants {
+public class Constants {
 
     public static final String BLOG_TYPE_PRI = "pri", BLOG_TYPE_PRO = "pro", BLOG_TYPE_PUB = "pub";
 

@@ -12,8 +12,8 @@ import org.springframework.core.env.Environment;
 
 import javax.sql.DataSource;
 
-import static site.xiaokui.blog.BlogConstants.BLOG_START_FLAG;
-import static site.xiaokui.blog.BlogConstants.FILE_START_FLAG;
+import static site.xiaokui.blog.Constants.BLOG_START_FLAG;
+import static site.xiaokui.blog.Constants.FILE_START_FLAG;
 
 
 /**

@@ -36,4 +36,8 @@ public class BlogFileHelper extends BaseFileHelper {
         }
         log.info("xiaokui.blogUploadPath:" + basePath);
     }
+
+    public static String  getTempDir() {
+        return BlogFileHelper.TEMP_DIR;
+    }
 }

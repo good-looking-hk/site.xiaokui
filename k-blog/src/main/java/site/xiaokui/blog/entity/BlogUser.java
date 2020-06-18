@@ -1,8 +1,7 @@
 package site.xiaokui.blog.entity;
 
 import lombok.Data;
-import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.user.entity.SysUser;
+import site.xiaokui.base.util.StringUtil;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ import java.util.List;
 @Data
 public class BlogUser {
 
-    private Integer id;
+    private Long id;
 
     private String name;
 

@@ -3,7 +3,7 @@ package site.xiaokui.blog.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import site.xiaokui.entity.ParentEntity;
+import site.xiaokui.base.entity.BaseEntity;
 
 import java.util.Comparator;
 import java.util.Date;
@@ -20,7 +20,7 @@ import java.util.Date;
  */
 @ToString(callSuper = true)
 @Getter@Setter
-public class SysBlog extends ParentEntity {
+public class SysBlog extends BaseEntity {
 
     /**
      * 博客标题
@@ -40,7 +40,12 @@ public class SysBlog extends ParentEntity {
     /**
      * 拥有者id
      */
-    private Integer userId;
+    private Long userId;
+
+    /**
+     * 博客排序号
+     */
+    protected Integer orderNum;
 
     /**
      * 总访问量
