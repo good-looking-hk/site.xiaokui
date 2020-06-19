@@ -157,7 +157,7 @@ public class IndexController extends BaseController {
             model.addAttribute("view", mostViewList);
         }
         model.addAttribute("user", blogUser);
-        model.addAttribute("title", "个人博客首页");
+        model.addAttribute("title", blogUser.getName());
         return BLOG_INDEX ;
     }
 
@@ -214,7 +214,7 @@ public class IndexController extends BaseController {
             model.addAttribute("recommend", recommendList);
             model.addAttribute("view", mostViewList);
             model.addAttribute("user", blogUser);
-            model.addAttribute("title", "个人博客首页");
+            model.addAttribute("title", blogUser.getName());
             return BLOG_INDEX + "1";
         }
         return null;

@@ -1,6 +1,6 @@
 @include("/blog/_header.html"){}
 <div class="layui-main" style="padding: 15px 4%;margin-top: 26px;width:60%;">
-    <center>本页共 ${site.xiaokui.user.pageTotal} 篇，分为 ${site.xiaokui.user.dirCount} 个系列展示</center>
+    <center>本页共 ${user.pageTotal} 篇，分为 ${user.dirCount} 个系列展示</center>
     @if (isNotEmpty(user.blogList)) {
     @for (list in user.blogList) {
     <ul class="list-group">

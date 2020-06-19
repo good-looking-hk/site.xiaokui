@@ -21,7 +21,7 @@ spring:
 xiaokui:
   basePath: /xiaokui/
   # 静态资源路径
-  staticLibsPath: ${xiaokui.basePath}/lib/
+  staticLibPath: ${xiaokui.basePath}/lib/
   # 博客上传路径
   blogUploadPath: ${xiaokui.basePath}/upload/
   # 音乐保存目录
