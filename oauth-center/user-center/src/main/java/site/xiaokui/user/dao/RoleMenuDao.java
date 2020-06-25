@@ -17,5 +17,5 @@ public interface RoleMenuDao extends BaseMapper<SysRoleMenu> {
      * @param roleId 角色菜单
      * @return 所影响的行数
      */
-    int deleteMenuByRoleId(@Param("roleId") Integer roleId);
+    int deleteMenuByRoleId(@Param("roleId") Long roleId);
 }

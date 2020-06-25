@@ -1,19 +1,15 @@
 package site.xiaokui.user.controller;
 
 import org.apache.shiro.subject.Subject;
-import site.xiaokui.common.support.HttpUtil;
-import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.entity.ResultEntity;
-import site.xiaokui.entity.enums.RoleTypeEnum;
-import site.xiaokui.user.entity.SysUser;
-import site.xiaokui.user.entity.enums.SexTypeEnum;
-import site.xiaokui.user.entity.enums.UserStatusEnum;
+import site.xiaokui.base.entity.ResultEntity;
+import site.xiaokui.base.util.StringUtil;
 import site.xiaokui.user.config.shiro.ShiroKit;
 import site.xiaokui.user.config.shiro.ShiroUser;
+import site.xiaokui.user.entity.SysUser;
+import site.xiaokui.user.entity.enums.RoleTypeEnum;
+import site.xiaokui.user.entity.enums.SexTypeEnum;
+import site.xiaokui.user.entity.enums.UserStatusEnum;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.Date;
 
 
@@ -31,26 +27,6 @@ public class BaseController implements ConstantController {
 
     protected final static ShiroKit SHIRO = ShiroKit.getInstance();
 
-    protected HttpServletRequest getHttpServletRequest() {
-        return HttpUtil.getRequest();
-    }
-
-    protected HttpServletResponse getHttpServletResponse() {
-        return HttpUtil.getResponse();
-    }
-
-    protected HttpSession getSession() {
-        return HttpUtil.getRequest().getSession();
-    }
-
-    protected String getParameter(String name) {
-        return HttpUtil.getRequest().getParameter(name);
-    }
-
-    protected String getIP() {
-        return HttpUtil.getIP();
-    }
-
     protected Subject getSubject() {
         return SHIRO.getSubject();
     }
@@ -59,7 +35,7 @@ public class BaseController implements ConstantController {
         return SHIRO.getUser();
     }
 
-    protected Integer getUserId() {
+    protected Long getUserId() {
         if (getUser() == null) {
             return null;
         }

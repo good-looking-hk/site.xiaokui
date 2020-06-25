@@ -1,0 +1,94 @@
+@layout("/beetl/box_container.html"){
+<div class="layui-row">
+    @var tableId = "User";
+    @var baseName = "用户";
+    @var baseUrl = "/sys/user/";
+    <div class="layui-row box-title">
+        <h5>${baseName}管理</h5>
+    </div>
+    <div class="layui-row box-content">
+        @inputs = [{title:"用户名称",id:"key",placeholder:"用户名称或邮箱地址"}, {title:"开始时间",id:"beginTime",placeholder:"注册开始时间"},
+        @{title:"结束时间",id:"endTime",placeholder:"注册结束时间"}];
+        @buttons1 = [{id:"search",name:"搜索",icon:"fa fa-search",method:"search()"}, {name:"重置",icon:"fa fa-trash",method:"reset()"}];
+        <#input_button inputs="${inputs}" buttons="${buttons1}"/>
+
+        @var buttons2 = [{name:"add" }, {name:"edit"}, {name:"remove"}, {name:"refresh"}, {name:"分配角色", method:"setRole"},
+        @{name:"重置密码",method:"resetPwd"}];
+        <#button tableId="${tableId}" buttons="${buttons2}" baseUrl="${baseUrl}"/>
+        <table id="${tableId}" data-mobile-responsive="true" data-click-to-select="true"></table>
+        <script>
+            layui.use('laydate', function(){
+                var laydate = layui.laydate;
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#beginTime' //指定元素
+                });
+                laydate.render({
+                    elem: '#endTime' //指定元素
+                });
+            });
+            var ${tableId} = {
+                exec: function (method) {
+                    HK.exec(method, "${baseUrl}", "${baseName}");
+                },
+                columns: function () {
+                    var columns = [
+                        {field: 'selectItem', radio: true},
+                        {title: '用户ID', field: 'id', visible: false, align: 'center', valign: 'middle'},
+                        {title: '用户名', field: 'name', align: 'center', valign: 'middle', sortable: true},
+                        {title: '邮箱', field: 'email', align: 'center', valign: 'middle', sortable: true},
+                        {title: '博客空间', field: 'blogSpace', align: 'center', valign: 'middle', sortable: true},
+                        {title: '角色', field: 'roleName', align: 'center', valign: 'middle', sortable: true},
+                        {title: '创建时间', field: 'createTime', align: 'center', valign: 'middle', sortable: true},
+                        {title: '性别', field: 'sex', align: 'center', valign: 'middle', sortable: true,
+                            formatter: function (value, item, index) {
+                                if (item.sex === 1) return '<span class="layui-btn layui-btn-normal layui-btn-xs">男</span>';
+                                if (item.sex === 2) return '<span class="layui-btn layui-btn-warm layui-btn-xs">女</span>';
+                                if (item.sex === 3) return '<span class="layui-btn layui-btn-danger layui-btn-xs">保密</span>';
+                            }},
+                        {title: '状态', field: 'status', align: 'center', valign: 'middle', sortable: true,
+                            formatter: function (value, row, index) {
+                                if (row.status === 1) return '<span class="layui-btn layui-btn-primary layui-btn-xs">正常</span>';
+                                if (row.status === 0) return '<span class="layui-btn layui-btn-disabled layui-btn-xs">冻结</span>';
+                            }
+                        }];
+                    return columns;
+                }
+            };
+            $(function () {
+                HK.initTreeTable("${tableId}", "${baseUrl}" + "list", ${tableId}.columns());
+            });
+            function setRole() {
+                var id = HK.getSelectedItemId();
+                if (id != null) {
+                    HK.initSelectZtree("/sys/role/tree", function(item) {
+                        if (item != null) {
+                            HK.post("${baseUrl}" + "setRole", {id:id, roleId:item.id}, "分配角色成功");
+                        }
+                    });
+                }
+            }
+            function resetPwd() {
+                var id = HK.getSelectedItemId();
+                if (id != null) {
+                    HK.confirm("确定重置该用户密码，此操作不可逆！", function() {
+                        HK.post("${baseUrl}" + "/resetPwd", {id:id}, "重置密码成功（123456）");
+                    });
+                }
+            }
+            function search() {
+                HK.clearData();
+                @for (input in inputs) {
+                    HK.setData("${input.id}");
+                @}
+                HK.refreshTable(HK.getData());
+            }
+            function reset() {
+            @for (input in inputs) {
+                    $("#${input.id}").val("");
+                @}
+            }
+        </script>
+    </div>
+</div>
+@}

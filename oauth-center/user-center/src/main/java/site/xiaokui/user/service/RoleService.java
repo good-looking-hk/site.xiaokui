@@ -18,7 +18,7 @@ public class RoleService extends BaseService<SysRole> {
     @Autowired
     private RoleMenuDao roleMenuDao;
 
-    public boolean deleteMenuByRoleId(Integer roleId) {
+    public boolean deleteMenuByRoleId(Long roleId) {
         return roleMenuDao.deleteMenuByRoleId(roleId) > 0;
     }
 
@@ -29,9 +29,9 @@ public class RoleService extends BaseService<SysRole> {
      * @param menuIds 菜单ids
      */
     @Transactional(rollbackFor = Exception.class)
-    public boolean assignRoleMenu(Integer roleId, Integer[] menuIds) {
+    public boolean assignRoleMenu(Long roleId, Long[] menuIds) {
         deleteMenuByRoleId(roleId);
-        for (int temp : menuIds) {
+        for (Long temp : menuIds) {
             SysRoleMenu roleMenu = new SysRoleMenu();
             roleMenu.setMenuId(temp);
             roleMenu.setRoleId(roleId);

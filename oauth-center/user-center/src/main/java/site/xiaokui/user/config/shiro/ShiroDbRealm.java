@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static site.xiaokui.base.constant.BaseConstants.*;
+import static site.xiaokui.user.entity.enums.RoleTypeEnum.SUPER_ADMIN;
 
 
 /**
@@ -86,8 +86,8 @@ public class ShiroDbRealm extends AuthorizingRealm {
         roleNameSet.add(roleName);
         // 超级管理员是最大的，因此拥有所有角色
         if (SUPER_ADMIN.equals(roleName)) {
-            roleNameSet.add(ADMIN);
-            roleNameSet.add(USER);
+//            roleNameSet.add(ADMIN);
+//            roleNameSet.add(USER);
         }
 
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();

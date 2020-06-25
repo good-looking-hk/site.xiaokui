@@ -22,8 +22,6 @@ import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.base.constant.BaseConstants;
 
 import javax.servlet.Filter;
 import java.util.LinkedHashMap;
@@ -65,7 +63,7 @@ import static site.xiaokui.user.config.shiro.ShiroConstants.SHIRO_ACTIVE_SESSION
  * @author HK
  * @date 2018-05-22 19:03
  */
-// @Configuration
+ @Configuration
 public class ShiroConfig {
 
     private static final String ANYBODY = ShiroConstants.SHIRO_ANYBODY, REMEMBER_ME = ShiroConstants.SHIRO_REMEMBER_ME, LOGIN_USER = ShiroConstants.SHIRO_LOGIN_USER;
@@ -113,8 +111,7 @@ public class ShiroConfig {
      */
     @Bean
     public ShiroFilterFactoryBean shiroFilter(DefaultWebSecurityManager securityManager, OnlineSessionFilter onlineSessionFilter,
-                                                    @Value("${spring.profiles.active}") String profile,
-                                                    @Value("${xiaokui.enable-shiro}") boolean enableShiro) {
+                                                    @Value("${spring.profiles.active}") String profile) {
         ShiroFilterFactoryBean shiroFilter = new ShiroFilterFactoryBean();
         shiroFilter.setSecurityManager(securityManager);
         // 登陆访问url,默认为/login.jsp(一般情况下建议主动修改)
@@ -165,17 +162,10 @@ public class ShiroConfig {
         filterMap.put("/user", REMEMBER_ME);
         filterMap.put("/swagger/**", REMEMBER_ME);
 
-        if (!BaseConstants.PROFILE_REMOTE.equals(profile)) {
-            // 本地免登录
-            filterMap.put("/**", StringUtil.addDot(onlineSessionFilter.getFilterName(), REMEMBER_ME));
-        } else {
-            // 线上需要登录
-            filterMap.put("/**", StringUtil.addDot(onlineSessionFilter.getFilterName(), LOGIN_USER));
-        }
-        if (!enableShiro) {
-            filterMap.clear();
-            filterMap.put("/**/*", ANYBODY);
-        }
+//        if (!enableShiro) {
+//            filterMap.clear();
+//            filterMap.put("/**/*", ANYBODY);
+//        }
         shiroFilter.setFilterChainDefinitionMap(filterMap);
         return shiroFilter;
     }

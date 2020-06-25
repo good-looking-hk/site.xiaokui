@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.entity.ResultEntity;
-import site.xiaokui.entity.ZTreeNode;
-import site.xiaokui.entity.enums.MenuTypeEnum;
+import site.xiaokui.base.entity.ResultEntity;
+import site.xiaokui.base.entity.ZTreeNode;
+import site.xiaokui.base.util.StringUtil;
 import site.xiaokui.user.UserConstants;
 import site.xiaokui.user.entity.SysMenu;
 import site.xiaokui.user.entity.enums.MenuStatusEnum;
+import site.xiaokui.user.entity.enums.MenuTypeEnum;
 import site.xiaokui.user.service.MenuService;
 import site.xiaokui.user.util.ZTreeTool;
 
@@ -87,7 +87,7 @@ public class MenuController extends AbstractController {
     @RequiresPermissions(MENU_PREFIX + ADD)
     @PostMapping(ADD)
     @ResponseBody
-    public ResultEntity add(String name, Integer parentId, @RequestParam(required = false) String parentName,
+    public ResultEntity add(String name, Long parentId, @RequestParam(required = false) String parentName,
                             Integer orderNum, String url, @RequestParam(required = false) String icon, String enabled) {
         if (StringUtil.hasEmptyStrOrLessThanEqualsZeroNumber(name, orderNum, url, enabled)) {
             return ResultEntity.paramError(name, orderNum, url, enabled);
@@ -117,7 +117,7 @@ public class MenuController extends AbstractController {
             sysMenu.setType(parent.getType() + 1);
         } else {
             sysMenu.setUrl("#");
-            sysMenu.setType(parentId + 1);
+            sysMenu.setType((int)(parentId + 1));
         }
         if (icon != null && icon.startsWith(ICON_START_FLAG)) {
             sysMenu.setIcon(icon);
@@ -128,7 +128,9 @@ public class MenuController extends AbstractController {
         sysMenu.setCreateTime(new Date());
         sysMenu.setEnabled(enable);
 
-        boolean success = menuService.insertRoleMenu(this.getRoleId(), sysMenu);
+        // TODO 有待补充
+        // boolean success = menuService.insertRoleMenu(this.getRoleId(), sysMenu);
+        boolean success = menuService.insertRoleMenu(null, sysMenu);
         return returnResult(success, "添加菜单失败");
     }
 
@@ -148,8 +150,7 @@ public class MenuController extends AbstractController {
      */
     @RequiresPermissions(MENU_PREFIX + EDIT)
     @GetMapping(EDIT + "/{id}")
-    @Override
-    public String edit(@PathVariable Integer id, Model model) {
+    public String edit(@PathVariable Long id, Model model) {
         SysMenu sysMenu = menuService.getById(id);
         if (sysMenu == null) {
             return ERROR;
@@ -178,7 +179,7 @@ public class MenuController extends AbstractController {
     @RequiresPermissions(MENU_PREFIX + EDIT)
     @PostMapping(EDIT)
     @ResponseBody
-    public ResultEntity edit(Integer id, String name, Integer parentId, @RequestParam(required = false) String parentName,
+    public ResultEntity edit(Long id, String name, Long parentId, @RequestParam(required = false) String parentName,
                              Integer orderNum, String url, @RequestParam(required = false) String icon, String enabled) {
         if (StringUtil.hasEmptyStrOrLessThanEqualsZeroNumber(name, orderNum, url, enabled)) {
             return this.paramError(name, orderNum, url, enabled);
@@ -215,7 +216,6 @@ public class MenuController extends AbstractController {
     @RequiresPermissions(MENU_PREFIX + REMOVE)
     @PostMapping(REMOVE)
     @ResponseBody
-    @Override
     public ResultEntity remove(Integer id) {
         if (id <= 0) {
             return ResultEntity.paramError();

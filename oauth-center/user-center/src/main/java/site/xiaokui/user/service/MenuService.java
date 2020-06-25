@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.xiaokui.base.service.BaseService;
-import site.xiaokui.entity.enums.MenuTypeEnum;
 import site.xiaokui.user.dao.MenuDao;
 import site.xiaokui.user.dao.RoleMenuDao;
 import site.xiaokui.user.entity.SysMenu;
 import site.xiaokui.user.entity.SysRoleMenu;
 import site.xiaokui.user.entity.enums.MenuStatusEnum;
+import site.xiaokui.user.entity.enums.MenuTypeEnum;
 
 import java.util.*;
 
@@ -27,7 +27,7 @@ public class MenuService extends BaseService<SysMenu> {
     private RoleMenuDao roleMenuDao;
 
     @Transactional(rollbackFor = Exception.class)
-    public boolean insertRoleMenu(Integer roleId, SysMenu menu) {
+    public boolean insertRoleMenu(Long roleId, SysMenu menu) {
         boolean result = insertIgnoreNullReturnKey(menu);
         SysRoleMenu sysRoleMenu = new SysRoleMenu();
         sysRoleMenu.setMenuId(menu.getId());
@@ -86,7 +86,7 @@ public class MenuService extends BaseService<SysMenu> {
         // 如果是有子菜单，是否强制删除
         if (focus) {
             SysMenu temp = new SysMenu();
-            temp.setParentId(menuId);
+            temp.setParentId(menuId.longValue());
             List<SysMenu> list = this.match(temp);
             if (list != null) {
                 for (SysMenu s : list) {
@@ -96,7 +96,7 @@ public class MenuService extends BaseService<SysMenu> {
             return true;
         } else {
             SysMenu temp = new SysMenu();
-            temp.setParentId(menuId);
+            temp.setParentId(menuId.longValue());
             List<SysMenu> list = this.match(temp);
             if (list == null || list.size() == 0) {
                 this.deleteById(menuId);
@@ -130,9 +130,9 @@ public class MenuService extends BaseService<SysMenu> {
                 menu.setType(temp.getType());
                 menu.setIcon(temp.getIcon());
                 menu.setUrl(temp.getUrl());
-                Integer parentMenuId = temp.getParentId();
+                Long parentMenuId = temp.getParentId();
                 // 添加至父菜单中
-                SysMenu parent = findMenuByParentId(menuList, parentMenuId);
+                SysMenu parent = findMenuByParentId(menuList, parentMenuId.intValue());
                 if (parent != null) {
                     if (parent.getList() == null) {
                         parent.setList(new ArrayList<>());

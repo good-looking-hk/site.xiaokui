@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
  * @author HK
  * @date 2018-06-24 22:50
  */
-public abstract class AbstractController extends BaseController implements CrudController {
+public abstract class AbstractController extends BaseController {
 
     private final String PREFIX = setPrefix();
 
@@ -31,7 +31,6 @@ public abstract class AbstractController extends BaseController implements CrudC
      * 又由于可以在方法体种判断权限，故子类可以免费愉快地获取到这两个方法
      */
     @GetMapping({EMPTY, INDEX})
-    @Override
     public String index() {
         Subject subject = SHIRO.getSubject();
         if (subject.isPermitted(PREFIX)) {
@@ -41,7 +40,6 @@ public abstract class AbstractController extends BaseController implements CrudC
     }
 
     @GetMapping(ADD)
-    @Override
     public String add() {
         Subject subject = SHIRO.getSubject();
         if (subject.isPermitted(TO_ADD)) {

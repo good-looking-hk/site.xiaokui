@@ -1,6 +1,5 @@
 package site.xiaokui.base.entity;
 
-import cn.hutool.core.date.DateUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

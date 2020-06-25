@@ -3,7 +3,7 @@ package site.xiaokui.user.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import site.xiaokui.entity.ParentEntity;
+import site.xiaokui.base.entity.ParentEntity;
 
 import java.util.List;
 

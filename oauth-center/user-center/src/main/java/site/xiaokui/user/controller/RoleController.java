@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import site.xiaokui.common.util.StringUtil;
-import site.xiaokui.entity.ResultEntity;
-import site.xiaokui.entity.ZTreeNode;
-import site.xiaokui.entity.enums.RoleTypeEnum;
+import site.xiaokui.base.entity.ResultEntity;
+import site.xiaokui.base.entity.ZTreeNode;
+import site.xiaokui.base.util.StringUtil;
 import site.xiaokui.user.UserConstants;
 import site.xiaokui.user.entity.SysMenu;
 import site.xiaokui.user.entity.SysRole;
+import site.xiaokui.user.entity.enums.RoleTypeEnum;
 import site.xiaokui.user.entity.wrapper.SysRoleWrapper;
 import site.xiaokui.user.service.MenuService;
 import site.xiaokui.user.service.RoleService;
@@ -74,7 +74,7 @@ public class RoleController extends AbstractController {
     @RequiresPermissions(ROLE_PREFIX + ADD)
     @PostMapping(ADD)
     @ResponseBody
-    public ResultEntity add(String name, Integer parentId, @RequestParam(required = false) String parentName, Integer orderNum, String description) {
+    public ResultEntity add(String name, Long parentId, @RequestParam(required = false) String parentName, Integer orderNum, String description) {
         if (this.isEmpty(name)) {
             return this.paramError(name);
         }
@@ -98,14 +98,13 @@ public class RoleController extends AbstractController {
 
     @RequiresPermissions(ROLE_PREFIX + EDIT)
     @GetMapping(EDIT + "/{id}")
-    @Override
     public String edit(@PathVariable Integer id, Model model) {
         SysRole sysRole = roleService.getById(id);
         if (sysRole == null) {
             return ERROR;
         }
         model.addAttribute("role", sysRole);
-        model.addAttribute("parentName", ServiceFactory.me().getRoleName(sysRole.getParentId()));
+        model.addAttribute("parentName", ServiceFactory.me().getRoleName(sysRole.getParentId().intValue()));
         return ROLE_PREFIX + EDIT;
     }
 
@@ -121,7 +120,6 @@ public class RoleController extends AbstractController {
     @RequiresPermissions(ROLE_PREFIX + REMOVE)
     @PostMapping(REMOVE)
     @ResponseBody
-    @Override
     public ResultEntity remove(Integer id) {
         String roleName = RoleTypeEnum.valueOf(id);
         if (roleName != null) {
@@ -149,11 +147,11 @@ public class RoleController extends AbstractController {
     @RequiresPermissions(ROLE_PREFIX + SET_AUTHORITY)
     @PostMapping(SET_AUTHORITY)
     @ResponseBody
-    public ResultEntity setAuthority(@RequestParam("roleId") Integer roleId, @RequestParam("ids") String ids) {
+    public ResultEntity setAuthority(@RequestParam("roleId") Long roleId, @RequestParam("ids") String ids) {
         if (StringUtil.hasEmptyStrOrLessThanEqualsZeroNumber(roleId, ids)) {
             return ResultEntity.paramError();
         }
-        Integer[] id = Convert.toIntArray(StringUtil.split(ids, ","));
+        Long[] id = Convert.toLongArray(StringUtil.split(ids, ","));
         boolean success = roleService.assignRoleMenu(roleId, id);
         return returnResult(success);
     }

@@ -40,7 +40,7 @@ public class EurekaInstanceCanceledListener implements ApplicationListener {
                     if (instance.getInstanceId().equals(event.getServerId())) {
                         log.error("服务：" + instance.getAppName() + " 挂啦");
                         // 发送邮件
-                        EmailService.sendInfo("服务：" + instance.getAppName() + " 挂啦");
+                        // EmailService.sendInfo("服务：" + instance.getAppName() + " 挂啦");
                         applications.removeApplication(registeredApplication);
                     }
                 });

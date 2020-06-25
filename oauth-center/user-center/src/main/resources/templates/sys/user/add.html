@@ -1,0 +1,49 @@
+@layout("/beetl/box_container.html"){
+<div class="layui-row box-content">
+	<form class="layui-form" lay-filter="setValue">
+		<#input title="用户名称" id="name" placeholder="例如 一般般帅"/>
+        <#input title="邮箱" id="email" placeholder="用于找回密码" required="email"/>
+
+		@inputs1 = [{title:"角色ID",id:"roleId",placeholder:"(选填，默认为普通用户)",readonly:"true"},
+		@{title:"角色名称",id:"roleName",placeholder:"(自动填充，角色名称)",readonly:"true"}];
+		@buttons1 = [{id:"temp",name:"选填",method:"openRoleTree(event)"}];
+		<#input_button type="form" inputs="${inputs1}" buttons="${buttons1}"/>
+
+        @values = ["男","女","保密"];
+        <#select title="性别" id="sex" values="${values}"/>
+        <#input title="密码" id="password" placeholder="设置用户密码" extra="lay-verify='password'"/>
+        <#input title="确认密码" id="repeat" placeholder="确认密码" extra="lay-verify='password'"/>
+
+		<div class="layui-form-item">
+			<div class="layui-input-block">
+				<button class="layui-btn" lay-submit lay-filter="add">添加用户</button>
+				<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+			</div>
+		</div>
+	</form>
+	<script>
+        layui.use('form', function () {
+            var form = layui.form;
+            form.verify({
+                password: [
+                    /^[\S]{6,12}$/, '密码必须6到12位，且不能出现空格'
+                ]
+            });
+            //监听提交
+            form.on('submit(add)', function (data) {
+                if (data.field.password !== data.field.repeat) {
+                    HK.msg("两次密码输入不匹配");
+                    return false;
+                }
+                // HK.toString(data.field);
+                HK.post("/sys/user/add", data.field, "添加用户成功");
+                return false;
+            });
+        });
+        function openRoleTree(e) {
+            e.preventDefault();
+            HK.initInputSelectZtree("roleId", "roleName", "/sys/role/tree");
+        }
+	</script>
+</div>
+@}

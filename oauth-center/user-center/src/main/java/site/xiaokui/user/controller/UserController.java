@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import site.xiaokui.common.util.StringUtil;
+import site.xiaokui.base.entity.ResultEntity;
+import site.xiaokui.base.util.StringUtil;
 import site.xiaokui.user.config.shiro.ShiroUser;
-import site.xiaokui.entity.ResultEntity;
 import site.xiaokui.user.UserConstants;
 import site.xiaokui.user.entity.SysRole;
 import site.xiaokui.user.entity.SysUser;
@@ -22,8 +22,6 @@ import site.xiaokui.user.service.ServiceFactory;
 import site.xiaokui.user.service.UserService;
 
 import java.util.List;
-
-import static site.xiaokui.base.constant.BaseConstants.SUPER_ADMIN;
 
 /**
  * @author HK
@@ -115,7 +113,7 @@ public class UserController extends AbstractController {
     @RequiresPermissions(USER_PREFIX + "/setRole")
     @PostMapping("/setRole")
     @ResponseBody
-    public ResultEntity setRole(Integer id, Integer roleId) {
+    public ResultEntity setRole(Long id, Integer roleId) {
         SysUser user = new SysUser();
         user.setId(id);
         user.setRoleId(roleId);
@@ -126,8 +124,7 @@ public class UserController extends AbstractController {
     @RequiresPermissions(USER_PREFIX + REMOVE)
     @PostMapping(REMOVE)
     @ResponseBody
-    @Override
-    public ResultEntity remove(Integer id) {
+    public ResultEntity remove(Long id) {
         boolean success = userService.deleteById(id);
         return returnResult(success, "删除用户失败");
     }
@@ -135,24 +132,22 @@ public class UserController extends AbstractController {
     /**
      * 最大程度保护用户隐私，只有最高权限才能修改
      */
-    @RequiresRoles(SUPER_ADMIN)
+    // @RequiresRoles(SUPER_ADMIN)
     @GetMapping(EDIT + "/{id}")
-    @Override
-    public String edit(@PathVariable Integer id, Model model) {
+    public String edit(@PathVariable Long id, Model model) {
         SysUser user = userService.getById(id);
         if (user == null) {
             return ERROR;
         }
-        user.setSsex(SexTypeEnum.valueOf(user.getSex()));
         model.addAttribute("user", user);
         model.addAttribute("roleName", ServiceFactory.me().getRoleName(user.getRoleId()));
         return TO_EDIT;
     }
 
-    @RequiresRoles(SUPER_ADMIN)
+    // @RequiresRoles(SUPER_ADMIN)
     @PostMapping(EDIT)
     @ResponseBody
-    public ResultEntity edit(Integer id, String name, String email, String sex, String password,
+    public ResultEntity edit(Long id, String name, String email, String sex, String password,
                              Integer roleId, @RequestParam(required = false) String roleName) {
         if (StringUtil.hasEmptyStrOrLessThanEqualsZeroNumber(id, name, email, sex, password)) {
             return this.paramError(id, name, email, sex, password);
@@ -189,7 +184,7 @@ public class UserController extends AbstractController {
     @RequiresPermissions(USER_PREFIX + RESET_PASSWORD)
     @PostMapping(RESET_PASSWORD)
     @ResponseBody
-    public ResultEntity resetPwd(Integer id) {
+    public ResultEntity resetPwd(Long id) {
         boolean success = userService.resetPwd(id);
         return returnResult(success, "重置密码失败");
     }

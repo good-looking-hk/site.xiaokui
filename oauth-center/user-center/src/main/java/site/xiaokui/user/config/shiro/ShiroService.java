@@ -2,7 +2,7 @@ package site.xiaokui.user.config.shiro;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import site.xiaokui.common.util.StringUtil;
+import site.xiaokui.base.util.StringUtil;
 import site.xiaokui.user.dao.MenuDao;
 import site.xiaokui.user.entity.SysUser;
 import site.xiaokui.user.service.ServiceFactory;
@@ -25,7 +25,7 @@ public class ShiroService {
     @Autowired
     private MenuDao menuDao;
 
-    public void updateLoginTimeAndIP(Integer id, Date date, String ip) {
+    public void updateLoginTimeAndIP(Long id, Date date, String ip) {
         SysUser user = new SysUser();
         user.setId(id);
         user.setLastLoginIp(ip);

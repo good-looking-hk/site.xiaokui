@@ -1,0 +1,63 @@
+@/*
+    页面输入框和按钮的封装，需要的参数如下
+    type(非必需): 分为两种类型，一种是form的组件，一种是layui-row所包装，依据不同情况进行选择（默认为第二种，如果传入值不为空则为第一种）
+    number(自动判断): 元素个数，一个输入框算一个，所有按钮算一个，程序根据这个进行布局分配，不能小于2，其中内置的x，y分别代表一个输入框的百分布局（满布局为12），
+x代表所有按钮所在布局(当number值过大时，页面可能会出现出现溢出，这里建议值number为2,3,4,5，尽量不要达到12份饱和，我设置了外边距，你可以自行修改源码)
+    inputs：input的集合，input对象有三个属性，分别为title，id（隐含name），placeholder、required
+    buttons: button的集合，button对象有4个属性，分别为id，name，icon和method
+@*/
+@var number = inputs.~size + 1;
+@var x,y;
+@if (number == 2) {
+ @x = 3;
+ @y = 3;
+@} else if (number == 3) {
+ @x = 4;
+ @y = 3;
+@} else if (number == 4) {
+ @x = 3;
+ @y = 2;
+@} else if (number == 5) {
+ @x = 2;
+ @y = 2;
+@} else if (number == 6) {
+ @x = 2;
+ @y = 1;
+@}
+@if (isEmpty(type)) {
+<div class="layui-row layui-form-pane">
+@} else {
+<div class="layui-form-item">
+@}
+@for (input in inputs) {
+    <div class="layui-col-md${x}">
+        <label class="layui-form-label">${input.title}</label>
+        <div class="layui-input-block">
+            <input type="text" name="${input.id}" id="${input.id}" autocomplete="off" placeholder="${input.placeholder}" class="layui-input"
+            @if (isNotEmpty(input.required)) {
+             required lay-verify="${input.required}"
+            @}
+            @if (isNotEmpty(input.readonly)) {
+             readonly="${input.readonly}"
+            @}
+            />
+        </div>
+    </div>
+@}
+    <div class="layui-col-md${y}"">
+        @for (button in buttons) {
+            @if (isNotEmpty(button.disabled)) {
+                <button id="${button.id!}" class="layui-btn layui-btn-disabled" disabled="${button.disabled} onclick="${button.method}">${button.name}</button>
+                @continue;
+            @} else {
+                <button id="${button.id!}" class="layui-btn" onclick="${button.method}">
+                @if (isNotEmpty(button.icon)) {
+                    <i class="${button.icon}"></i>&nbsp;${button.name}
+                @} else {
+                    ${button.name}
+                @}
+                </button>
+            @}
+        @}
+    </div>
+</div>

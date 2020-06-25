@@ -1,5 +1,5 @@
 server:
-  port: 7000
+  port: 7001
 
 spring:
   application:
@@ -17,7 +17,7 @@ eureka:
     registry-fetch-interval-seconds: 10  #从eureka服务端获取注册信息的间隔时间
     fetch-registry: false      #为true时，可以启动，但报异常：Cannot execute request on any known server ，是否从eureka服务端获取注册信息，消费者需要配置true
     service-url:
-      defaultZone: http://localhost:7000/eureka
+      defaultZone: http://localhost:7001/eureka
   instance:
     lease-expiration-duration-in-seconds: 30 # 服务失效时间，默认值90秒，开发时可以调小一点
     lease-renewal-interval-in-seconds: 10 # 服务续约(renew)的间隔，默认为30秒

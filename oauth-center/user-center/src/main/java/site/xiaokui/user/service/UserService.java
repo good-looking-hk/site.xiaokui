@@ -39,7 +39,7 @@ public class UserService extends BaseService<SysUser> {
         return matchOne(user);
     }
 
-    public boolean resetPwd(Integer id) {
+    public boolean resetPwd(Long id) {
         return resetPwd(id, "123456");
     }
 
@@ -49,7 +49,7 @@ public class UserService extends BaseService<SysUser> {
         return this.query(query);
     }
 
-    public boolean resetPwd(Integer id, String newPassword) {
+    public boolean resetPwd(Long id, String newPassword) {
         SysUser user = new SysUser();
         user.setId(id);
         user.setSalt(ShiroKit.getInstance().fastSalt());

@@ -3,7 +3,7 @@ package site.xiaokui.user.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import site.xiaokui.entity.BaseEntity;
+import site.xiaokui.base.entity.BaseEntity;
 
 import java.util.Date;
 
@@ -30,11 +30,6 @@ public class SysUser extends BaseEntity {
     private String salt;
 
     private Integer sex;
-
-    /**
-     * 不可序列化字段，用于承载sex对应字段
-     */
-    private transient String ssex;
 
     private Integer roleId;
 

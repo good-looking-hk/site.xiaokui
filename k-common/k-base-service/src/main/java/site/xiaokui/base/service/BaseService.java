@@ -87,9 +87,13 @@ public class BaseService<T extends BaseEntity> {
      * @param id 删除id
      * @return 影响行数
      */
-    public boolean deleteById(Integer id) {
+    public boolean deleteById(Long id) {
         Class<T> cls = getCurrentEntityClass();
         return sqlManager.deleteById(cls, id) == 1;
+    }
+
+    public boolean deleteById(Integer id) {
+        return deleteById(id.longValue());
     }
 
     /**
@@ -172,6 +176,10 @@ public class BaseService<T extends BaseEntity> {
     public T getById(Long id) {
         Class<T> cls = getCurrentEntityClass();
         return sqlManager.single(cls, id);
+    }
+
+    public T getById(Integer id) {
+        return getById(id.longValue());
     }
 
     public List<T> inIds(String column, Collection<?> c) {
@@ -275,6 +283,10 @@ public class BaseService<T extends BaseEntity> {
     public String getName(Long id) {
         T t = getById(id);
         return t == null ? null : t.getName();
+    }
+
+    public String getName(Integer id) {
+        return getName(id.longValue());
     }
 
     /**

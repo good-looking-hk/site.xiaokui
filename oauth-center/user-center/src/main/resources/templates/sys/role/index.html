@@ -1,0 +1,60 @@
+@layout("/beetl/box_container.html"){
+<div class="layui-row">
+    @var tableId = "Role";
+    @var baseName = "角色";
+    @var baseUrl = "/sys/role/";
+    <div class="layui-row box-title">
+        <h5>${baseName}管理</h5>
+    </div>
+    <div class="layui-row box-content">
+        @inputs = [{title:"角色名称",id:"name",placeholder:"匹配角色名称"}];
+        @buttons1 = [{id:"search",name:"搜索",icon:"fa fa-search",method:"search()"}, {name:"重置",icon:"fa fa-trash",method:"reset()"}];
+        <#input_button inputs="${inputs}" buttons="${buttons1}"/>
+
+        @var buttons2 = [{ name:"add" }, {name:"edit"}, {name:"remove"}, {name:"refresh"}, {name:"分配权限",method:"setAuthority"}];
+        <#button tableId="${tableId}" buttons="${buttons2}" baseUrl="${baseUrl}"/>
+        <table id="${tableId}" data-mobile-responsive="true" data-click-to-select="true"></table>
+        <script>
+            var ${tableId} = {
+                exec: function (method) {
+                    HK.exec(method, "${baseUrl}", "${baseName}");
+                },
+                columns: function () {
+                    var columns = [
+                        {field: 'selectItem', radio: true},
+                        {title: '角色ID', field: 'id', visible: false, align: 'center', valign: 'middle'},
+                        {title: '角色名称', field: 'name', align: 'center', valign: 'middle', sortable: true, width: '12%'},
+                        {title: '描述', field: 'description', align: 'center', valign: 'middle', sortable: true, width: '12%'},
+                        {title: '父角色ID', field: 'parentId', align: 'center', valign: 'middle', sortable: true},
+                        {title: '排序', field: 'orderNum', visible: false, align: 'center', valign: 'middle', sortable: true},
+                        {title: '创建时间', field: 'createTime', align: 'center', valign: 'middle', sortable: true}];
+                    return columns;
+                }
+            };
+            $(function () {
+                HK.initTreeTable("${tableId}", "${baseUrl}" + "list", ${tableId}.columns());
+            });
+            function setAuthority() {
+                var id = HK.getSelectedItemId();
+                if (id != null) {
+                    HK.initSelectZtree("${baseUrl}menuTree/" + id, function(ids){
+                        HK.post("${baseUrl}setAuthority", {roleId: id, ids: ids}, "分配权限成功");
+                    }, true)
+                }
+            }
+            function search() {
+                HK.clearData();
+                @for (input in inputs) {
+                    HK.setData("${input.id}");
+                @}
+                HK.refreshTable(HK.getData());
+            }
+            function reset() {
+                @for (input in inputs) {
+                    $("#${input.id}").val("");
+                @}
+            }
+        </script>
+    </div>
+</div>
+@}

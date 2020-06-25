@@ -1,0 +1,107 @@
+spring:
+  redis:
+    ################### redis 单机版 start ##########################
+    host: localhost
+    port: 6379
+    timeout: 6000
+    database: 1
+    lettuce:
+      pool:
+        max-active: 10 # 连接池最大连接数（使用负值表示没有限制）,如果赋值为-1，则表示不限制；如果pool已经分配了maxActive个jedis实例，则此时pool的状态为exhausted(耗尽)
+        max-idle: 8   # 连接池中的最大空闲连接 ，默认值也是8
+        max-wait: 100 # # 等待可用连接的最大时间，单位毫秒，默认值为-1，表示永不超时。如果超过等待时间，则直接抛出JedisConnectionException
+        min-idle: 2    # 连接池中的最小空闲连接 ，默认值也是0
+      shutdown-timeout: 100ms
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          lowerCaseServiceId: true
+          enabled: true
+      default-filters:
+        - name: Hystrix
+          args:
+            name: default
+            fallbackUri: 'forward:/defaultfallback'
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter.replenishRate: 1000  # 令牌桶的容积
+            redis-rate-limiter.burstCapacity: 1000  # 流速 每秒
+            key-resolver: "#{@ipAddressKeyResolver}" #SPEL表达式去的对应的bean
+      routes:
+        # =====================================
+        - id: api-eureka
+          uri: lb://eureka-server
+          order: 8000
+          predicates:
+            - Path=/api-eureka/**
+          filters:
+            - StripPrefix=1
+        - id: api-user
+          uri: lb://user-center
+          order: 8001
+          predicates:
+            - Path=/api-user/**
+          filters:
+            - StripPrefix=1
+        - id: api-auth
+          uri: lb://auth-server
+          order: 8002
+          predicates:
+            - Path=/api-auth/**
+          filters:
+            - PreserveHostHeader
+            - StripPrefix=0
+        - id: api-log
+          uri: lb://log-center
+          order: 8005
+          predicates:
+            - Path=/api-log/**
+          filters:
+            - StripPrefix=1
+
+
+eureka:
+  instance:
+    # 使用 ip 代替实例名
+    prefer-ip-address: true
+    # 实例的主机名
+    hostname: ${spring.cloud.client.ip-address}
+    # 实例的 ID 规则
+    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}
+  client:
+    serviceUrl:
+      # 注册中心地址
+      defaultZone: http://${eureka.instance.hostname}:7001/eureka/
+
+hystrix:
+  threadpool:
+    default:
+      coreSize: 100
+      maximumSize: 5000
+      allowMaximumSizeToDivergeFromCoreSize: true
+      maxQueueSize: -1
+  command:
+    default:
+      circuitBreaker:
+        forceOpen: false
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 900000
+
+ribbon:
+  eureka:
+    enabled: true
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+  MaxAutoRetries: 0
+  MaxAutoRetriesNextServer: 1
+  OkToRetryOnAllOperations: false
+
+logging:
+  level:
+    # log 级别
+    org.springframework.cloud.gateway: debug

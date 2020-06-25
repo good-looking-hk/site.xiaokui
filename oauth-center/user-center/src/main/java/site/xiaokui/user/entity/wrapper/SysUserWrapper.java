@@ -1,7 +1,6 @@
 package site.xiaokui.user.entity.wrapper;
 
 import cn.hutool.core.date.DateUtil;
-import site.xiaokui.entity.wrapper.BaseEntityWrapper;
 import site.xiaokui.user.entity.SysUser;
 import site.xiaokui.user.service.ServiceFactory;
 

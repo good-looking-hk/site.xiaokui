@@ -14,9 +14,9 @@ public class SysRoleMenu implements Serializable {
 
     private Integer id;
 
-    private Integer roleId;
+    private Long roleId;
 
-    private Integer menuId;
+    private Long menuId;
 
     private Date createTime;
 }

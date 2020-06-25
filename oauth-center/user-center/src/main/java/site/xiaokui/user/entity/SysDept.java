@@ -1,6 +1,7 @@
 package site.xiaokui.user.entity;
 
-import site.xiaokui.entity.BaseEntity;
+
+import site.xiaokui.base.entity.BaseEntity;
 
 /**
  * @author HK

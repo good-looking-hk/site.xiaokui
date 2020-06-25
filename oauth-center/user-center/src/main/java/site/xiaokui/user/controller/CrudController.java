@@ -1,7 +1,7 @@
 package site.xiaokui.user.controller;
 
 import org.springframework.ui.Model;
-import site.xiaokui.entity.ResultEntity;
+import site.xiaokui.base.entity.ResultEntity;
 
 /**
  * @author HK
