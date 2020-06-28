@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Tuple;
-import site.xiaokui.base.service.RedisService;
 import site.xiaokui.blog.RedisKey;
 import site.xiaokui.blog.entity.SysBlog;
 

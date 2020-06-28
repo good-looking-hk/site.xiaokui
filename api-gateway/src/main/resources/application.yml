@@ -1,3 +1,6 @@
+server:
+  port: 8000
+
 spring:
   redis:
     ################### redis 单机版 start ##########################
@@ -25,11 +28,11 @@ spring:
             fallbackUri: 'forward:/defaultfallback'
         - name: RequestRateLimiter
           args:
-            redis-rate-limiter.replenishRate: 1000  # 令牌桶的容积
-            redis-rate-limiter.burstCapacity: 1000  # 流速 每秒
+            redis-rate-limiter.replenishRate: 2  # 流速每秒
+            redis-rate-limiter.burstCapacity: 4  # 令牌桶的容积
             key-resolver: "#{@ipAddressKeyResolver}" #SPEL表达式去的对应的bean
       routes:
-        # =====================================
+        # lb代表从注册中心获取服务
         - id: api-eureka
           uri: lb://eureka-server
           order: 8000
@@ -51,13 +54,6 @@ spring:
             - Path=/api-auth/**
           filters:
             - PreserveHostHeader
-            - StripPrefix=0
-        - id: api-log
-          uri: lb://log-center
-          order: 8005
-          predicates:
-            - Path=/api-log/**
-          filters:
             - StripPrefix=1
 
 
@@ -103,5 +99,4 @@ ribbon:
 
 logging:
   level:
-    # log 级别
     org.springframework.cloud.gateway: debug

@@ -25,7 +25,7 @@ import site.xiaokui.oauth2.service.UserService;
 @Component
 public class ShiroRealm extends AuthorizingRealm {
 
-    @Autowired
+//    @Autowired
     private UserService userService;
 
     @Override

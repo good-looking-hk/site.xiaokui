@@ -5,11 +5,16 @@ dependencies {
 //
 //    }
 
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+
+
     compile 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     compile 'org.springframework.cloud:spring-cloud-starter-gateway'
 
     compile 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix'
     compile 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
     compile 'org.springframework.boot:spring-boot-starter-data-redis'
+    compile 'redis.clients:jedis'
+
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }

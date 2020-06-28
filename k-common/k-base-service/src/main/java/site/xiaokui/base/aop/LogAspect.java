@@ -76,7 +76,7 @@ public class LogAspect {
         
         String ip = "";
         if (StrUtil.isNotEmpty(module)) {
-            module += " ";
+            module += "模块 ";
         }
         if (recordIp) {
             ip = HttpUtil.getRequestIP() + " ";

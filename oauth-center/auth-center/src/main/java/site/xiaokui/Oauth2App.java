@@ -2,6 +2,8 @@ package site.xiaokui;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * 参考链接如下，项目原型参考开涛大神的脚手架，但对技术选型/代码逻辑进行大部分重写
@@ -30,6 +32,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @date 2020-06-12 15:38
  */
 @SpringBootApplication
+@EnableDiscoveryClient
+@EnableFeignClients
 public class Oauth2App {
     public static void main(String[] args) {
         SpringApplication.run(Oauth2App.class, args);

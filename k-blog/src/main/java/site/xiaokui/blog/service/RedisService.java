@@ -1,4 +1,4 @@
-package site.xiaokui.base.service;
+package site.xiaokui.blog.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
