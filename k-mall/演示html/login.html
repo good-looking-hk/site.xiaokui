@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商城登录界面</title>
+</head>
+<body>
+<h3>商城登录界面</h3>
+    用户名：<input type="text" name="username" required value="admin"/>
+    密 码：<input type="text" name="password" required value="admin"/>
+    <button type="submit" id="loginRequest">登录</button>
+<div style="margin-top: 200px">
+    <a href="login.html">登录界面</a>、<a href="product.html">商品展示界面</a>、
+    <a href="product.html">订单界面界面</a>、<a href="product.html">支付界面</a>
+</div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+<script>
+    $('#loginRequest').click(function () {
+        var username = $('input[name=username]').val();
+        var password = $('input[name=password]').val();
+        if (username === '' || password === '') {
+            return;
+        }
+        $.post("http://localhost:8000/user-service/login", {username: username, password: password}, function (result) {
+            console.error(result)
+            if (result.code === 200) {
+                localStorage.setItem("k-mall-token", result.token)
+                window.location.href = "product.html"
+            }
+        }, "json")
+    });
+</script>
+</html>

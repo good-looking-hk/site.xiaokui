@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商品展示界面</title>
+</head>
+<body>
+<h3>商品展示界面</h3>
+<table id="tableId" style="text-align: left;">
+    <tr>
+        <th>商品ID</th>
+        <th>商品名称</th>
+        <th>商品价格</th>
+        <th>商品库存</th>
+        <th>商品备注</th>
+        <th>创建时间</th>
+        <th>操作</th>
+    </tr>
+</table>
+<div></div>
+<div style="margin-top: 200px">
+    <a href="login.html">登录界面</a>、<a href="product.html">商品展示界面</a>、
+    <a href="product.html">订单界面界面</a>、<a href="product.html">支付界面</a>
+</div>
+</body>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
+<script>
+    $(function () {
+        var token = localStorage.getItem("k-mall-token")
+        $.post("http://localhost:8000/product-service/list?token=" + token, {}, function (result) {
+            console.error(result)
+            if (result.code === 200) {
+                var data = result.data
+                data.map(e => {
+                    var htmlText = "<tr>"
+                    htmlText += "<td>" + e.uid + "</td>"
+                    htmlText += "<td>" + e.name + "</td>"
+                    htmlText += "<td>" + e.price + "</td>"
+                    htmlText += "<td>" + e.stock + "</td>"
+                    htmlText += "<td>" + e.remark + "</td>"
+                    htmlText += "<td>" + e.createTime + "</td>"
+                    htmlText += "<td><a href='http://localhost:8000/product-service/preBuy'>" +  + "</a></td>"
+                    htmlText += "</tr>"
+                    $("#tableId").append(htmlText)
+                })
+                // let htmlText = data.uid + data.name + data.price + data.stock + data.createTime + remark
+            }
+        }, "json")
+    })
+</script>
+</html>

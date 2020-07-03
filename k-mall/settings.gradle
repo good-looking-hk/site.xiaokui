@@ -1,0 +1,6 @@
+include 'api-gateway'
+include 'eureka-server'
+include 'order-service'
+include 'pay-service'
+include 'product-service'
+include 'user-service'
