@@ -5,6 +5,7 @@
     <title>商品展示界面</title>
 </head>
 <body>
+<p>欢迎 <span id="userId"></span></p>
 <h3>商品展示界面</h3>
 <table id="tableId" style="text-align: left;">
     <tr>
@@ -18,7 +19,7 @@
     </tr>
 </table>
 <div></div>
-<div style="margin-top: 200px">
+<div style="margin-top: 150px">
     <a href="login.html">登录界面</a>、<a href="product.html">商品展示界面</a>、
     <a href="product.html">订单界面界面</a>、<a href="product.html">支付界面</a>
 </div>
@@ -26,20 +27,31 @@
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
 <script>
     $(function () {
-        var token = localStorage.getItem("k-mall-token")
-        $.post("http://localhost:8000/product-service/list?token=" + token, {}, function (result) {
+        var token = JSON.parse(localStorage.getItem("k-mall-token"))
+        console.error(token)
+        var accessToken = ""
+        if (!token) {
+            $("#userId").html("游客，请先<a href=\"login.html\">登录</a>")
+        } else {
+            var username = token.username
+            $("#userId").html(username + "，<a onclick='logout()' href='#'>登出</a>")
+            accessToken = token.token
+            console.error("访问token为:" + accessToken)
+        }
+
+        $.post("http://localhost:8000/product-service/list?token=" + accessToken, {}, function (result) {
             console.error(result)
             if (result.code === 200) {
                 var data = result.data
                 data.map(e => {
                     var htmlText = "<tr>"
-                    htmlText += "<td>" + e.uid + "</td>"
+                    htmlText += "<td>" + e.pid + "</td>"
                     htmlText += "<td>" + e.name + "</td>"
                     htmlText += "<td>" + e.price + "</td>"
                     htmlText += "<td>" + e.stock + "</td>"
                     htmlText += "<td>" + e.remark + "</td>"
                     htmlText += "<td>" + e.createTime + "</td>"
-                    htmlText += "<td><a href='http://localhost:8000/product-service/preBuy'>" +  + "</a></td>"
+                    htmlText += "<td><a onclick=preBuy('http://localhost:8000/product-service/preBuy?pid={0}&token={1}')>预下单</a></td>".format(e.pid, accessToken)
                     htmlText += "</tr>"
                     $("#tableId").append(htmlText)
                 })
@@ -47,5 +59,48 @@
             }
         }, "json")
     })
+
+    function preBuy(url) {
+        $.post(url, {}, function (result) {
+            if (result.code === 200) {
+                alert("下单成功，请在2分钟内完成支付，否则订单将会失效")
+                window.location.href = "pay.html"
+            } else {
+                alert(result.msg)
+            }
+        }, "json")
+    }
+
+    function logout() {
+        localStorage.removeItem("k-mall-token")
+        window.location.href = "login.html"
+    }
+
+    /**
+     * var str='这是一个测试的字符串：{0} {1}'.format('Hello','world');
+     * var str='这是一个测试的字符串：{str0} {str1}'.format({str0:'Hello',str1:'world'});
+     */
+    String.prototype.format = function(args) {
+        var result = this;
+        if (arguments.length > 0) {
+            if (arguments.length == 1 && typeof (args) == "object") {
+                for (var key in args) {
+                    if(args[key]!=undefined){
+                        var reg = new RegExp("({" + key + "})", "g");
+                        result = result.replace(reg, args[key]);
+                    }
+                }
+            }
+            else {
+                for (var i = 0; i < arguments.length; i++) {
+                    if (arguments[i] != undefined) {
+                        var reg= new RegExp("({)" + i + "(})", "g");
+                        result = result.replace(reg, arguments[i]);
+                    }
+                }
+            }
+        }
+        return result;
+    }
 </script>
 </html>

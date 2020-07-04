@@ -52,7 +52,8 @@ public class MallApiGatewayApp {
                                             JSONObject json = new JSONObject(s);
                                             String token = json.getStr("token");
                                             String id = json.getStr("id");
-                                            tokenService.addToken(token, id);
+                                            String username = json.getStr("username");
+                                            tokenService.addToken(token, (id + "#" + token + "*" + username + "^").hashCode());
                                             System.out.println("为用户" + id + "发放token:" + token);
                                             return Mono.just(s);
                                         })).uri("lb://user-service"))

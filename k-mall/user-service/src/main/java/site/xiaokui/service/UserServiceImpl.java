@@ -1,7 +1,12 @@
 package site.xiaokui.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
+import site.xiaokui.dao.UserRepository;
+import site.xiaokui.entity.MallUser;
 import site.xiaokui.entity.ResultEntity;
+
+import java.util.UUID;
 
 /**
  * @author HK
@@ -10,12 +15,17 @@ import site.xiaokui.entity.ResultEntity;
 @RestController
 public class UserServiceImpl implements UserService {
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public ResultEntity login(String username, String password) {
-        if ("admin".equals(username) && "admin".equals(password)) {
-            return ResultEntity.ok("登录成功").put("token", "1q2w3e4r")
-                    .put("id", "1").put("user", username);
+        MallUser user = userRepository.findByUsernameAndPassword(username, password);
+        if (user == null) {
+            return ResultEntity.failed("登录失败");
         }
-        return ResultEntity.failed("登录失败");
+        return ResultEntity.ok("登录成功")
+                .put("token", UUID.randomUUID().toString().replace("-", ""))
+                .put("id", user.getUid()).put("username", username);
     }
 }

@@ -1,5 +1,7 @@
 package site.xiaokui.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -7,9 +9,11 @@ import java.util.Date;
  * @author HK
  * @date 2020-07-02 14:36
  */
-public class Product {
+@Entity
+public class MallProduct {
 
-    private Long uid;
+    @Id
+    private Long pid;
 
     private String name;
 
@@ -21,12 +25,12 @@ public class Product {
 
     private String remark;
 
-    public Long getUid() {
-        return uid;
+    public Long getPid() {
+        return pid;
     }
 
-    public void setUid(Long uid) {
-        this.uid = uid;
+    public void setPid(Long pid) {
+        this.pid = pid;
     }
 
     public String getName() {
@@ -67,5 +71,17 @@ public class Product {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    @Override
+    public String toString() {
+        return "MallProduct{" +
+                "pid=" + pid +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", stock=" + stock +
+                ", createTime=" + createTime +
+                ", remark='" + remark + '\'' +
+                '}';
     }
 }

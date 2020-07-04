@@ -26,8 +26,6 @@ include 'k-mall:api-gateway'
 findProject(':k-mall:api-gateway')?.name = 'api-gateway'
 include 'k-mall:eureka-server'
 findProject(':k-mall:eureka-server')?.name = 'eureka-server'
-include 'k-mall:web-h5'
-findProject(':k-mall:web-h5')?.name = 'web-h5'
 include 'k-mall:common-api'
 findProject(':k-mall:common-api')?.name = 'common-api'
 
