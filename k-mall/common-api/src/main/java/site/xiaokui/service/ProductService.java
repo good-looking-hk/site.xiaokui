@@ -31,13 +31,13 @@ public interface ProductService {
      */
     @RequestMapping("/preBuy")
     @ResponseBody
-    ResultEntity preBuy(Long pid);
+    ResultEntity preBuy(Long uid, Long pid);
 
     /**
      * 对某个商品进行预购买，此时已完成支付
      */
     @RequestMapping("/sureBuy")
     @ResponseBody
-    ResultEntity sureBuy(Long pid);
+    ResultEntity sureBuy(Long ord, Long uid, Long pid);
 
 }

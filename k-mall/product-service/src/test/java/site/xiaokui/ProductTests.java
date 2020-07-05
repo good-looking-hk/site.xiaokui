@@ -62,7 +62,7 @@ public class ProductTests {
             executor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    ResultEntity result = productService.preBuy(3L);
+                    ResultEntity result = productService.preBuy(0L, 3L);
                     if (result.get("code").equals(2001)) {
                         str2001.getAndIncrement();
                     } else if (result.get("code").equals(2002)) {
@@ -76,7 +76,6 @@ public class ProductTests {
             });
         }
         // 等待线程任务执行完毕
-        Thread.sleep(5000);
         executor.shutdown();
         System.out.println("成功减库存数：" + str200.get());
         System.out.println("失败减库存数：" + str2002.get());

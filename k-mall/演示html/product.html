@@ -3,6 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <title>商品展示界面</title>
+    <style>
+        table th {
+            padding-left: 10px;
+            padding-right: 5px;
+        }
+        table td {
+            padding-left: 10px;
+            padding-right: 5px;
+        }
+    </style>
 </head>
 <body>
 <p>欢迎 <span id="userId"></span></p>
@@ -18,7 +28,6 @@
         <th>操作</th>
     </tr>
 </table>
-<div></div>
 <div style="margin-top: 150px">
     <a href="login.html">登录界面</a>、<a href="product.html">商品展示界面</a>、
     <a href="product.html">订单界面界面</a>、<a href="product.html">支付界面</a>
@@ -39,7 +48,7 @@
             console.error("访问token为:" + accessToken)
         }
 
-        $.post("http://localhost:8000/product-service/list?token=" + accessToken, {}, function (result) {
+        $.post("http://localhost:8000/product-service/list?token=" + accessToken, {token: accessToken}, function (result) {
             console.error(result)
             if (result.code === 200) {
                 var data = result.data
@@ -51,7 +60,7 @@
                     htmlText += "<td>" + e.stock + "</td>"
                     htmlText += "<td>" + e.remark + "</td>"
                     htmlText += "<td>" + e.createTime + "</td>"
-                    htmlText += "<td><a onclick=preBuy('http://localhost:8000/product-service/preBuy?pid={0}&token={1}')>预下单</a></td>".format(e.pid, accessToken)
+                    htmlText += "<td><a onclick=preBuy('http://localhost:8000/product-service/preBuy?pid={0}&token={1}') href='#'>预下单</a></td>".format(e.pid, accessToken)
                     htmlText += "</tr>"
                     $("#tableId").append(htmlText)
                 })
@@ -61,7 +70,8 @@
     })
 
     function preBuy(url) {
-        $.post(url, {}, function (result) {
+        var token = JSON.parse(localStorage.getItem("k-mall-token"))
+        $.post(url, {uid: token.uid}, function (result) {
             if (result.code === 200) {
                 alert("下单成功，请在2分钟内完成支付，否则订单将会失效")
                 window.location.href = "pay.html"

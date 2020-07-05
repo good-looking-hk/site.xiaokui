@@ -1,10 +1,15 @@
 package site.xiaokui.service;
 
+import cn.hutool.core.lang.Snowflake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RestController;
 import site.xiaokui.dao.ProductRepository;
 import site.xiaokui.entity.MallProduct;
 import site.xiaokui.entity.ResultEntity;
+import site.xiaokui.enums.OrderStatus;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -17,8 +22,19 @@ import java.util.Optional;
 @RestController
 public class ProductServiceImpl implements ProductService {
 
+    private Logger logger = LoggerFactory.getLogger(ProductServiceImpl.class);
+
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private OrderService orderService;
+
+    @Value("${snowflake.workerId}")
+    private Integer workerId;
+
+    @Value("${snowflake.dataCenterId}")
+    private Integer dataCenterId;
 
     @Override
     public ResultEntity all() {
@@ -41,7 +57,7 @@ public class ProductServiceImpl implements ProductService {
      * 暂时将商品购买数量限制为1
      */
     @Override
-    public ResultEntity preBuy(@NotNull Long pid) {
+    public ResultEntity preBuy(@NotNull Long uid, Long pid) {
         Optional<MallProduct> optional = productRepository.findById(pid);
         MallProduct product = optional.orElse(null);
         if (product == null) {
@@ -56,7 +72,17 @@ public class ProductServiceImpl implements ProductService {
         if (affectRow == 0) {
             return new ResultEntity(2002, "该商品已卖完");
         }
-        // 向支付中心提交订单
+        // 向订单中心提交预订单
+        // 注意这里的分布式订单编号
+        Long productOrderId = new Snowflake(workerId, dataCenterId).nextId();
+        ResultEntity result = orderService.preOrder(productOrderId, uid, pid, product.getPrice(), OrderStatus.TO_PAY.getCode(), "等待用户完成支付");
+        if (result == null) {
+            throw new RuntimeException("调用订单中心失败");
+        }
+        if (!result.get("code").equals(200)) {
+            throw new RuntimeException("调用订单中心失败:" + result.get("msg"));
+        }
+        logger.info("因子{}, {} 生成预支付订单: {} {} {} {}", workerId, dataCenterId, productOrderId, uid, pid, product.getPrice());
         return ResultEntity.ok();
     }
 
@@ -66,7 +92,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResultEntity sureBuy(@NotNull Long pid) {
+    public ResultEntity sureBuy(@NotNull Long ord, Long uid, Long pid) {
         return null;
     }
 }

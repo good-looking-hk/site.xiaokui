@@ -1,9 +1,9 @@
 server:
-  port: 8980
+  port: 8970
 
 spring:
   application:
-    name: product-service
+    name: order-service
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     # 注意这里的GMT+8，用于解决数据库时差8问题
@@ -18,11 +18,6 @@ eureka:
       defaultZone: http://localhost:9000/eureka/
   instance:
       instanceId: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}
-
-# 雪花算法留个workId、dataCenterId的bit位数分别为5位、5位，即取值范围为0 ～ 2^6-1=31，总大小为32 * 32 = 1024
-snowflake:
-  workerId: 11
-  dataCenterId: 22
 
 
 

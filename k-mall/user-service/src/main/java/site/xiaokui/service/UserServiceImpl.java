@@ -26,6 +26,6 @@ public class UserServiceImpl implements UserService {
         }
         return ResultEntity.ok("登录成功")
                 .put("token", UUID.randomUUID().toString().replace("-", ""))
-                .put("id", user.getUid()).put("username", username);
+                .put("uid", user.getUid()).put("username", username);
     }
 }

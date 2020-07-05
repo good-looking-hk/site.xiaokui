@@ -41,6 +41,7 @@ public class RequestStatsFilter implements GlobalFilter, Ordered {
             }));
         }
 
+        // 暂时只支持get地址上面的token检查
         String token = exchange.getRequest().getQueryParams().getFirst("token");
         if (StringUtils.isEmpty(token) || !tokenService.checkToken(token)) {
             // 不合法的token

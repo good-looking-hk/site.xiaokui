@@ -18,7 +18,7 @@ CREATE TABLE `mall_product` (
                              `name` varchar(255) DEFAULT NULL,
                              `price` decimal(19, 2) DEFAULT NULL,
                              `stock` int(1) DEFAULT NULL,
-                             `createTime` datetime DEFAULT NULL,
+                             `create_time` datetime DEFAULT NULL,
                              `remark` varchar(255) DEFAULT NULL,
                              PRIMARY KEY (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -26,12 +26,15 @@ CREATE TABLE `mall_product` (
 
 DROP TABLE IF EXISTS `mall_order`;
 CREATE TABLE `mall_order` (
-                             `uid` bigint(20) NOT NULL AUTO_INCREMENT,
-                             `username` varchar(255) DEFAULT NULL,
-                             `password` varchar(255) DEFAULT NULL,
-                             `status` char(1) DEFAULT NULL,
+                             `oid` bigint(20) NOT NULL AUTO_INCREMENT,
+                             `uid` bigint(255) DEFAULT NULL,
+                             `pid` bigint(255) DEFAULT NULL,
+                             `price` decimal(19, 2) DEFAULT NULL,
+                             `status` varchar(255) DEFAULT NULL,
+                             `pay_msg` varchar(255) DEFAULT NULL,
                              `remark` varchar(255) DEFAULT NULL,
-                             PRIMARY KEY (`uid`)
+                             `create_time` datetime DEFAULT NULL,
+                             PRIMARY KEY (`oid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 BEGIN;

@@ -19,6 +19,10 @@ eureka:
   instance:
     instanceId: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}
 
+# 雪花算法留个workId、dataCenterId的bit位数分别为5位、5位，即取值范围为0 ～ 2^6-1=63
+snowflake:
+  workerId: 11
+  dataCenterId: 22
 
 
 

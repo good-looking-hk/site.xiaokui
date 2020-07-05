@@ -51,10 +51,10 @@ public class MallApiGatewayApp {
                                             System.out.println("服务端返回:" + s);
                                             JSONObject json = new JSONObject(s);
                                             String token = json.getStr("token");
-                                            String id = json.getStr("id");
+                                            String uid = json.getStr("uid");
                                             String username = json.getStr("username");
-                                            tokenService.addToken(token, (id + "#" + token + "*" + username + "^").hashCode());
-                                            System.out.println("为用户" + id + "发放token:" + token);
+                                            tokenService.addToken(token, (uid + "#" + token + "*" + username + "^").hashCode());
+                                            System.out.println("为用户" + uid + "/" + username + "发放token:" + token);
                                             return Mono.just(s);
                                         })).uri("lb://user-service"))
                 .build();

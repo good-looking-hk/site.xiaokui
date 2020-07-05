@@ -21,8 +21,8 @@ eureka:
 
 # 雪花算法留个workId、dataCenterId的bit位数分别为5位、5位，即取值范围为0 ～ 2^6-1=31，总大小为32 * 32 = 1024
 snowflake:
-  workerId: 11
-  dataCenterId: 22
+  workerId: 10
+  dataCenterId: 1
 
 
 

@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
 
 /**
+ * --spring.profiles.active=master
  * 一般300兆足够了，可选配置参数如下
  * -Xms200m -Xmx400m
  * @author hk
