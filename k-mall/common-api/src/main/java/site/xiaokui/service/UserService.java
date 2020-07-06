@@ -2,6 +2,7 @@ package site.xiaokui.service;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import site.xiaokui.entity.ResultEntity;
 
@@ -17,5 +18,5 @@ public interface UserService {
      */
     @RequestMapping("/login")
     @ResponseBody
-    ResultEntity login(String username, String password);
+    ResultEntity login(@RequestParam String username, @RequestParam String password);
 }

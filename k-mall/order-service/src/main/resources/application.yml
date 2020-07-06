@@ -11,6 +11,12 @@ spring:
     username: root
     password: 199710
     driver-class-name: com.mysql.cj.jdbc.Driver
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  jpa:
+    hibernate:
+      ddl-auto: update
 
 eureka:
   client:

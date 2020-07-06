@@ -72,10 +72,10 @@ public class ProductServiceImpl implements ProductService {
         if (affectRow == 0) {
             return new ResultEntity(2002, "该商品已卖完");
         }
-        // 向订单中心提交预订单
         // 注意这里的分布式订单编号
+        // 向订单中心提交预订单，这里的分布式事务 TODO
         Long productOrderId = new Snowflake(workerId, dataCenterId).nextId();
-        ResultEntity result = orderService.preOrder(productOrderId, uid, pid, product.getPrice(), OrderStatus.TO_PAY.getCode(), "等待用户完成支付");
+        ResultEntity result = orderService.preOrder(productOrderId, uid, pid, product.getName(), product.getPrice(), OrderStatus.TO_PAY.getCode(), "等待用户完成支付");
         if (result == null) {
             throw new RuntimeException("调用订单中心失败");
         }
@@ -92,7 +92,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResultEntity sureBuy(@NotNull Long ord, Long uid, Long pid) {
-        return null;
+    public ResultEntity sureBuy(@NotNull Long oid, Long uid, Long pid) {
+        return ResultEntity.ok();
     }
 }

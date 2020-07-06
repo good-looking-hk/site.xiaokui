@@ -1,5 +1,7 @@
 package site.xiaokui.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import java.math.BigDecimal;
@@ -12,22 +14,30 @@ import java.util.Date;
 @Entity
 public class MallOrder {
 
+    /**
+     * 处理前端Long型的精度丢失，修改jackson序列化方式
+     */
     @Id
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long oid;
 
     private Long uid;
 
     private Long pid;
 
+    private String name;
+
     private BigDecimal price;
 
-    private String status;
+    private Integer status;
 
     private String payMsg;
 
     private String remark;
 
     private Date createTime;
+
+    private Date updateTime;
 
     public Long getOid() {
         return oid;
@@ -53,6 +63,14 @@ public class MallOrder {
         this.pid = pid;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public BigDecimal getPrice() {
         return price;
     }
@@ -61,11 +79,11 @@ public class MallOrder {
         this.price = price;
     }
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
@@ -91,5 +109,13 @@ public class MallOrder {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public Date getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Date updateTime) {
+        this.updateTime = updateTime;
     }
 }

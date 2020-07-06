@@ -30,7 +30,7 @@ CREATE TABLE `mall_order` (
                              `uid` bigint(255) DEFAULT NULL,
                              `pid` bigint(255) DEFAULT NULL,
                              `price` decimal(19, 2) DEFAULT NULL,
-                             `status` varchar(255) DEFAULT NULL,
+                             `status` int(1) DEFAULT NULL,
                              `pay_msg` varchar(255) DEFAULT NULL,
                              `remark` varchar(255) DEFAULT NULL,
                              `create_time` datetime DEFAULT NULL,

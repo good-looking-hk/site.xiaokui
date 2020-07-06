@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <title>支付界面</title>
     <style>
-        table th td {
-            margin-right: 10px;
+        table th {
+            padding-left: 10px;
+            padding-right: 5px;
+        }
+        table td {
+            padding-left: 10px;
+            padding-right: 5px;
         }
     </style>
 </head>
@@ -15,18 +20,33 @@
 <table id="tableId" style="text-align: left;">
     <tr>
         <th>订单编号</th>
+        <th>用户ID</th>
         <th>商品ID</th>
         <th>商品名称</th>
-        <th>商品价格</th>
-        <th>商品库存</th>
-        <th>商品备注</th>
+        <th>应付款</th>
+        <th>备注</th>
         <th>创建时间</th>
+        <th>操作</th>
+    </tr>
+</table>
+<div style="margin-top: 50px;"></div>
+<h3>已完成订单列表</h3>
+<table id="tableId1" style="text-align: left;">
+    <tr>
+        <th>订单编号</th>
+        <th>用户ID</th>
+        <th>商品ID</th>
+        <th>商品名称</th>
+        <th>应付款</th>
+        <th>备注</th>
+        <th>创建时间</th>
+        <th>完成时间</th>
         <th>操作</th>
     </tr>
 </table>
 <div style="margin-top: 150px">
     <a href="login.html">登录界面</a>、<a href="product.html">商品展示界面</a>、
-    <a href="product.html">订单界面界面</a>、<a href="product.html">支付界面</a>
+    <a href="pay.html">订单界面界面</a>、<a href="pay.html">支付界面</a>
 </div>
 </body>
 <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.js"></script>
@@ -44,32 +64,68 @@
             console.error("访问token为:" + accessToken)
         }
 
-        $.post("http://localhost:8000/pay-service/list?token=" + accessToken, {token: accessToken}, function (result) {
-            console.error(result)
+        $.post("http://localhost:8000/order-service/toPaidOrder?token=" + accessToken, {token: accessToken, uid: token.uid}, function (result) {
             if (result.code === 200) {
                 var data = result.data
                 data.map(e => {
                     var htmlText = "<tr>"
+                    htmlText += "<td>" + e.oid + "</td>"
+                    htmlText += "<td>" + e.uid + "</td>"
                     htmlText += "<td>" + e.pid + "</td>"
                     htmlText += "<td>" + e.name + "</td>"
                     htmlText += "<td>" + e.price + "</td>"
-                    htmlText += "<td>" + e.stock + "</td>"
                     htmlText += "<td>" + e.remark + "</td>"
                     htmlText += "<td>" + e.createTime + "</td>"
-                    htmlText += "<td><a onclick=preBuy('http://localhost:8000/product-service/preBuy?pid={0}&token={1}') href='#'>预下单</a></td>".format(e.pid, accessToken)
+                    htmlText += "<td><a onclick=pay('http://localhost:8000/order-service/completeOrder?oid={0}&token={1}','{2}') href='#'>支付</a></td>".format(e.oid, accessToken, e.price)
                     htmlText += "</tr>"
                     $("#tableId").append(htmlText)
                 })
                 // let htmlText = data.uid + data.name + data.price + data.stock + data.createTime + remark
             }
         }, "json")
+
+        $.post("http://localhost:8000/order-service/paidOrder?token=" + accessToken, {token: accessToken, uid: token.uid}, function (result) {
+            if (result.code === 200) {
+                var data = result.data
+                data.map(e => {
+                    var htmlText = "<tr>"
+                    htmlText += "<td>" + e.oid + "</td>"
+                    htmlText += "<td>" + e.uid + "</td>"
+                    htmlText += "<td>" + e.pid + "</td>"
+                    htmlText += "<td>" + e.name + "</td>"
+                    htmlText += "<td>" + e.price + "</td>"
+                    htmlText += "<td>" + e.remark + "</td>"
+                    htmlText += "<td>" + e.createTime + "</td>"
+                    htmlText += "<td>" + e.updateTime + "</td>"
+                    htmlText += "<td><a onclick=del('http://localhost:8000/order-service/deleteOrder?oid={0}&token={1}') href='#'>删除</a></td>".format(e.oid, accessToken)
+                    htmlText += "</tr>"
+                    $("#tableId1").append(htmlText)
+                })
+            }
+        }, "json")
     })
 
-    function preBuy(url) {
-        var token = JSON.parse(localStorage.getItem("k-mall-token"))
-        $.post(url, {uid: token.uid}, function (result) {
+    function pay(url, price) {
+        var result = confirm("确认支付" + price + "元？")
+        if (!result) {
+            return;
+        }
+        $.post(url, function (result) {
             if (result.code === 200) {
-                alert("下单成功，请在2分钟内完成支付，否则订单将会失效")
+                window.location.href = "pay.html"
+            } else {
+                alert(result.msg)
+            }
+        }, "json")
+    }
+
+    function del(url) {
+        var result = confirm("确认删除该订单？")
+        if (!result) {
+            return;
+        }
+        $.post(url, function (result) {
+            if (result.code === 200) {
                 window.location.href = "pay.html"
             } else {
                 alert(result.msg)

@@ -2,6 +2,7 @@ package site.xiaokui.service;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import site.xiaokui.entity.ResultEntity;
 
@@ -24,20 +25,20 @@ public interface ProductService {
      */
     @RequestMapping("/details/{pid}")
     @ResponseBody
-    ResultEntity details(Long pid);
+    ResultEntity details(@RequestParam Long pid);
 
     /**
      * 对某个商品进行预购买，此时尚未支付
      */
     @RequestMapping("/preBuy")
     @ResponseBody
-    ResultEntity preBuy(Long uid, Long pid);
+    ResultEntity preBuy(@RequestParam Long uid, @RequestParam Long pid);
 
     /**
      * 对某个商品进行预购买，此时已完成支付
      */
     @RequestMapping("/sureBuy")
     @ResponseBody
-    ResultEntity sureBuy(Long ord, Long uid, Long pid);
+    ResultEntity sureBuy(@RequestParam Long oid, @RequestParam Long uid, @RequestParam Long pid);
 
 }
