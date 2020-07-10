@@ -1,37 +1,56 @@
 package site.xiaokui.blog.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import site.xiaokui.base.controller.BaseController;
-import site.xiaokui.blog.service.UserService;
+import site.xiaokui.blog.config.shiro.ShiroKit;
+
 
 /**
- * 目前使用oauth2登录
  * @author HK
- * @date 2018-05-20 21:34
+ * @date 2018-05-23 14:39
  */
-@Slf4j
-@RequestMapping("/sys")
+@Controller("rootLoginController")
 public class LoginController extends BaseController {
 
-    @Autowired
-    private UserService userService;
-
     /**
-     * 点击登录执行的动作
+     * 跳转到登录页面
      */
-    @PostMapping("/login")
+    @GetMapping("/login")
     public String login() {
-        return "11";
+        // 如果用户已登录，将跳至管理界面
+        if (ShiroKit.getInstance().getSubject().isAuthenticated()) {
+            return REDIRECT + "/manage";
+        }
+        return "/sys/login";
     }
 
     /**
-     * 退出登录
+     * 注册界面
      */
-    @RequestMapping(value = "/logout")
-    public String logout() {
-        return "22";
+    @GetMapping("/register")
+    public String register() {
+        if (ShiroKit.getInstance().getSubject().isAuthenticated()) {
+            return REDIRECT + "/manage";
+        }
+        return  "/sys/register";
+    }
+
+    /**
+     * 后台管理界面，只有通过认证才能访问
+     */
+    @GetMapping("/manage")
+    public String manage(Model model) {
+//        List<SysMenu> list = menuService.getUserMenu(this.getRoleId());
+//        model.addAttribute("menu", list);
+//        return SYS_PREFIX + "/manage";
+        return null;
+    }
+
+    @GetMapping("/unauthorized")
+    public String unauthorized() {
+        return "/unauthorized";
     }
 }
