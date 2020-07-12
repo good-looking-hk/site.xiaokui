@@ -1,8 +1,7 @@
 package test.beetlsql;
 
 import org.beetl.sql.core.SQLManager;
-import site.xiaokui.module.user.entity.SysUser;
-import site.xiaokui.module.user.entity.wrapper.SysUserWrapper;
+import site.xiaokui.blog.entity.SysUser;
 
 import java.util.List;
 
@@ -21,8 +20,5 @@ public class UserWrapperTest {
     private static void selectAll() {
         List<SysUser> list = sqlManager.all(SysUser.class);
         Sql.print(list);
-
-        SysUserWrapper wrapper = new SysUserWrapper(list);
-        System.out.println(wrapper);
     }
 }

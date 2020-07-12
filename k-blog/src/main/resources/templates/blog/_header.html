@@ -10,6 +10,11 @@
     <link href="${ctxPath}/css/typora.css" rel="stylesheet"/>
     <link href="${ctxPath}/aplayer/APlayer.min.css" rel="stylesheet"/>
     <link href="${ctxPath}/css/rainbow.css" rel="stylesheet"/>
+    <style>
+        .main-container {
+            padding: 15px 4% 15px 9.5%;
+        }
+    </style>
 </head>
 <body>
 <div class="header-nav">
@@ -22,13 +27,10 @@
             </a>
         </ul>
         <div class="layui-form" id="nav-search">
-<!--            <div class="search">-->
-<!--                <input type="text"/><button>搜索</button>-->
-<!--            </div>-->
-            <div>
+            <div style="width: 100%; margin: auto 0;">
                 <input type="text" name="key" id="key" autocomplete="off" placeholder="快速搜索 如多线程"
-                       class="layui-input search" style="width:60%;margin-left: 5%">
-                <button class="layui-btn layui-btn-primary search" onclick="search()">
+                       class="layui-input search" style="width:70%;margin-left: 4%">
+                <button class="layui-btn layui-btn-primary search" onclick="search()" style="width: 22%">
                     搜索
                 </button>
             </div>
@@ -36,11 +38,11 @@
         <ul class="layui-nav fly-nav" id="nav-title">
             <li class="layui-nav-item"><a href="${ctxPath}/">首页</a></li>
             <li class="layui-nav-item">
-                <a href="javascript:;">布局</a>
+                <a href="javascript:;">归档</a>
                 <dl class="layui-nav-child" id="nav-l">
-                    <dd><a href="javascript:void(0);" onclick="dealClick('layout', '');">默认布局</a></dd>
-                    <dd><a href="javascript:void(0);" onclick="dealClick('layout', 'time');">日期布局</a></dd>
-                    <dd><a href="javascript:void(0);" onclick="dealClick('layout', 'dir');">目录布局</a></dd>
+                    <dd><a href="javascript:void(0);" onclick="dealClick('layout', '');">默认归档</a></dd>
+                    <dd><a href="javascript:void(0);" onclick="dealClick('layout', 'time');">按日期</a></dd>
+                    <dd><a href="javascript:void(0);" onclick="dealClick('layout', 'dir');">按分类</a></dd>
                 </dl>
             </li>
             <li class="layui-nav-item"><a href="javascript:void(0);" onclick="dealClick('type', 'pro');">非公开</a></li>

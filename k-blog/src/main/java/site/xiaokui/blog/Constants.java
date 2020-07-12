@@ -6,6 +6,21 @@ package site.xiaokui.blog;
  */
 public class Constants {
 
+    /**
+     * 本地开放环境
+     */
+    public static final String PROFILE_LOCAL = "local";
+
+    /**
+     * 线上环境
+     */
+    public static final String PROFILE_REMOTE = "remote";
+
+    /**
+     * 本地测试环境，数据库为远程数据库
+     */
+    public static final String PROFILE_TEST = "test";
+
     public static final String BLOG_TYPE_PRI = "pri", BLOG_TYPE_PRO = "pro", BLOG_TYPE_PUB = "pub";
 
     public static final String BLOG_LAYOUT_DIR = "dir", BLOG_LAYOUT_TIME = "time";
@@ -16,7 +31,7 @@ public class Constants {
     public static final String PREFIX = "/blog";
 
     /**
-     * 博客管理前缀
+     * 博客管理前缀，默认/sys/blog
      */
     public static final String BLOG_PREFIX = "/sys" + PREFIX;
 
@@ -40,5 +55,4 @@ public class Constants {
      * 字节为单位，默认4M
      */
     public static final long MAX_BLOG_UPLOAD_FILE = 1024 * 1024 * 4;
-
 }

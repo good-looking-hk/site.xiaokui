@@ -13,6 +13,10 @@ html {
     -webkit-font-smoothing: antialiased;
 }
 
+blockquote .small:before, blockquote footer:before, blockquote small:before {
+    content: none;
+}
+
 /*body {*/
     /*margin: 0px;*/
     /*padding: 0px;*/

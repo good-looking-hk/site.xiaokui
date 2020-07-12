@@ -34,7 +34,7 @@ public class BlogDetailList {
     /**
      * 用于存储目录排序，也是方便在index1界面展示。泛型为String
      */
-    private List priDir = new LinkedList<>(), proDir = new LinkedList<>(), pubDir = new ArrayList<>();
+    private List<String> priDir = new LinkedList<>(), proDir = new LinkedList<>(), pubDir = new ArrayList<>();
 
     private List[] dirs = {pubDir, proDir, priDir};
 
@@ -188,33 +188,33 @@ public class BlogDetailList {
         return count[2];
     }
 
-    public List getPriDir() {
+    public List<String> getPriDir() {
         return dirs[2];
     }
 
-    public List getProDir() {
+    public List<String> getProDir() {
         return dirs[1];
     }
 
-    public List getPubDir() {
+    public List<String> getPubDir() {
         return dirs[0];
     }
 
-    public List getUploadTopN(int n) {
+    public List<SysBlog> getUploadTopN(int n) {
         if (n > this.uploadTopNList.size()) {
             return this.uploadTopNList;
         }
         return this.uploadTopNList.subList(0, n);
     }
 
-    public List getModifyTopN(int n) {
+    public List<SysBlog> getModifyTopN(int n) {
         if (n > this.modifyTopNList.size()) {
             return this.modifyTopNList;
         }
         return this.modifyTopNList.subList(0, n);
     }
 
-    public List getRecommendTopN(int n) {
+    public List<SysBlog> getRecommendTopN(int n) {
         if (n > this.recommendTopNList.size()) {
             return this.recommendTopNList;
         }

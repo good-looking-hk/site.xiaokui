@@ -54,10 +54,6 @@ public class IndexController extends BaseController {
     @Autowired
     private CacheCenter cacheCenter;
 
-// 暂时去掉，后续再看
-//    @Value("${xiaokui.recent-upload}")
-//    private Integer recentUploadCount;
-
     @Value("${xiaokui.recent-update}")
     private Integer recentUpdateCount;
 
@@ -117,7 +113,7 @@ public class IndexController extends BaseController {
         // 解析所有公开、受保护的博客，这一步很关键，一般会用缓存
         BlogDetailList details = BlogUtil.resolveBlogList(allBlogList, user.getId(), blogSpace, true);
         BlogUser blogUser = new BlogUser(user);
-        // 设置关于 和 简历
+        // 设置关于 和 简历 等一些公共属性
         commonConfig(model);
         // 如果指定了layout布局
         String result = dealLayout(layout, type, model, proCheckPass, details, blogUser);
@@ -133,32 +129,41 @@ public class IndexController extends BaseController {
             blogUser.setPub(details.getPub());
             blogUser.setPageTotal(details.getPro());
             blogUser.setDirCount(protectedList.size());
+            model.addAttribute("titles", details.getProCreateYears());
+            model.addAttribute("lists", details.getProCreateTimeList());
+            model.addAttribute("user", blogUser);
+            model.addAttribute("title", blogUser.getName());
+            return "/blog/archive";
         } else if (Constants.BLOG_TYPE_PRI.equals(type)) {
-            // TODO
-            return ERROR;
-        } else {
-            List<List<SysBlog>> dirLists = details.getPublicList();
-            // 最近上传和推荐阅读，这个是查数据库或Map缓存得来的
-//            List recentUploadList = details.getUploadTopN(this.recentUploadCount);
-            List recentUpdateList = details.getModifyTopN(this.recentUpdateCount);
-            List recommendList = details.getRecommendTopN(this.recommendCount);
-            // 最多访问，这个需要查redis获取topN
-            LinkedHashMap<Long, Integer> map = blogService.getMostViewTopN(user.getId(), mostView);
-            List<SysBlog> mostViewList = resolveMostViewList(details, map);
-
+            // TODO 有待开发
+            List<List<SysBlog>> dirLists = details.getPrivateList();
             blogUser.setBlogList(dirLists);
             blogUser.setPub(details.getPub());
             blogUser.setPro(details.getPro());
             blogUser.setPageTotal(details.getPub());
             blogUser.setDirCount(dirLists.size());
-            /// model.addAttribute("upload", recentUploadList);
+            return ERROR;
+        } else {
+            // 获取最近更新博客topN
+            List<SysBlog> recentUpdateList = details.getModifyTopN(this.recentUpdateCount);
+            // 获取推荐阅读topN
+            List<SysBlog>  recommendList = details.getRecommendTopN(this.recommendCount);
+            // 最多访问，这个需要查redis获取topN
+            LinkedHashMap<Long, Integer> map = blogService.getMostViewTopN(user.getId(), mostView);
+            List<SysBlog> mostViewList = resolveMostViewList(details, map);
+
             model.addAttribute("update", recentUpdateList);
             model.addAttribute("recommend", recommendList);
             model.addAttribute("view", mostViewList);
+
+            model.addAttribute("titles", details.getPubCreateYears());
+            model.addAttribute("lists", details.getPubCreateTimeList());
+            blogUser.setPageTotal(details.getPub());
+            blogUser.setDirCount(details.getPubCreateYears().size());
         }
         model.addAttribute("user", blogUser);
         model.addAttribute("title", blogUser.getName());
-        return BLOG_INDEX ;
+        return "/blog/timeline";
     }
 
     private String dealLayout(String layout, String type, Model model, boolean proCheckPass, BlogDetailList details, BlogUser blogUser) {
@@ -183,7 +188,7 @@ public class IndexController extends BaseController {
                 blogUser.setDirCount(details.getPubCreateYears().size());
             }
             model.addAttribute("user", blogUser);
-            return BLOG_INDEX + "1";
+            return "/blog/archive";
         } else if (Constants.BLOG_LAYOUT_DIR.equals(layout)) {
             // 目录布局
             if (Constants.BLOG_TYPE_PRI.equals(type)) {
@@ -202,20 +207,9 @@ public class IndexController extends BaseController {
                 blogUser.setPageTotal(details.getPub());
                 blogUser.setDirCount(details.getPubDir().size());
             }
-///            List recentUploadList = details.getUploadTopN(this.recentUploadCount);
-            List recommendList = details.getRecommendTopN(this.recommendCount);
-            List recentUpdateList = details.getModifyTopN(this.recentUpdateCount);
-
-            // 最多访问，这个需要查redis获取topN
-            LinkedHashMap<Long, Integer> map = blogService.getMostViewTopN(blogUser.getId(), mostView);
-            List<SysBlog> mostViewList = resolveMostViewList(details, map);
-///            model.addAttribute("upload", recentUploadList);
-           model.addAttribute("update", recentUpdateList);
-            model.addAttribute("recommend", recommendList);
-            model.addAttribute("view", mostViewList);
             model.addAttribute("user", blogUser);
             model.addAttribute("title", blogUser.getName());
-            return BLOG_INDEX + "1";
+            return "/blog/archive";
         }
         return null;
     }

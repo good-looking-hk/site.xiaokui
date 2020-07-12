@@ -12,15 +12,15 @@
             @if(isNotEmpty(user.blog.createTime) && isNotEmpty(user.blog.updateTime)) {
             <blockquote>
                 <small>
-                    Views ${user.blog.viewCount!"1"} times and Created by ${user.name} on
-                    ${user.blog.createTime, "yyyy-MM-dd"} and Updated on
+                    访问： ${user.blog.viewCount!"1"} 次，${user.name} 创建于
+                    ${user.blog.createTime, "yyyy-MM-dd"}，最近更新于
                     ${user.blog.updateTime, "yyyy-MM-dd"}
                 </small>
             </blockquote>
             @} else if (isNotEmpty(user.blog.createTime)) {
             <blockquote>
                 <small>
-                    Views ${user.blog.viewCount!"1"} times and Created by ${user.name} on
+                    访问量 ${user.blog.viewCount!"1"} 次，${user.name} 创建于
                     ${user.blog.createTime, dateFormat="yyyy-MM-dd"}
                 </small>
             </blockquote>
