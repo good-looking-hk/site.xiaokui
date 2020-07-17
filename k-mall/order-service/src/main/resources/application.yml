@@ -16,7 +16,23 @@ spring:
     time-zone: GMT+8
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          # RocketMQ 服务器地址
+          name-server: localhost:9876
+        bindings:
+          channel-output:
+            producer:
+              group: order-tx-produce-group
+              # 开启事务消息
+              transactional: true
+      bindings:
+        channel-output:
+          destination: TransactionTopic
+          content-type: application/json
 
 eureka:
   client:
@@ -24,6 +40,20 @@ eureka:
       defaultZone: http://localhost:9000/eureka/
   instance:
       instanceId: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}
+
+# 雪花算法留个workId、dataCenterId的bit位数分别为5位、5位，即取值范围为0 ～ 2^6-1=31，总大小为32 * 32 = 1024
+snowflake:
+  workerId: 10
+  dataCenterId: 10
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          stream:
+            binder:
+              rocketmq: DEBUG
 
 
 

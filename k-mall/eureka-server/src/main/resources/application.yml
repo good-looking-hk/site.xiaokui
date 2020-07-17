@@ -13,3 +13,6 @@ eureka:
       defaultZone: http://localhost:9000/eureka/
   server:
     enableSelfPreservation: false
+  instance:
+    lease-expiration-duration-in-seconds: 10 # 服务失效时间，默认值90秒，开发时可以调小一点
+    lease-renewal-interval-in-seconds: 10 # 服务续约(renew)的间隔，默认为30秒

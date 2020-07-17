@@ -15,29 +15,62 @@ import java.util.Date;
 public class MallOrder {
 
     /**
+     * 订单编号
      * 处理前端Long型的精度丢失，修改jackson序列化方式
      */
     @Id
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private Long oid;
 
+    /**
+     * 用户编号
+     */
     private Long uid;
 
+    /**
+     * 商品编号
+     */
     private Long pid;
 
+    /**
+     * 商品名称
+     */
     private String name;
 
+    /**
+     * 商品价格
+     */
     private BigDecimal price;
 
+    /**
+     * 订单状态
+     */
     private Integer status;
 
+    /**
+     * 支付信息
+     */
     private String payMsg;
 
+    /**
+     * 订单备注
+     */
     private String remark;
 
+    /**
+     * 创建时间
+     */
     private Date createTime;
 
-    private Date updateTime;
+    /**
+     * 失效时间
+     */
+    private Date expireTime;
+
+    /**
+     * 完成时间
+     */
+    private Date completeTime;
 
     public Long getOid() {
         return oid;
@@ -111,11 +144,36 @@ public class MallOrder {
         this.createTime = createTime;
     }
 
-    public Date getUpdateTime() {
-        return updateTime;
+    public Date getExpireTime() {
+        return expireTime;
     }
 
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
+    public void setExpireTime(Date expireTime) {
+        this.expireTime = expireTime;
+    }
+
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
+    }
+
+    @Override
+    public String toString() {
+        return "MallOrder{" +
+                "oid=" + oid +
+                ", uid=" + uid +
+                ", pid=" + pid +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", status=" + status +
+                ", payMsg='" + payMsg + '\'' +
+                ", remark='" + remark + '\'' +
+                ", createTime=" + createTime +
+                ", expireTime=" + expireTime +
+                ", completeTime=" + completeTime +
+                '}';
     }
 }

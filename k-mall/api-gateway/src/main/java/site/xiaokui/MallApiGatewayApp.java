@@ -44,6 +44,9 @@ public class MallApiGatewayApp {
                                 .modifyRequestBody(String.class, String.class,
                                         ((exchange, s) -> {
                                             System.out.println("请求url:" + exchange.getRequest().getURI() + " body内容:" + s);
+                                            if (s == null) {
+                                                s = "";
+                                            }
                                             return Mono.just(s);
                                         }))
                                 .modifyResponseBody(String.class, String.class,

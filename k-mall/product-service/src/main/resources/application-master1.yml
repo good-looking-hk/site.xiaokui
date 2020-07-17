@@ -11,6 +11,9 @@ spring:
     username: root
     password: 199710
     driver-class-name: com.mysql.cj.jdbc.Driver
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 
 eureka:
   client:
@@ -19,10 +22,9 @@ eureka:
   instance:
       instanceId: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}
 
-# 雪花算法留个workId、dataCenterId的bit位数分别为5位、5位，即取值范围为0 ～ 2^6-1=31，总大小为32 * 32 = 1024
 snowflake:
-  workerId: 10
-  dataCenterId: 1
+  workerId: 11
+  dataCenterId: 10
 
 
 

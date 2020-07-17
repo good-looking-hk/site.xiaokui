@@ -20,7 +20,7 @@ public interface OrderService {
      */
     @RequestMapping(value = "/preOrder")
     @ResponseBody
-    ResultEntity preOrder(@RequestParam Long oid, @RequestParam Long uid, @RequestParam Long pid, @RequestParam String name, @RequestParam BigDecimal price, @RequestParam Integer status, @RequestParam String payMsg);
+    ResultEntity preOrder(@RequestParam Long uid, @RequestParam Long pid, @RequestParam String name, @RequestParam BigDecimal price, @RequestParam String payMsg, @RequestParam String remark);
 
     /**
      * 生成支付订单
@@ -41,7 +41,7 @@ public interface OrderService {
      */
     @RequestMapping("/toPaidOrder")
     @ResponseBody
-    ResultEntity toPaidOrdeList(Long oid);
+    ResultEntity toPaidOrdeeList(Long oid);
 
     /**
      * 查询已完成订单

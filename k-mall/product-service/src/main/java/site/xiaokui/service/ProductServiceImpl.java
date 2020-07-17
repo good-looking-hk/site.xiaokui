@@ -30,12 +30,6 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private OrderService orderService;
 
-    @Value("${snowflake.workerId}")
-    private Integer workerId;
-
-    @Value("${snowflake.dataCenterId}")
-    private Integer dataCenterId;
-
     @Override
     public ResultEntity all() {
         List<MallProduct> list = productRepository.findAll();
@@ -74,15 +68,13 @@ public class ProductServiceImpl implements ProductService {
         }
         // 注意这里的分布式订单编号
         // 向订单中心提交预订单，这里的分布式事务 TODO
-        Long productOrderId = new Snowflake(workerId, dataCenterId).nextId();
-        ResultEntity result = orderService.preOrder(productOrderId, uid, pid, product.getName(), product.getPrice(), OrderStatus.TO_PAY.getCode(), "等待用户完成支付");
+        ResultEntity result = orderService.preOrder(uid, pid, product.getName(), product.getPrice(), "等待用户完成支付", "加个鼠标垫，谢谢");
         if (result == null) {
             throw new RuntimeException("调用订单中心失败");
         }
         if (!result.get("code").equals(200)) {
             throw new RuntimeException("调用订单中心失败:" + result.get("msg"));
         }
-        logger.info("因子{}, {} 生成预支付订单: {} {} {} {}", workerId, dataCenterId, productOrderId, uid, pid, product.getPrice());
         return ResultEntity.ok();
     }
 

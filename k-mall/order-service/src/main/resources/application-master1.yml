@@ -22,6 +22,10 @@ eureka:
   instance:
       instanceId: ${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}
 
+snowflake:
+  workerId: 10
+  dataCenterId: 10
+
 
 
 

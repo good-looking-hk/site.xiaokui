@@ -11,6 +11,31 @@ spring:
     username: root
     password: 199710
     driver-class-name: com.mysql.cj.jdbc.Driver
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          # RocketMQ 服务器地址
+          name-server: localhost:9876
+      bindings:
+        # 消费者
+        input:
+          destination: TransactionTopic
+          content-type: application/json
+          group: order-tx-consume-group
+          consumer:
+            concurrency: 20
+            maxAttempts: 2
+        inputDlq:
+          destination: '%DLQ%${spring.cloud.stream.bindings.input.group}'
+          content-type: application/json
+          group: order-dlq-group
+          consumer:
+            concurrency: 20
+
 
 eureka:
   client:
@@ -22,7 +47,17 @@ eureka:
 # 雪花算法留个workId、dataCenterId的bit位数分别为5位、5位，即取值范围为0 ～ 2^6-1=31，总大小为32 * 32 = 1024
 snowflake:
   workerId: 11
-  dataCenterId: 22
+  dataCenterId: 10
+
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          stream:
+            binder:
+              rocketmq: DEBUG
 
 
 

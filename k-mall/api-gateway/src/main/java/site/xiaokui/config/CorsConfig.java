@@ -16,7 +16,7 @@ import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 /**
- * 解决网关跨域问题
+ * 解决网关跨域问题，放行所有请求
  *
  * @author hk
  */
