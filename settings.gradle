@@ -1,5 +1,9 @@
 rootProject.name = 'newxiaokui'
 include 'k-study'
+include 'k-study:k-wx-root'
+include 'k-study:k-java'
+include 'k-study:k-offer'
+
 include 'k-blog'
 include 'k-common'
 include 'k-common:k-base-service'

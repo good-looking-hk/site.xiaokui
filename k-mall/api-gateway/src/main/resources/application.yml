@@ -23,6 +23,7 @@ spring:
             redis-rate-limiter.burstCapacity: 4  # 令牌桶的容积
             key-resolver: "#{@ipAddressKeyResolver}" #SPEL表达式去的对应的bean
   redis:
+    # redis机器最好与网关在同一台机器上，便于最大化限流效果
     host: localhost
     port: 6379
     timeout: 6000

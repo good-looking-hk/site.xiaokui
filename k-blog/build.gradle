@@ -1,15 +1,16 @@
-apply plugin: 'java'
-apply plugin: 'idea'
+plugins {
+    id 'org.springframework.boot' version '2.3.0.RELEASE'
+    id 'java'
+}
+
 apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
 
-jar{
-    enabled = true
-}
-
-bootJar {
-    enabled = true
-}
+//apply plugin: 'java'
+//apply plugin: 'idea'
+//
+//bootJar {
+//    enabled = true
+//}
 
 repositories {
     maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
@@ -17,11 +18,8 @@ repositories {
 }
 
 dependencies {
-
-    compile project(':k-common:k-base-service')
-
+//    compile project(':k-common:k-base-service')
     compile('org.springframework.boot:spring-boot-starter-actuator')
-
     compile 'org.apache.shiro:shiro-spring-boot-starter:1.4.0'
 
     compile 'com.github.penggle:kaptcha:2.3.2'
