@@ -49,6 +49,7 @@ hystrix:
       execution:
         isolation:
           thread:
+            # 默认熔断时间
             timeoutInMilliseconds: 1000
 
 

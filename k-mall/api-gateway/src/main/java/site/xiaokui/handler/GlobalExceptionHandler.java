@@ -51,8 +51,11 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
         if (ex instanceof ResponseStatusException) {
             response.setStatusCode(((ResponseStatusException) ex).getStatus());
+        } else {
+            ex.printStackTrace();
         }
         logger.error("网关错误，访问地址" + exchange.getRequest().getURI() + "，错误信息:" + ex.getMessage());
+
         return response.writeWith(Mono.fromSupplier(() -> {
             DataBufferFactory bufferFactory = response.bufferFactory();
             try {

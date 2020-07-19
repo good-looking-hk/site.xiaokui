@@ -10,7 +10,6 @@ import org.springframework.web.reactive.function.server.RouterFunctions;
 import site.xiaokui.handler.HystrixFallbackHandler;
 
 @Configuration
-@SuppressWarnings("all")
 public class GatewayFallbackConfig {
 
     @Autowired
@@ -22,6 +21,5 @@ public class GatewayFallbackConfig {
             RequestPredicates.GET("/defaultfallback")
                 .and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), hystrixFallbackHandler);
     }
-
 }
  
