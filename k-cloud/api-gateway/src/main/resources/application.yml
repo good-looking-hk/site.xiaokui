@@ -28,8 +28,8 @@ spring:
             fallbackUri: 'forward:/defaultfallback'
         - name: RequestRateLimiter
           args:
-            redis-rate-limiter.replenishRate: 2  # 流速每秒
-            redis-rate-limiter.burstCapacity: 4  # 令牌桶的容积
+            redis-rate-limiter.replenishRate: 1  # 流速每秒
+            redis-rate-limiter.burstCapacity: 2  # 令牌桶的容积
             key-resolver: "#{@ipAddressKeyResolver}" #SPEL表达式去的对应的bean
       routes:
         # lb代表从注册中心获取服务

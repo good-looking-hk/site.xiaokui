@@ -29,6 +29,7 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import site.xiaokui.Constants;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 全局拦截请求、应答信息，打印日志，应该放置在认证过滤器后面，避免过多的无效日志
+ * 全局拦截请求、应答信息，打印日志，应该放置在 认证过滤器{@link AuthFilter} 后面，避免过多的无效日志
  * 后期可以针对这里的日志信息做分析，比如引入ELK
  * @author HK
  * @date 2020-07-19 10:21
@@ -51,7 +52,7 @@ public class LogFilter implements GlobalFilter, Ordered {
      */
     @Override
     public int getOrder() {
-        return -1;
+        return Constants.LOG_FILTER_ORDER;
     }
 
     @Override

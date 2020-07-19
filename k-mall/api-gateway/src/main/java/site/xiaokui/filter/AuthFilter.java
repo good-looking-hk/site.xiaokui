@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import site.xiaokui.Constants;
 import site.xiaokui.service.TokenService;
 
 import java.nio.charset.Charset;
@@ -44,7 +45,7 @@ public class AuthFilter implements GlobalFilter, Ordered {
 
     @Override
     public int getOrder() {
-        return -1;
+        return Constants.AUTH_FILTER_ORDER;
     }
 
     @Override

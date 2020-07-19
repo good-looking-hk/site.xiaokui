@@ -7,6 +7,8 @@ include 'k-study:k-offer'
 include 'k-blog'
 include 'k-common'
 include 'k-common:k-base-service'
+include 'k-common:k-swagger-starter'
+
 
 include 'k-mall'
 include 'k-mall:user-service'

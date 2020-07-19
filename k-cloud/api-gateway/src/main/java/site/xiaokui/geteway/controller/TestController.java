@@ -1,4 +1,4 @@
-package site.xiaokui.controller;
+package site.xiaokui.geteway.controller;
 
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
