@@ -4,7 +4,6 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
@@ -22,24 +21,10 @@ import java.util.concurrent.atomic.AtomicReference;
 public class TestController {
 
     /**
-     * 测试命令 curl -XPOST -d "name=lili&age=45" 'http://127.0.0.1:8090/info'
+     * 测试命令 curl -X POST -d 'name=hk' 'http://127.0.0.1:8000/hello'
      */
-    @RequestMapping(path = "/info")
-    public String get(ServerWebExchange serverWebExchange) {
-        ServerHttpRequest request = serverWebExchange.getRequest();
-        String body = resolveBodyFromRequest(request);
-        System.out.println("body is:" + body);
-        return "ok";
-    }
-
-    private String resolveBodyFromRequest(ServerHttpRequest serverHttpRequest) {
-        Flux<DataBuffer> body = serverHttpRequest.getBody();
-        AtomicReference<String> bodyRef = new AtomicReference<>();
-        body.subscribe(buffer -> {
-            CharBuffer charBuffer = StandardCharsets.UTF_8.decode(buffer.asByteBuffer());
-            DataBufferUtils.release(buffer);
-            bodyRef.set(charBuffer.toString());
-        });
-        return bodyRef.get();
+    @RequestMapping("/hello")
+    public String hello(String name) {
+        return "hello," + name;
     }
 }

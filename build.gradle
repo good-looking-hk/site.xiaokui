@@ -1,43 +1,46 @@
-plugins {
-    id 'org.springframework.boot' version '2.3.0.RELEASE'
-    id 'io.spring.dependency-management' version '1.0.9.RELEASE'
-    id 'java'
-}
-
-group = 'site.xiaokui'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-repositories {
-    maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
-    mavenCentral()
-}
-
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'war'
-    apply plugin: 'idea'
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
-    ext {
-        springBootVersion = '2.3.0.RELEASE'
-        springCloudVersion = 'Hoxton.SR5'
-    }
+buildscript {
     repositories {
+        mavenLocal()
         maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
         mavenCentral()
     }
     dependencies {
-        compileOnly 'org.projectlombok:lombok'
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
     }
+}
+
+subprojects {
+    apply plugin: 'war'
+    apply plugin: 'java'
+    apply plugin: 'idea'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    group = 'site.xiaokui'
+    version = '1.0.1-SNAPSHOT'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenLocal()
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        mavenCentral()
+    }
+
+    dependencies {
+        compileOnly 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'
+        testCompile "org.springframework.boot:spring-boot-starter-test"
+    }
+
     dependencyManagement {
         imports {
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
         }
+    }
+
+    // 这里一定得要。在多模块下，不然编译失败，因为不会依赖模块给打包。
+    jar {
+        enabled = true
     }
 }

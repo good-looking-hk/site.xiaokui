@@ -1,0 +1,4 @@
+include 'api-gateway'
+include 'oauth-center'
+include 'regisgter-center'
+include 'k-common:k-base-service'

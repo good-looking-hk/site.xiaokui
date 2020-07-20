@@ -19,9 +19,6 @@ include 'k-mall:api-gateway'
 include 'k-mall:eureka-server'
 include 'k-mall:common-api'
 
-//include 'k-base'
-//include 'k-wx'
-
 include 'k-cloud'
 include 'k-cloud:oauth-center'
 include 'k-cloud:oauth-center:user-center'

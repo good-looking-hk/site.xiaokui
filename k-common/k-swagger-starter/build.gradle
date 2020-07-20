@@ -1,3 +1,5 @@
+apply plugin: 'java'
+
 ext {
     swaggerVersion = '2.9.2'
 }
