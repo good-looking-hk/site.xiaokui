@@ -1,7 +1,0 @@
-include 'common-api'
-include 'api-gateway'
-include 'eureka-server'
-include 'order-service'
-include 'point-service'
-include 'product-service'
-include 'user-service'

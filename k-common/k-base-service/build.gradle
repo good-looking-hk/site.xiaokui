@@ -1,34 +1,33 @@
 dependencies {
-    compile 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-//    // java工具包
-//    compile 'cn.hutool:hutool-all:5.3.1'
-//    // 邮箱支持
-//    compile 'javax.mail:mail:1.4.7'
-//
-//    // Spring Web支持
-//    compile 'org.springframework.boot:spring-boot-starter-web'
-//    // AOP 支持
-//    compile 'org.springframework.boot:spring-boot-starter-aop'
-//    // Cache 支持
-//    compile 'org.springframework.boot:spring-boot-starter-cache'
-//
-//    // jdbc支持
-//    compile 'org.springframework.boot:spring-boot-starter-jdbc'
-//    // redis支持
-//    compile 'redis.clients:jedis'
-//    // 高性能数据库连接池
-//    compile 'com.zaxxer:HikariCP:3.4.5'
-//
-//    // beetl支持，分为beetl模板引擎、beetlsql数据库操作框架
-//    compile 'com.ibeetl:beetl-framework-starter:1.2.28.RELEASE'
-//
-//    // 支持lombok，这个要么不用，要么就在基础模块里面统一引入
-//    compileOnly 'org.projectlombok:lombok'
-//    annotationProcessor 'org.projectlombok:lombok'
-//
-//    // 用于支持mysql8
-//    runtime 'mysql:mysql-connector-java:8.0.9-rc'
-//
-//    // 测试依赖
-//    testCompile('org.springframework.boot:spring-boot-starter-test')
+    // java工具包
+    compile 'cn.hutool:hutool-all:5.3.1'
+    // 邮箱支持
+    compile 'javax.mail:mail:1.4.7'
+
+    // Spring Web支持
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    // AOP 支持
+    compile 'org.springframework.boot:spring-boot-starter-aop'
+    // Cache 支持
+    compile 'org.springframework.boot:spring-boot-starter-cache'
+
+    // jdbc支持
+    compile 'org.springframework.boot:spring-boot-starter-jdbc'
+    // redis支持
+    compile 'redis.clients:jedis'
+    // 高性能数据库连接池
+    compile 'com.zaxxer:HikariCP:3.4.5'
+
+    // beetl支持，分为beetl模板引擎、beetlsql数据库操作框架
+    compile 'com.ibeetl:beetl-framework-starter:1.2.28.RELEASE'
+
+    // 支持lombok，这个要么不用，要么就在基础模块里面统一引入
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // 用于支持mysql8
+    runtime 'mysql:mysql-connector-java:8.0.9-rc'
+
+    // 测试依赖
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 }
