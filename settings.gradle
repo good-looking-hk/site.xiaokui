@@ -27,6 +27,7 @@ include 'k-landlords:k-landlords-client'
 include 'k-landlords:k-landlords-server'
 include 'k-landlords:k-landlords-common'
 
-include 'k-wx:k-wx-robot'
-include 'k-wx:k-wx-red-envelope'
+// 微信公众号机器人
+include 'k-wx:k-mp-robot'
+include 'k-wx:k-red-envelope'
 include 'k-wx:k-wx-seckill'
