@@ -12,7 +12,7 @@
             @if(isNotEmpty(user.blog.createTime) && isNotEmpty(user.blog.updateTime)) {
             <blockquote>
                 <small>
-                    访问： ${user.blog.viewCount!"1"} 次，${user.name} 创建于
+                    总访问次数:${user.blog.viewCount!"1"} 次，${user.name} 创建于
                     ${user.blog.createTime, "yyyy-MM-dd"}，最近更新于
                     ${user.blog.updateTime, "yyyy-MM-dd"}
                 </small>
@@ -20,7 +20,7 @@
             @} else if (isNotEmpty(user.blog.createTime)) {
             <blockquote>
                 <small>
-                    访问量 ${user.blog.viewCount!"1"} 次，${user.name} 创建于
+                    总访问次数:${user.blog.viewCount!"1"}，${user.name} 创建于
                     ${user.blog.createTime, dateFormat="yyyy-MM-dd"}
                 </small>
             </blockquote>

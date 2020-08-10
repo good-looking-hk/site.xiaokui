@@ -1,6 +1,7 @@
 package site.xiaokui.weixin.mp.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.api.WxMpMessageRouter;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -8,7 +9,6 @@ import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import site.xiaokui.base.aop.annotation.Log;
 
 /**
  * @author Binary Wang(https://github.com/binarywang)
@@ -21,7 +21,6 @@ public class WxPortalController {
     private final WxMpService wxService;
     private final WxMpMessageRouter messageRouter;
 
-    @Log
     @GetMapping(produces = "text/plain;charset=utf-8")
     public String authGet(@PathVariable String appid,
                           @RequestParam(name = "signature", required = false) String signature,

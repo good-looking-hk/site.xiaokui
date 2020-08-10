@@ -45,7 +45,7 @@ public class LoginController extends BaseController {
     public String login() {
         // 如果用户已登录，将跳至管理界面
         if (this.getSubject().isAuthenticated()) {
-            return REDIRECT + "/manage";
+            return REDIRECT + SYS_PREFIX + "/manage";
         }
         return SYS_PREFIX + "/login";
     }

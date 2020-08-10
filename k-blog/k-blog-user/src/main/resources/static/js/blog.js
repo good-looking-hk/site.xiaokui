@@ -64,11 +64,11 @@ $(function () {
         }, 500);
     });
 
-    var needLocate = $(window).height() / 4 * 3 < $('#right-nav').height();
-    if (needLocate) {
-        $('#right-nav').css({top: top - 20});
-        $('#right-nav').css({"padding": '15px 10px'});
-    }
+    // var needLocate = $(window).height() / 4 * 3 < $('#right-nav').height();
+    // if (needLocate) {
+    //     $('#right-nav').css({top: top - 20});
+    //     $('#right-nav').css({"padding": '15px 10px'});
+    // }
 
     var obj = countChars();
     var minute = (parseInt(obj.中英文单词数) / 493).toFixed(1);
@@ -88,7 +88,27 @@ $(function () {
     $('#countChars').text('字数约 ' + obj.中英文单词数 + ' 字，阅读耗时约 ' + Number(minute).toFixed(1) + ' 分钟');
 });
 
+
 $(function () {
+    $(document).scroll(function() {
+        var scroH = $(document).scrollTop();  //滚动高度
+        var viewH = $(window).height();  //可见高度
+        var contentH = $(document).height();  //内容高度
+
+        if(scroH > 54){  //距离顶部大于100px时
+            $('#right-nav').css({top: '70px'});
+            console.error("顶部高度"+ scroH)
+        } else {
+            $('#right-nav').css({top: '125px'});
+        }
+        if (contentH - (scroH + viewH) <= 100){  //距离底部高度小于100px
+            console.error("底部高度" + contentH - (scroH + viewH))
+        }
+        if (contentH === (scroH + viewH)){  //滚动条滑到底部啦
+            console.error("底部" + contentH)
+        }
+    });
+
     setTimeout(function () {
         var url = document.location.href
         var index = url.indexOf('#')

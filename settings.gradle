@@ -24,4 +24,8 @@ include 'k-cloud:register-center'
 include 'k-cloud:register-center:eureka-server'
 include 'k-cloud:api-gateway'
 
+include 'k-landlords:k-landlords-client'
+include 'k-landlords:k-landlords-server'
+include 'k-landlords:k-landlords-common'
+
 

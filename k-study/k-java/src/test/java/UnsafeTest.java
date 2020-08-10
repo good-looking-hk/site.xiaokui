@@ -48,17 +48,17 @@ public class UnsafeTest {
         @SneakyThrows
         @Override
         public void run () {
-            Field value = state.getClass().getDeclaredField("value");
-            long offset = unsafe.objectFieldOffset(value);
-            value.setAccessible(true);
-            while (curValue.get() < 9) {
-                while (unsafe.compareAndSwapInt(state, offset,expect - 1, expect)) {
-                    System.out.println(Thread.currentThread().getName() + ":" + curValue.getAndIncrement() + " " + state);
-                    if (state == 3) {
-                        unsafe.compareAndSwapInt(state, offset,3, 0);
-                    }
-                }
-            }
+//            Field value = state.getClass().getDeclaredField("value");
+//            long offset = unsafe.objectFieldOffset(value);
+//            value.setAccessible(true);
+//            while (curValue.get() < 9) {
+//                while (unsafe.compareAndSwapInt(state, offset,expect - 1, expect)) {
+//                    System.out.println(Thread.currentThread().getName() + ":" + curValue.getAndIncrement() + " " + state);
+//                    if (state == 3) {
+//                        unsafe.compareAndSwapInt(state, offset,3, 0);
+//                    }
+//                }
+//            }
         }
     }
 }
