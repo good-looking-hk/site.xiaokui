@@ -1,5 +1,4 @@
 rootProject.name = 'newxiaokui'
-include 'k-study:k-wx-root'
 include 'k-study:k-java'
 include 'k-study:k-offer'
 
@@ -28,4 +27,6 @@ include 'k-landlords:k-landlords-client'
 include 'k-landlords:k-landlords-server'
 include 'k-landlords:k-landlords-common'
 
-
+include 'k-wx:k-wx-robot'
+include 'k-wx:k-wx-red-envelope'
+include 'k-wx:k-wx-seckill'

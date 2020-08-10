@@ -1,4 +1,4 @@
-package site.xiaokui.blog.sys.seckill.dto;
+package site.xiaokui.seckill.dto;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package site.xiaokui.blog.sys.seckill.service;
+package site.xiaokui.seckill.service;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.crypto.SecureUtil;

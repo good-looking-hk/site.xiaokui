@@ -1,4 +1,4 @@
-package site.xiaokui.blog.sys.seckill.entity;
+package site.xiaokui.seckill.entity;
 
 import lombok.Getter;
 

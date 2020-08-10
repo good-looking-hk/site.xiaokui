@@ -1,4 +1,4 @@
-package site.xiaokui.blog.sys.seckill;
+package site.xiaokui.seckill;
 
 import static site.xiaokui.module.user.UserConstants.SYS_PREFIX;
 

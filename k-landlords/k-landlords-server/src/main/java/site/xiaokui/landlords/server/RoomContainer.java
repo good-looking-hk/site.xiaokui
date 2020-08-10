@@ -11,9 +11,6 @@ import java.util.concurrent.ConcurrentSkipListMap;
  */
 public class RoomContainer {
 
-    /**
-     * The map of server side
-     */
     private final static Map<Integer, Room> ROOM_MAP = new ConcurrentSkipListMap<>();
 
     public final static Room getRoom(int id){
