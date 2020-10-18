@@ -1,6 +1,5 @@
 package netty.io;
 
-import lombok.SneakyThrows;
 
 import java.io.IOException;
 

@@ -1,5 +1,10 @@
 package site.xiaokui;
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
+import org.jasypt.encryption.StringEncryptor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -7,7 +12,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 答辩思路：
  * 1.首先简单介绍，这个项目是开始于大二的时候，由于不喜欢市面上主流的博客写作方式，于是决定自己搞一个
  * 到现在，这个项目经过了多次技术迭代、系统升级、代码重写，现在还算是功能比较完整的一个项目
- * 2.代码量是绝对够的，只看跟项目的Java代码，近9000行：目录/home/hk/IdeaWorkSpace/newxiaokui/src/main/java下共有：
+ * 2.代码量是绝对够的，只看根项目的Java代码，近9000行：目录/home/hk/IdeaWorkSpace/newxiaokui/src/main/java下共有：
  * java文件120个，有效java代码(不含注释和空行)5520行，java注释1950行，空白行1219行
  * 统计耗时：161ms
  * 3.技术都是最前沿的技术，我对他们做了一些深度的定制，具有开发速度快，扩展性高的特点，此外，代码的编写水平也是可以的
@@ -17,10 +22,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 发布方式是上传文件、支持上下篇浏览、此外，我还吸收另外微信队友访问量的统计方式，就是一天一人对于每篇最多贡献4个阅读量，我的
  * 也是，此外他是一个博客平台，你也可以注册账号在上面使用
  * 7.用户-角色-权限就是权限系统那套东西了
- *
- * 如果你看到这里，说明是有缘人，在此，请允许我郑重向你推荐几个有水平的类
- * {@link TestSpringMVC}里面包含一些对于Spring MVC的理解
- * {@link site.xiaokui.config.shiro.ShiroConfig}里面包含一些对于Shiro的理解
  *
  * 本项目开始自2017年3月份，最开始网站名称为小葵网，后面逐渐演化到个人博客，下面是对于项目功能的一些说明：
  * 1、Spring Boot、Beetl、BeetlSql、Shiro的使用和配置，这里的东西贯穿全称，很有多东西

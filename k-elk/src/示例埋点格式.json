@@ -1,0 +1,10 @@
+{
+  "page_id": "im1",
+  "app_id": "login",
+  "utc_server_time": "2020-05-12T01:51:01Z",
+  "property": {
+    "residence_time": 979,
+    "path": "/auth/login"
+  },
+  "event_type": "page_enter_evt"
+}

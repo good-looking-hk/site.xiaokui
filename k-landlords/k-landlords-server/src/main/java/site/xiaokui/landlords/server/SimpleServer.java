@@ -20,7 +20,6 @@ import java.net.InetSocketAddress;
  */
 public class SimpleServer {
 
-
     public static void main(String[] args) throws InterruptedException {
         // 如果不指定，则采取 ServerContainer.port 中的默认端口
         if (args != null && args.length > 1) {

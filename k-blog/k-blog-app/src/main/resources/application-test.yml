@@ -4,6 +4,10 @@ beetlsql:
   basePackage: site.xiaokui
   daoSuffix: Dao
 
+jasypt:
+  encryptor:
+    password: '@kpwd@'
+
 spring:
   resources:
     static-locations: classpath:/static/
@@ -11,12 +15,12 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://120.79.20.49:3306/newxiaokui?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=false
     username: root
-    password: 1238127943Hk!
+    password: ENC(MdrHx2+xFQGOmHhMINpEH/Is2n2crwgOT5t3TmVmZIlIsbjdQKcZqn+g4M+ZbZPS)
     driver-class-name: com.mysql.cj.jdbc.Driver
   redis:
     host: 120.79.20.49
     port: 6379
-    password: 1238127943Hk~
+    password: ENC(yO1ze7HVhFu0y90o6ZJDVxiBEAaxlGs5DGWxpCmSVILsouH2XE1TlKWg+K8Bw00w)
 
 xiaokui:
   basePath: /xiaokui/

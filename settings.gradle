@@ -31,3 +31,6 @@ include 'k-landlords:k-landlords-common'
 include 'k-wx:k-mp-robot'
 include 'k-wx:k-red-envelope'
 include 'k-wx:k-wx-seckill'
+
+// elk + flink
+include 'k-elk'

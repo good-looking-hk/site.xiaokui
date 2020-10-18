@@ -5,6 +5,7 @@ import cn.hutool.core.exceptions.UtilException;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.cron.task.Task;
 import lombok.extern.slf4j.Slf4j;
+import org.jasypt.encryption.StringEncryptor;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +18,7 @@ import java.util.Date;
 
 
 /**
- * 具体cron表达是间 http://www.cnblogs.com/peida/archive/2013/01/08/2850483.html
+ * 具体cron表达式见 http://www.cnblogs.com/peida/archive/2013/01/08/2850483.html
  *
  * @author HK
  * @date 2019-02-21 15:27
