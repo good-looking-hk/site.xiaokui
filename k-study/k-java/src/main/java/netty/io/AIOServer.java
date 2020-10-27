@@ -1,6 +1,5 @@
 package netty.io;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
@@ -19,6 +18,7 @@ public class AIOServer {
     private static final ExecutorService executorService = Executors.newFixedThreadPool(200);
 
     public void init() throws Exception {
+
         AsynchronousChannelGroup group = AsynchronousChannelGroup.withThreadPool(executorService);
         AsynchronousServerSocketChannel server = AsynchronousServerSocketChannel.open(group);
         server.bind(new InetSocketAddress(3333));
@@ -45,7 +45,8 @@ public class AIOServer {
                     }
                     @Override
                     public void failed(Throwable exc, ByteBuffer attachment) {
-                        System.out.println(exc.getMessage());
+                        exc.printStackTrace();
+//                        System.out.println(exc.getMessage());
                     }
                 });
             }

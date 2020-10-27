@@ -41,10 +41,18 @@ public class IndexController extends BaseController {
 
     private static final String BLOG_PREFIX = Constants.PREFIX;
 
-    private static final String BLOG_INDEX = BLOG_PREFIX + INDEX;
-
     private static final String SHOW_BLOG = BLOG_PREFIX + BLOG_PREFIX;
 
+    /**
+     * 时间线页面
+     */
+    private static final String BLOG_TIMELINE_PAGE = BLOG_PREFIX + "/timeline";
+
+    /**
+     * 按目录归档页面
+     */
+    private static final String BLOG_ARCHIVE_PAGE = BLOG_PREFIX + "/archive";
+    
     @Autowired
     private UserService userService;
 
@@ -133,7 +141,7 @@ public class IndexController extends BaseController {
             model.addAttribute("lists", details.getProCreateTimeList());
             model.addAttribute("user", blogUser);
             model.addAttribute("title", blogUser.getName());
-            return "/blog/archive";
+            return BLOG_ARCHIVE_PAGE;
         } else if (Constants.BLOG_TYPE_PRI.equals(type)) {
             // TODO 有待开发
             List<List<SysBlog>> dirLists = details.getPrivateList();
@@ -163,7 +171,7 @@ public class IndexController extends BaseController {
         }
         model.addAttribute("user", blogUser);
         model.addAttribute("title", blogUser.getName());
-        return "/blog/timeline";
+        return BLOG_TIMELINE_PAGE;
     }
 
     private String dealLayout(String layout, String type, Model model, boolean proCheckPass, BlogDetailList details, BlogUser blogUser) {
@@ -188,7 +196,7 @@ public class IndexController extends BaseController {
                 blogUser.setDirCount(details.getPubCreateYears().size());
             }
             model.addAttribute("user", blogUser);
-            return "/blog/archive";
+            return BLOG_ARCHIVE_PAGE;
         } else if (Constants.BLOG_LAYOUT_DIR.equals(layout)) {
             // 目录布局
             if (Constants.BLOG_TYPE_PRI.equals(type)) {
@@ -209,7 +217,7 @@ public class IndexController extends BaseController {
             }
             model.addAttribute("user", blogUser);
             model.addAttribute("title", blogUser.getName());
-            return "/blog/archive";
+            return BLOG_ARCHIVE_PAGE;
         }
         return null;
     }
@@ -300,7 +308,7 @@ public class IndexController extends BaseController {
         model.addAttribute("titles", details.getPubDir());
         model.addAttribute("lists", details.getPublicList());
         commonConfig(model);
-        return BLOG_INDEX + "1";
+        return BLOG_ARCHIVE_PAGE;
     }
 
     @RequiresAuthentication

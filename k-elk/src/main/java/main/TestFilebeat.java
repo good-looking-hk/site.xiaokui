@@ -14,11 +14,10 @@ public class TestFilebeat {
     public static void main(String[] args) {
         while (true) {
             try {
-                Thread.sleep(300);
+                Thread.sleep(3000);
                 log.info("info收到客户端请求" + System.currentTimeMillis());
                 log.warn("warn消息" + System.currentTimeMillis());
             } catch (InterruptedException e) {
-
             }
         }
     }

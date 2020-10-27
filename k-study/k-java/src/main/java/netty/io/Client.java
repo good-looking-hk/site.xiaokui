@@ -13,6 +13,15 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class Client {
 
+    private int number = 10;
+
+    public Client() {
+    }
+
+    public Client(int thread) {
+        this.number = thread;
+    }
+
     private void initClient(int port) throws IOException, InterruptedException {
         Socket socket = new Socket(InetAddress.getLocalHost(), port);
         PrintWriter pw = new PrintWriter(socket.getOutputStream());
@@ -30,7 +39,6 @@ public class Client {
     }
 
     public void beginTest(int port) throws InterruptedException {
-        int number = 3000;
         AtomicInteger atomicInteger = new AtomicInteger(0);
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(number, number + 10, 10, TimeUnit.SECONDS,
                 new ArrayBlockingQueue<>(number), new ThreadFactory() {
@@ -62,7 +70,7 @@ public class Client {
             });
         }
         countDownLatch.await();
-        System.out.println(number + "线程连接服务器，总耗时：" + (System.currentTimeMillis() - beginTime) + "ms");
+        System.out.println(number + "线程连接服务器，总耗时： " + (System.currentTimeMillis() - beginTime) + " ms");
         System.exit(0);
     }
 }

@@ -20,6 +20,10 @@ public class NIO {
             }
         }).start();
         Thread.sleep(1000);
-        new Client().beginTest(4444);
+        if (args.length != 0) {
+            new Client(Integer.parseInt(args[0])).beginTest(4444);
+        } else {
+            new Client().beginTest(4444);
+        }
     }
 }

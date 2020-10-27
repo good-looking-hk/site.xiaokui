@@ -21,6 +21,10 @@ public class BIO {
             }
         }).start();
         Thread.sleep(1000);
-        new Client().beginTest(2222);
+        if (args.length != 0) {
+            new Client(Integer.parseInt(args[0])).beginTest(2222);
+        } else {
+            new Client().beginTest(2222);
+        }
     }
 }
