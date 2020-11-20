@@ -13,5 +13,7 @@ public class TestBash {
         Process process = Runtime.getRuntime().exec(cmd);
         int code = process.waitFor();
         System.out.println(code);
+
+        Thread thread = new Thread();
     }
 }

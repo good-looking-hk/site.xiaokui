@@ -1,4 +1,4 @@
-package site.xiaokui.seckill.dto;
+package seckill.dto;
 
 import lombok.Data;
 import site.xiaokui.module.sys.seckill.entity.SeckillStatusEnum;

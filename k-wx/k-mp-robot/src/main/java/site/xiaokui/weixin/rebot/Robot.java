@@ -62,10 +62,14 @@ public class Robot {
         HttpRequest httpRequest = HttpRequest.post(NORMAL_MSG_URL + token).form("query", encodeStr);
         HttpResponse httpResponse = httpRequest.execute();
         JSONObject json = new JSONObject(httpResponse.body());
+        System.out.println(json);
         // 调用微信机器人出错
         if (json.get("errcode") != null || json.get("code") != null) {
             EmailService.sendToRealMe(json.toString());
-            return new TextBuilder().content("机器人正在休息中，请稍后再试").build();
+            return new TextBuilder().content("小冰冰正在休息中，请稍后再试").build();
+        }
+        if ("no access".equals(json.get("title"))) {
+            return new TextBuilder().content("小冰冰不知道说什么了，不好意思哈>_>").build();
         }
         String answerType = json.getStr("answer_type");
         String answer = json.get("answer").toString();
@@ -83,7 +87,7 @@ public class Robot {
             String songName = msgContent.getStr("song_name");
             String respTitle = msgContent.getStr("resp_title");
             return new MusicBuilder().musicUrl(url).title(singerName + " - " + songName)
-                .description("点击播放").hqMusicUrl(url).toUser(toUser).fromUser(me).build();
+                .description("\n点击播放").hqMusicUrl(url).toUser(toUser).fromUser(me).build();
         }
         else if (AnswerType.NEWS.getType().equals(answerType)) {
             WxMpXmlOutNewsMessage.Item item = new WxMpXmlOutNewsMessage.Item();

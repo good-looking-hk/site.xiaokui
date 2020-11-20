@@ -1,0 +1,14 @@
+spring:
+  resources:
+    static-locations: classpath:/static/
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    # 注意这里的GMT+8，用于解决数据库时差8问题
+    url: jdbc:mysql://localhost:3306/k-mp?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=true
+    username: root
+    password: 199710
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  redis:
+    host: localhost
+    port: 6379
+    password:

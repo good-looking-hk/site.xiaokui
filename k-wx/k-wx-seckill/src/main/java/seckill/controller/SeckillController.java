@@ -1,4 +1,4 @@
-package site.xiaokui.seckill.controller;
+package seckill.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

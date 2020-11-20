@@ -1,4 +1,4 @@
-package site.xiaokui.seckill.entity;
+package seckill.entity;
 
 import lombok.Getter;
 import lombok.Setter;

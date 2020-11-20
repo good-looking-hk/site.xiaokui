@@ -1,7 +1,6 @@
 package site.xiaokui.weixin.mp.controller;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.mp.api.WxMpMessageRouter;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -9,6 +8,12 @@ import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import site.xiaokui.base.util.DateUtil;
+import site.xiaokui.weixin.mp.entity.MsgLog;
+import site.xiaokui.weixin.mp.entity.MsgLogBuilder;
+import site.xiaokui.weixin.mp.service.MsgLogService;
+
+import java.util.Date;
 
 /**
  * @author Binary Wang(https://github.com/binarywang)
@@ -18,8 +23,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/wx/portal/{appid}")
 public class WxPortalController {
+
     private final WxMpService wxService;
     private final WxMpMessageRouter messageRouter;
+    private final MsgLogService msgLogService;
 
     @GetMapping(produces = "text/plain;charset=utf-8")
     public String authGet(@PathVariable String appid,
@@ -33,19 +40,19 @@ public class WxPortalController {
         if (StringUtils.isAnyBlank(signature, timestamp, nonce, echostr)) {
             throw new IllegalArgumentException("请求参数非法，请核实!");
         }
-
         if (!this.wxService.switchover(appid)) {
             throw new IllegalArgumentException(String.format("未找到对应appid=[%s]的配置，请核实！", appid));
         }
 
         if (wxService.checkSignature(timestamp, nonce, signature)) {
+            MsgLog msgLog = new MsgLogBuilder().fromUser("微信官方").toUser(appid).content("认证成功")
+                    .msgType("认证消息").receive(true).build();
+            msgLogService.insert(msgLog);
             return echostr;
         }
-
         return "非法请求";
     }
 
-    @Log
     @PostMapping(produces = "application/xml; charset=UTF-8")
     public String post(@PathVariable String appid,
                        @RequestBody String requestBody,
@@ -76,8 +83,18 @@ public class WxPortalController {
             }
             outMessage.setFromUserName(inMessage.getToUser());
             outMessage.setToUserName(inMessage.getFromUser());
+
+            // 记录输入日志
+            MsgLog msgLog = new MsgLogBuilder(inMessage).build();
+            msgLogService.insert(msgLog);
+
             out = outMessage.toXml();
             log.info("\n组装回复信息：{}", out);
+            System.out.println(out.toString());
+
+            // 记录输出日志
+            msgLog = new MsgLogBuilder(outMessage).build();
+            msgLogService.insert(msgLog);
             return out;
         } else if ("aes".equalsIgnoreCase(encType)) {
             // aes加密的消息

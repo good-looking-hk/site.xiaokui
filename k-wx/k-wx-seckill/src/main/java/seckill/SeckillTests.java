@@ -1,4 +1,4 @@
-package site.xiaokui.seckill;
+package seckill;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import site.xiaokui.module.sys.seckill.dto.SeckillResult;
