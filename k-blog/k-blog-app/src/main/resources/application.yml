@@ -10,6 +10,8 @@ spring:
   profiles:
     # 需要激活的profile local或remote
     active: local
+  main:
+    allow-bean-definition-overriding: true
   mvc:
     view:
       prefix: /

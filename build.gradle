@@ -9,12 +9,17 @@ buildscript {
     }
 }
 
+plugins {
+    id 'net.ltgt.apt' version '0.15'
+}
+
 subprojects {
     apply plugin: 'war'
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'net.ltgt.apt-idea'
 
     group = 'site.xiaokui'
     version = '1.0.1-SNAPSHOT'
@@ -28,6 +33,8 @@ subprojects {
     }
 
     dependencies {
+        compile("org.mapstruct:mapstruct:1.3.1.Final")
+        annotationProcessor("org.mapstruct:mapstruct-processor:1.3.1.Final")
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
     }
@@ -42,4 +49,14 @@ subprojects {
     jar {
         enabled = true
     }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs = [
+            '-Amapstruct.suppressGeneratorTimestamp=true',
+            // 默认交由spring管理，在外部可以直接使用@Autowired注入mapper
+            '-Amapstruct.defaultComponentModel=spring',
+            '-Amapstruct.suppressGeneratorVersionInfoComment=true',
+            '-Amapstruct.unmappedTargetPolicy=IGNORE'
+    ]
 }

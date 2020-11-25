@@ -1,14 +1,31 @@
+// 欢迎参观
 rootProject.name = 'newxiaokui'
+// 记录个人学习的一些代码
 include 'k-study:k-java'
+// 记录关于面试笔试的一些代码
 include 'k-study:k-offer'
 
+// 老博客模块，纯原创，开始于2017年，前后端未完全分离
+// 技术架构整体没问题，业务模块也没啥大问题，思而再三，还是决定不用了，改造适配vue工作量过大
 include 'k-blog:k-blog-user'
 include 'k-blog:k-blog-core'
 include 'k-blog:k-blog-app'
 
+// 为了界面的美化，采用前后端完全分离开发（主要是管理端，vue的界面和操作体验真是没话说）
+// 又由于后台管理的基础模板较多，这里就不在多做重复的罗轮子了
+// 基础模板借鉴自 https://github.com/elunez/eladmin，约有70%左右的代码重复量
+// 新博客模块，主要是优化用户体验
+include 'k-new-blog:eladmin-common'
+include 'k-new-blog:eladmin-system'
+include 'k-new-blog:eladmin-logging'
+include 'k-new-blog:eladmin-tool'
+include 'k-new-blog:eladmin-blog'
+
+// 基础公共模块模块
 include 'k-common:k-base-service'
 include 'k-common:k-swagger-starter'
 
+// 微服务技术栈迷你商城
 include 'k-mall:user-service'
 include 'k-mall:product-service'
 include 'k-mall:order-service'
@@ -17,20 +34,20 @@ include 'k-mall:api-gateway'
 include 'k-mall:eureka-server'
 include 'k-mall:common-api'
 
-include 'k-cloud:oauth-center'
-include 'k-cloud:oauth-center:auth-center'
-include 'k-cloud:register-center'
-include 'k-cloud:register-center:eureka-server'
-include 'k-cloud:api-gateway'
-
+// 基于netty的斗地主
 include 'k-landlords:k-landlords-client'
 include 'k-landlords:k-landlords-server'
 include 'k-landlords:k-landlords-common'
 
 // 微信公众号机器人
 include 'k-wx:k-mp-robot'
-include 'k-wx:k-red-envelope'
-include 'k-wx:k-wx-seckill'
 
-// elk + flink
+// sso oauth2 认证支持
+include 'k-cloud:oauth-center'
+include 'k-cloud:oauth-center:auth-center'
+include 'k-cloud:register-center'
+include 'k-cloud:register-center:eureka-server'
+include 'k-cloud:api-gateway'
+
+// elk + flink相关实战代码
 include 'k-elk'

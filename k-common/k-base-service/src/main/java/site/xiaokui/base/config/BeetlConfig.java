@@ -17,7 +17,7 @@ import javax.sql.DataSource;
  * @author HK
  * @date 2020-11-13 11:15
  */
-@Configuration(value = "beetlConfiguration")
+@Configuration(value = "DefaultBeetlConfiguration")
 public class BeetlConfig {
 
     @Bean(name = "datasource")
