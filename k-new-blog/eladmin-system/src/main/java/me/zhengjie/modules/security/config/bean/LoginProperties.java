@@ -38,6 +38,9 @@ public class LoginProperties {
      */
     private boolean singleLogin = false;
 
+    /**
+     * 验证码相关配置
+     */
     private LoginCode loginCode;
     /**
      * 用户登录信息缓存
@@ -64,7 +67,7 @@ public class LoginProperties {
                 loginCode.setCodeType(LoginCodeEnum.arithmetic);
             }
         }
-        return switchCaptcha(loginCode);
+        return createCaptcha(loginCode);
     }
 
     /**
@@ -73,8 +76,9 @@ public class LoginProperties {
      * @param loginCode 验证码配置信息
      * @return /
      */
-    private Captcha switchCaptcha(LoginCode loginCode) {
+    private Captcha createCaptcha(LoginCode loginCode) {
         Captcha captcha;
+        // 个人感觉这里的锁是没必要的，但保留原作者代码
         synchronized (this) {
             switch (loginCode.getCodeType()) {
                 case arithmetic:

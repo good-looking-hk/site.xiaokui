@@ -13,27 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package me.zhengjie.config.thread;
+package me.zhengjie.repository;
 
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
+import me.zhengjie.domain.GenConfig;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * 线程池配置属性类
- * @author https://juejin.im/entry/5abb8f6951882555677e9da2
- * @date 2019年10月31日14:58:18
+ * @author Zheng Jie
+ * @date 2019-01-14
  */
-@Data
-@Component
-@ConfigurationProperties(prefix = "task.pool")
-public class AsyncTaskProperties {
+public interface GenConfigRepository extends JpaRepository<GenConfig,Long> {
 
-    private int corePoolSize;
-
-    private int maxPoolSize;
-
-    private int keepAliveSeconds;
-
-    private int queueCapacity;
+    /**
+     * 查询表配置
+     * @param tableName 表名
+     * @return /
+     */
+    GenConfig findByTableName(String tableName);
 }

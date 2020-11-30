@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package me.zhengjie.config.thread;
+package me.zhengjie.config.web;
 
 import me.zhengjie.utils.SpringContextHolder;
 

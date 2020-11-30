@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * 这个类（beanName为userDetailsService），是Spring Security中整合需要的，需要实现loadUserByUsername并返回特定的用户信息
  * @author Zheng Jie
  * @date 2018-11-22
  */
@@ -52,35 +53,39 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     static Map<String, JwtUserDto> userDtoCache = new ConcurrentHashMap<>();
 
+    /**
+     * 迎合Spring的验证需要，获取用户信息
+     * @return 返回对象，为UserDetails对象，包含了Spring Security需要的一些必要信息
+     */
     @Override
     public JwtUserDto loadUserByUsername(String username) {
-        boolean searchDb = true;
-        JwtUserDto jwtUserDto = null;
+        JwtUserDto jwtUserDto;
+        // 如果走缓存，且缓存可以找得到
         if (loginProperties.isCacheEnable() && userDtoCache.containsKey(username)) {
             jwtUserDto = userDtoCache.get(username);
-            searchDb = false;
+            return jwtUserDto;
         }
-        if (searchDb) {
-            UserDto user;
-            try {
-                user = userService.findByName(username);
-            } catch (EntityNotFoundException e) {
-                // SpringSecurity会自动转换UsernameNotFoundException为BadCredentialsException
-                throw new UsernameNotFoundException("", e);
+        // 再走数据库
+        UserDto user;
+        try {
+            user = userService.findByName(username);
+        } catch (EntityNotFoundException e) {
+            // SpringSecurity会自动转换UsernameNotFoundException为BadCredentialsException
+            throw new UsernameNotFoundException("", e);
+        }
+        if (user == null) {
+            throw new UsernameNotFoundException("");
+        } else {
+            if (!user.getEnabled()) {
+                throw new BadRequestException("账号未激活！");
             }
-            if (user == null) {
-                throw new UsernameNotFoundException("");
-            } else {
-                if (!user.getEnabled()) {
-                    throw new BadRequestException("账号未激活！");
-                }
-                jwtUserDto = new JwtUserDto(
-                        user,
-                        dataService.getDeptIds(user),
-                        roleService.mapToGrantedAuthorities(user)
-                );
-                userDtoCache.put(username, jwtUserDto);
-            }
+            // 这里主要是获取用户对应的权限/菜单
+            jwtUserDto = new JwtUserDto(
+                    user,
+                    dataService.getDeptIds(user),
+                    roleService.mapToGrantedAuthorities(user)
+            );
+            userDtoCache.put(username, jwtUserDto);
         }
         return jwtUserDto;
     }

@@ -29,6 +29,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConfigBeanConfiguration {
 
+    /**
+     * 扫描配置文件中的以 login 开头的配置项，自动注入 LoginProperties 实体类，
+     * 注意，实体类的驼峰在配置映射为中划线，举例如下：loginCode -> login-code
+     */
     @Bean
     @ConfigurationProperties(prefix = "login", ignoreUnknownFields = true)
     public LoginProperties loginProperties() {
