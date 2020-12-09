@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>感谢来访</title>
+    <link href="layui/css/layui.css" rel="stylesheet"/>
+    <style>
+        .layui-card-header {
+            display: block;
+            color: green;
+            font-size: 16px;
+            font-weight: bold;
+            height: 38px;
+        }
+        .layui-card-header a {
+            display: block
+        }
+        .layui-card-body {
+            padding-bottom: 0;
+        }
+
+        .layui-card-body p {
+            margin-bottom: 7px;
+        }
+
+        .layui-card {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid grey;
+        }
+        a {
+            color: #5B995B;
+        }
+        .no-hover a:hover {
+            color: #5B995B;
+            cursor: default;
+        }
+        .layui-card-body a:hover {
+            cursor: pointer;
+        }
+        .p1 {
+            margin: 2px auto 3px 25px;
+        }
+        .p2 {
+            margin-top: 20px;
+        }
+        .bottomDiv {
+            text-align: center;
+            width: 800px;
+            margin:5px auto 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-main" style="margin-top: 3%;">
+
+    <h1>您好！ 请问您对以下哪项最感兴趣：</h1>
+    <hr>
+    <div class="layui-row layui-col-space25">
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <a href="https://blog.xiaokui.site" title="访问我的个人博客" target="_blank">个人博客</a>
+                </div>
+                <div class="layui-card-body">
+                    <p>本人自2017年6月写第一篇博客开始，至今已有近3年博客创作历史，
+                        里面包含了个人对于编程技术学习的记录、探讨、研究，每篇都经过反复的修改，不乏精华之作。
+                    </p>
+                    <p>博客总数约70余篇，不多，相比较于收获别人认同的博客大咖、知乎名人，我更喜欢独享创作完后的那种豁然开朗、喜悦，甚至情有独钟当时那一股从头部散发至颈部的电流。</p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <a href="https://blog.xiaokui.site/blog/good-looking-hk/search?key=Spring%E6%BA%90%E7%A0%81" title="点击查看详情" target="_blank">精通Spring</a>
+                </div>
+                <div class="layui-card-body">
+                    <p>本人自2017年12月份开始看Spring源码，至今仍在不断学习。
+                        中间断断停停，这一路下来过程也算比较崎岖。
+                    </p>
+                    <p>关于Spring源码的阅读，主要分为两个阶段。一是2017年年底的泛读，把Spring的大致原理看得差不多就没看了。
+                        二是2020年年初的精读，发现对Spring的理解不能停留在表面，不能停留在理论，应该再更加深入了解一层，所幸获益匪浅。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space25">
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <a href="https://blog.xiaokui.site/blog/good-looking-hk?type=pro&passwd=黄葵" target="_blank" title="包含个人工作至今的一点文字">业务/工作小结</a>
+                </div>
+                <div class="layui-card-body">
+                    <p>里面包含了个人毕业这一年来对于工作中的一点小结，主要分为业务层面和代码层面，内容不多，就不单独开个页面了，如下</p>
+                    <p class="p1" style="margin-top: 18px;"><a href="https://blog.xiaokui.site/blog/good-looking-hk/%E9%87%91%E5%BE%AE%E8%93%9D/%E5%B0%8F%E9%A2%9D%E6%94%AF%E4%BB%98%E4%B8%9A%E5%8A%A1%E6%80%BB%E7%BB%93" target="_blank">小额支付业务总结</a></p>
+                    <p class="p1"><a target="_blank" href="https://blog.xiaokui.site/blog/good-looking-hk/%E9%87%91%E5%BE%AE%E8%93%9D/%E7%A7%AF%E5%88%86%E4%B8%AD%E5%BF%83%E4%B8%9A%E5%8A%A1%E6%80%BB%E7%BB%93">积分中心业务总结</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <a href="https://github.com/good-looking-hk" target="_blank" title="有待完善">开源项目</a>
+                </div>
+                <div class="layui-card-body">
+                    <p>主要包含开源项目的说明、演示以及源码，大致包含以下以下几大块（有待完善）：</p>
+                    <p class="p1">1、小葵博客平台、微信公众号、公众号机器人</p>
+                    <p class="p1">2、在线文件服务器/<a href="https://s.xiaokui.site" target="_blank" title="点击访问">短链接转换</a></p>
+                    <p class="p1">3、迷你QQ、在线音乐平台、俄罗斯方块</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space25">
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <a href="https://blog.xiaokui.site/blog/good-looking-hk/user?name=假如我是面试官" title="假如我是面试官" target="_blank">假如我是面试官**</a>
+                </div>
+                <div class="layui-card-body">
+                    <p>暂时让 您 作为局外人，从另一个角度观察我，没准能帮 您 省下不少时间。假如我是面试官的话：</p>
+                    <p class="p1">
+                        我可能会问以下问题....
+                    </p>
+                    <p class="p1">
+                        我可能希望面试者能这样回答....
+                    </p>
+                    <p class="p1">
+                        我可能就是这么菜~ ~ ~
+                    </p>
+                </div>
+            </div>
+        </div>
+<!--        <div class="layui-col-md6">-->
+<!--            <div class="layui-card">-->
+<!--                <div class="layui-card-header">-->
+<!--                    <a href="https://blog.xiaokui.site/blog/good-looking-hk/user?name=%E7%AE%80%E5%8E%86" title="完整版简历" target="_blank">完整版简历</a>-->
+<!--                </div>-->
+<!--                <div class="layui-card-body">-->
+<!--                    <p class="p2">麻烦 您 了，这是 <a href="https://blog.xiaokui.site/blog/good-looking-hk/user?name=%E7%AE%80%E5%8E%86" title="完整版简历" target="_blank">完整版简历</a>，-->
+<!--                        这是之前的 <a href="https://blog.xiaokui.site/blog/good-looking-hk/user?name=%E7%AE%80%E5%8E%86" title="简易版简历" target="_blank">简易版简历</a>。-->
+<!--                    </p>-->
+<!--                    <p class="p2">茫茫人海，相逢即是缘，真的很希望将来有机会能与 您 共事，感谢阅读，谢谢！</p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+    </div>
+</div>
+
+<div style="margin-top: 40px">
+    <div class="bottomDiv">
+        <p>        <a href="https://blog.xiaokui.site/web/nginx?type=access" target="_blank">nginx访问日志</a>、
+            <!--        <a href="https://blog.xiaokui.site/web/nginx?type=error" target="_blank">nginx错误日志</a>、-->
+            <a href="https://blog.xiaokui.site/web/log?key=199710" target="_blank">本网站日志</a>、
+            <a href="https://hb.xiaokui.site/">后备:https://hb.xiaokui.site</a>
+        </p>
+        <p style="margin-top: 5px;"> <a>佛系少年，在线随缘，每周一更，QQ467914950</a></p>
+    </div>
+    <div class="bottomDiv">
+        <a href="http://www.beian.miit.gov.cn">湘ICP备17005816号</a>
+    </div>
+</div>
+
+<script src="jquery/jquery.min.js"></script>
+<script src="layui/layui.js"></script>
+<div hidden>
+    <script src="https://s13.cnzz.com/z_stat.php?id=1264398488&web_id=1264398488"></script>
+</div>
+</body>
+</html>

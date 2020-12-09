@@ -1,0 +1,10 @@
+### 增加博客
+POST http://localhost:8000/api/sysBlog
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiIzMmE2M2Q1NDdmMTc0NDY2OTcwMWI1YjhhYzkzMWQzZiIsInN1YiI6ImFkbWluIn0.kTHwrfM48Y_qihnygB5GZ36L4uo3-jSkB9EoyO_-rWuyCRN2QBlBxWL1qLneKLXzMAk_jxRKMiqrAKClCwkfmg
+
+{
+  "id": 199,
+  "dir": "33",
+  "title": "33"
+}

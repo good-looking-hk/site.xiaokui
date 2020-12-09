@@ -63,5 +63,10 @@ public class UserDto extends BaseDTO implements Serializable {
     @JsonIgnore
     private Boolean isAdmin = false;
 
+    private String blogSpace;
+
+    @JsonIgnore
+    private String blogPwd;
+
     private Date pwdResetTime;
 }

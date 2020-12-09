@@ -31,12 +31,11 @@ import me.zhengjie.modules.security.config.bean.LoginProperties;
 import me.zhengjie.modules.security.config.bean.SecurityProperties;
 import me.zhengjie.modules.security.security.TokenProvider;
 import me.zhengjie.modules.security.service.OnlineUserService;
+import me.zhengjie.modules.security.service.UserCacheClean;
 import me.zhengjie.modules.security.service.dto.AuthUserDto;
 import me.zhengjie.modules.security.service.dto.JwtUserDto;
-import me.zhengjie.utils.RedisUtils;
-import me.zhengjie.utils.RsaUtils;
-import me.zhengjie.utils.SecurityUtils;
-import me.zhengjie.utils.StringUtils;
+import me.zhengjie.modules.system.domain.User;
+import me.zhengjie.utils.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -71,6 +70,7 @@ public class AuthorizationController {
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final LoginProperties loginProperties;
+    private final UserCacheClean userCacheClean;
 
     @ApiOperation("登录授权")
     @AnonymousPostMapping(value = "/login")
@@ -146,7 +146,13 @@ public class AuthorizationController {
     @ApiOperation("退出登录")
     @AnonymousDeleteMapping(value = "/logout")
     public ResponseEntity<Object> logout(HttpServletRequest request) {
-        onlineUserService.logout(tokenProvider.getToken(request));
+        try {
+            userCacheClean.cleanUserCache(SecurityUtils.getCurrentUsername());
+            redisUtils.del(CacheKey.USER_NAME + SecurityUtils.getCurrentUsername());
+            onlineUserService.logout(tokenProvider.getToken(request));
+        } catch (Exception e) {
+            // ignore
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

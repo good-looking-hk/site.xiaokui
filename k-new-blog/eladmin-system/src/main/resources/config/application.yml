@@ -2,12 +2,20 @@ server:
   port: 8000
 
 spring:
-  freemarker:
-    check-template-location: false
   profiles:
     active: dev
+  freemarker:
+    check-template-location: false
+#  jackson:
+#    serialization:
+#      write-dates-as-timestamps: false
+#    date-format: yyyy-MM-dd HH:mm:ss
+#    time-zone: GMT+8
   jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
   data:
     redis:
       repositories:
@@ -29,6 +37,38 @@ spring:
     password: ${REDIS_PWD:}
     #连接超时时间
     timeout: 5000
+
+xiaokui:
+  # 最多访问数量
+  most-view: 8
+  # 最近上传数量
+  recent-upload: 0
+  # 最近上传数量
+  recent-update: 8
+  # 推荐数量
+  recommend-count: 16
+  # 单个IP单日对单篇博客最大贡献访问量
+  single-ip-contribute-blog: 5
+  # 单个IP单日对所有博客最大贡献访问量
+  single-ip-contribute--all-blog: 20
+  # 单个用户单日对单篇博客最大贡献访问量
+  single-user-contribute-blog: 20
+  # 单个用户单日对所有博客最大贡献访问量，两个限制条件不冲突
+  single-user-contribute--all-blog: 40
+
+  basePath: /xiaokui/
+  # 静态资源路径
+  staticLibPath: ${xiaokui.basePath}lib/
+  # 博客上传路径
+  blogUploadPath: ${xiaokui.basePath}upload/
+  # 音乐保存目录
+  blogMusicPath: ${xiaokui.basePath}music/
+  # 头像上传目录
+  avatarUploadPath: ${xiaokui.basePath}avatar/
+  # 系统日志目的地
+  logsPath: ${xiaokui.basePath}logs/
+  # 日志文件名
+  logName: remote.log
 
 task:
   pool:

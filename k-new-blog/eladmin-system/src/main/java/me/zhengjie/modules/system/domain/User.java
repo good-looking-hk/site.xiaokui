@@ -101,6 +101,14 @@ public class User extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "是否为admin账号", hidden = true)
     private Boolean isAdmin = false;
 
+    @Column(name = "blog_space")
+    @ApiModelProperty(value = "博客空间")
+    private String blogSpace;
+
+    @Column(name = "blog_pwd")
+    @ApiModelProperty(value = "受保护博客访问密码", hidden = true)
+    private String blogPwd;
+
     @Column(name = "pwd_reset_time")
     @ApiModelProperty(value = "最后修改密码的时间", hidden = true)
     private Date pwdResetTime;

@@ -33,6 +33,18 @@ import java.util.Set;
 public interface UserService {
 
     /**
+     * 获取系统内首位注册用户信息
+     * @return /
+     */
+    UserDto getFirstUser();
+
+    /**
+     * 根据博客空间名查找用户
+     * @return /
+     */
+    UserDto getUserByBlogSpace(String blogSpace);
+
+    /**
      * 根据ID查询
      * @param id ID
      * @return /

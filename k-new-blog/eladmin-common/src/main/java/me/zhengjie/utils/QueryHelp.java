@@ -33,6 +33,12 @@ import java.util.*;
 @SuppressWarnings({"unchecked","all"})
 public class QueryHelp {
 
+    /**
+     * 原作者对于jpa中动态sql语句的具体实现的解析代码，非常重要的一段代码
+     * @param root /
+     * @param query 查询实体类信息，这个是变的
+     * @param cb /
+     */
     public static <R, Q> Predicate getPredicate(Root<R> root, Q query, CriteriaBuilder cb) {
         List<Predicate> list = new ArrayList<>();
         if(query == null){
@@ -53,6 +59,7 @@ public class QueryHelp {
             }
         }
         try {
+            // 获取查询字段信息
             List<Field> fields = getAllFields(query.getClass(), new ArrayList<>());
             for (Field field : fields) {
                 boolean accessible = field.isAccessible();
@@ -193,6 +200,9 @@ public class QueryHelp {
         return true;
     }
 
+    /**
+     * 获取类及其父类上声明的查询字段信息
+     */
     public static List<Field> getAllFields(Class clazz, List<Field> fields) {
         if (clazz != null) {
             fields.addAll(Arrays.asList(clazz.getDeclaredFields()));

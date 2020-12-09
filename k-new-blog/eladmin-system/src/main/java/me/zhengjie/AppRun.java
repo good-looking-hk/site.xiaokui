@@ -15,18 +15,27 @@
  */
 package me.zhengjie;
 
+import cn.hutool.core.util.StrUtil;
 import io.swagger.annotations.Api;
+import me.zhengjie.annotation.AnonymousAccess;
 import me.zhengjie.annotation.rest.AnonymousGetMapping;
 import me.zhengjie.utils.SpringContextHolder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import site.xiaokui.CacheCenter;
+
+import static org.springframework.boot.web.servlet.DispatcherType.FORWARD;
 
 /**
  * 开启审计功能 -> @EnableJpaAuditing
@@ -37,7 +46,9 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableAsync
 @RestController
 @Api(hidden = true)
-@SpringBootApplication
+@EnableJpaRepositories(basePackages = {"me.zhengjie", "site.xiaokui"})
+@EntityScan(basePackages = {"me.zhengjie", "site.xiaokui"})
+@SpringBootApplication(scanBasePackages = {"me.zhengjie", "site.xiaokui"})
 @EnableTransactionManagement
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 public class AppRun {
@@ -56,15 +67,5 @@ public class AppRun {
         TomcatServletWebServerFactory fa = new TomcatServletWebServerFactory();
         fa.addConnectorCustomizers(connector -> connector.setProperty("relaxedQueryChars", "[]{}"));
         return fa;
-    }
-
-    /**
-     * 访问首页提示
-     *
-     * @return /
-     */
-    @AnonymousGetMapping("/")
-    public String index() {
-        return "Backend service started successfully";
     }
 }

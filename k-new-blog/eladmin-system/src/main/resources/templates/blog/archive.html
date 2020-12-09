@@ -1,0 +1,23 @@
+@include("/blog/_header.html"){}
+
+<div style="margin-top: 30px;">
+    <center>本页共 ${user.pageTotal} 篇，分为 ${user.dirCount} 个系列展示</center>
+</div>
+
+<div class="layui-main main-container">
+    @if (isNotEmpty(lists) && isNotEmpty(titles)) {
+    <ul>
+        @for (list in lists) {
+        <h3 style="clear: both;margin: 0;padding: 15px 0 5px;">${titles[listLP.index - 1]}</h3>
+        @for (blog in list) {
+        <li style="width:50%;margin:9px 0;float:left;padding-right:5px;">
+            ${blog.createTime, "yyyy-MM-dd"}
+            <a target="_blank" href="${ctxPath + blog.blogPath}">${blog.dir}：${blog.title}</a>
+        </li>
+        @}
+        @}
+    </ul>
+    @}
+</div>
+@include("/blog/_common_nav.html"){}
+@include("/blog/_footer.html"){}

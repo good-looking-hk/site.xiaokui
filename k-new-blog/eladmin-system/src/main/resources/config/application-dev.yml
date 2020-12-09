@@ -1,3 +1,5 @@
+debug: true
+
 #配置数据源
 spring:
   datasource:
@@ -103,8 +105,8 @@ file:
     path: ~/file/
     avatar: ~/avatar/
   linux:
-    path: /home/eladmin/file/
-    avatar: /home/eladmin/avatar/
+    path: /xiaokui/file/
+    avatar: /xiaokui/avatar/
   windows:
     path: C:\eladmin\file\
     avatar: C:\eladmin\avatar\

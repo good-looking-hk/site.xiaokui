@@ -102,10 +102,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 静态资源等等
                 .antMatchers(
                         HttpMethod.GET,
+                        "/",
+                        "/index",
+                        "/test",
                         "/*.html",
                         "/**/*.html",
                         "/**/*.css",
                         "/**/*.js",
+                        "/**/*.woff",
+                        "/**/*.ttf",
+                        "/**/*.png",
+                        "/**/*.jpg",
+                        "/**/*.gif",
+                        "/**/*.ico",
+                        "/**/*.mp3",
                         "/webSocket/**"
                 ).permitAll()
                 // swagger 文档
@@ -118,6 +128,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/file/**").permitAll()
                 // 阿里巴巴 druid
                 .antMatchers("/druid/**").permitAll()
+                // 博客服务
+                .antMatchers("/blog/**").permitAll()
                 // 放行OPTIONS请求
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 // 自定义匿名访问所有url放行：允许匿名和带Token访问，细腻化到每个 Request 类型

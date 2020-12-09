@@ -13,6 +13,8 @@ import site.xiaokui.base.controller.BaseController;
 import site.xiaokui.base.util.StringUtil;
 import site.xiaokui.blog.CacheCenter;
 
+import java.util.Date;
+
 /**
  * 项目根控制器，匹配 /*
  * @author HK
@@ -79,5 +81,11 @@ public class RootController extends BaseController {
         } else if ("2".equals(id)) {
         }
         return ERROR;
+    }
+
+    @GetMapping("/test")
+    @ResponseBody
+    public Date test(Model model, String id) {
+        return new Date();
     }
 }
