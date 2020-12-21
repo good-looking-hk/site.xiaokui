@@ -71,6 +71,7 @@ $(function () {
     // }
 
     var obj = countChars();
+    console.error(obj)
     var minute = (parseInt(obj.中英文单词数) / 493).toFixed(1);
     if (minute > 25) {
         minute -= 5.5;

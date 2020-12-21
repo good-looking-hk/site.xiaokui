@@ -5,6 +5,7 @@ import org.beetl.core.resource.*;
 import org.beetl.ext.spring.BeetlGroupUtilConfiguration;
 import org.beetl.ext.spring.BeetlSpringViewResolver;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,7 @@ import javax.sql.DataSource;
  * @author HK
  * @date 2020-11-13 11:15
  */
+@ConditionalOnMissingBean(name = "beetlConfiguration")
 @Configuration(value = "DefaultBeetlConfiguration")
 public class BeetlConfig {
 

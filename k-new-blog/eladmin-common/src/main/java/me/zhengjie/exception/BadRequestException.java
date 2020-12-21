@@ -22,7 +22,7 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 /**
  * @author Zheng Jie
  * @date 2018-11-23
- * 统一异常处理
+ * 统一异常处理，非严重异常，无需记录日志
  */
 @Getter
 public class BadRequestException extends RuntimeException{

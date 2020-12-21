@@ -22,7 +22,7 @@ subprojects {
     apply plugin: 'net.ltgt.apt-idea'
 
     group = 'site.xiaokui'
-    version = '1.0.1-SNAPSHOT'
+    version = 'v2.0'
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 

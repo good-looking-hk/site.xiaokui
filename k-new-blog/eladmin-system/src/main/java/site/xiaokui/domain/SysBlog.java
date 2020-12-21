@@ -1,40 +1,39 @@
 /*
-*  Copyright 2019-2020 Zheng Jie
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*  http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*/
+ *  Copyright 2019-2020 Zheng Jie
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package site.xiaokui.domain;
 
-import lombok.Data;
 import cn.hutool.core.bean.BeanUtil;
-import io.swagger.annotations.ApiModelProperty;
 import cn.hutool.core.bean.copier.CopyOptions;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
 import javax.persistence.*;
-import javax.validation.constraints.*;
-import java.sql.Timestamp;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Date;
 
 /**
-* @website https://el-admin.vip
-* @description /
-* @author hk
-* @date 2020-12-01
-**/
+ * @author hk
+ * @website https://el-admin.vip
+ * @description /
+ * @date 2020-12-01
+ **/
 @Entity
 @Data
-@Table(name="sys_blog")
+@Table(name = "sys_blog")
 public class SysBlog implements Serializable {
 
     @Id
@@ -115,8 +114,8 @@ public class SysBlog implements Serializable {
 
     private transient Integer recommendValue;
 
-    public void copy(SysBlog source){
-        BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
+    public void copy(SysBlog source) {
+        BeanUtil.copyProperties(source, this, CopyOptions.create().setIgnoreNullValue(true));
     }
 
     /**
@@ -147,6 +146,7 @@ public class SysBlog implements Serializable {
      */
     public static class DateComparator implements Comparator<SysBlog> {
         private boolean orderByCreateTime = true;
+
         public DateComparator(boolean orderByCreateTimeNotByUpdateTime) {
             this.orderByCreateTime = orderByCreateTimeNotByUpdateTime;
         }
@@ -180,10 +180,10 @@ public class SysBlog implements Serializable {
     /**
      * 推荐值比较器，具体算法思路大致如下：创建时间影响占比0.1、总阅读量占比0.35、昨日阅读量占比0.15，更新时间占比0.4
      * 如果该项没有值则忽略，假设有如下数据
-     *     序号 名称 创建时间 更新时间 昨日阅读量 总阅读量
-     *     1   博客1 20200101 20200102 10    100
-     *     2   博客2 20200202 20200220 200   200
-     *     3   博客3 20200301 20200311 2     3
+     * 序号 名称 创建时间 更新时间 昨日阅读量 总阅读量
+     * 1   博客1 20200101 20200102 10    100
+     * 2   博客2 20200202 20200220 200   200
+     * 3   博客3 20200301 20200311 2     3
      */
     public static class RecommendComparator implements Comparator<SysBlog> {
         @Override
@@ -239,7 +239,7 @@ public class SysBlog implements Serializable {
         if (this.getCharacterCount() != null) {
             characterValue = (double) this.characterCount / 650 + 2;
         }
-        double value = 1150 - createTimeValue  - (updateTimeValue * 49) + yesterdayValue + viewCountValue + characterValue;
+        double value = 1150 - createTimeValue - (updateTimeValue * 49) + yesterdayValue + viewCountValue + characterValue;
         if (this.title.contains("**")) {
             value += 500;
         } else if (this.title.contains("*")) {

@@ -5,10 +5,12 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
+import me.zhengjie.exception.ErrorRequestException;
 import org.springframework.web.multipart.MultipartFile;
 import site.xiaokui.domain.BlogDetailList;
 import site.xiaokui.domain.SysBlog;
 import site.xiaokui.domain.UploadBlog;
+import site.xiaokui.domain.WordCounter;
 
 import java.io.*;
 import java.util.Date;
@@ -110,68 +112,62 @@ public class BlogUtil {
         if (blog.getErrorInfo() != null) {
             return blog;
         }
-        BufferedReader reader = null;
-        BufferedWriter writer = null;
         boolean isSuccess = false;
-        File targetFile = null, mdFile = null;
+        File targetFile = null, mdFile;
         try {
-            /// 留作测试用的InputStreamReader inputFileReader = new InputStreamReader(new FileInputStream(upload), "UTF-8");
-            InputStreamReader inputFileReader = new InputStreamReader(upload.getInputStream(), "UTF-8");
-            reader = new BufferedReader(inputFileReader);
-            // 调用Spring
+            // 创建html目标文件
             targetFile = BlogFileHelper.getInstance().createTempFile(userId, blog.getName() + HTML_SUFFIX);
-
-            mdFile = BlogFileHelper.getInstance().locateFile(userId, "$md", fullName);
-            if (!mdFile.exists()) {
-                mdFile.createNewFile();
-            }
-            // md文件备份
-            BlogFileHelper.getInstance().saveInputStream(upload.getInputStream(), mdFile);
-
             if (targetFile == null) {
                 throw new RuntimeException("创建文件失败：" + fullName);
             }
+            // 目标文件输入流
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(targetFile), "UTF-8");
-            writer = new BufferedWriter(outputStreamWriter);
-            boolean startFlag = false;
+            BufferedWriter writer = new BufferedWriter(outputStreamWriter);
 
-            // 对上传html文件的处理，以后可能会被抛弃
-            if (HTML_SUFFIX.equals(blog.getSuffix())) {
-                String str;
-                while ((str = reader.readLine()) != null) {
-                    if (!startFlag) {
-                        if (str.startsWith("<body")) {
-                            startFlag = true;
-                        }
-                    } else {
-                        writer.write(str);
-                    }
+            // 创建临时文件，将上传流保存
+            mdFile = BlogFileHelper.getInstance().locateFile(userId, "$md", fullName);
+            if (!mdFile.exists()) {
+                if (!mdFile.createNewFile()) {
+                    throw new RuntimeException("创建文件失败:" + mdFile.getAbsolutePath());
                 }
-                writer.flush();
-                isSuccess = true;
-                blog.setUploadFile(targetFile);
-            } else if (MD_SUFFIX.equals(blog.getSuffix()) && upload.getSize() < MAX_BLOG_UPLOAD_FILE) {
+            }
+            // md文件备份
+            upload.transferTo(mdFile);
+            // 本地文件流，需要读两次，一次转换html，一次统计字数
+            InputStreamReader inputFileReader = new InputStreamReader(new FileInputStream(mdFile), "UTF-8");
+            if (MD_SUFFIX.equals(blog.getSuffix())) {
                 MarkDownParser.ParseData data = MarkDownParser.PARSER.parse(inputFileReader);
                 if (data.getHtmlStr() != null) {
                     writer.write(data.getHtmlStr());
                     writer.flush();
-                    isSuccess = true;
-                    // 字数统计，近似值
-                    int charCount = (int) UploadBlog.determineCharCount(data.getTextLength());
-                    blog.setCharacterCount(charCount);
+                    writer.close();
+                    inputFileReader.close();
                     blog.setUploadFile(targetFile);
+
                 }
-            } else if (MD_SUFFIX.equals(blog.getSuffix()) && upload.getSize() >= MAX_BLOG_UPLOAD_FILE) {
-                // 后台开个线程执行，异步返回结果
-                // TODO
+                // 再读一次流
+                inputFileReader = new InputStreamReader(new FileInputStream(mdFile), "UTF-8");
+                BufferedReader reader = new BufferedReader(inputFileReader);
+                String str;
+                WordCounter total = new WordCounter(0, 0, 0, 0);
+                while ((str = reader.readLine()) != null) {
+                    WordCounter temp = MarkdownWordCounter.calcWordCount(str);
+                    total.chineseCount += temp.chineseCount;
+                    total.englishCount += temp.englishCount;
+                    total.numberCount += temp.numberCount;
+                    total.otherCount += temp.otherCount;
+                }
+                blog.setWordCounter(total);
+                inputFileReader.close();
+                isSuccess = true;
+                blog.setUploadFile(targetFile);
             }
             log.info("上传目标文件地址为：" + targetFile);
         } catch (IOException e) {
             e.printStackTrace();
             log.error("文件读取/写入失败，目标文件信息:{}，失败信息:{}, blog信息:{}", targetFile, e.getMessage(), blog);
         } finally {
-            closeStream(reader, writer);
-            if (!isSuccess && targetFile != null && !targetFile.delete()) {
+            if (!isSuccess) {
                 System.out.println("转换失败，删除上传转存的的文件");
             }
         }
@@ -217,7 +213,7 @@ public class BlogUtil {
             if (arr.length != 2 || arr[0].length() != 8 || !NumberUtil.isInteger(arr[0])) {
                 throw new RuntimeException("不合法文件名：" + fullName + blog.getSuffix());
             }
-            blog.setCreateTime(DateUtil.parse(arr[0]));
+            blog.setCreateDate(Integer.parseInt(arr[0]));
             blog.setName(arr[1]);
             return blog;
         }
@@ -258,8 +254,8 @@ public class BlogUtil {
             return blog;
         }
         blog.setName(fullName);
-        if (blog.getCreateTime() == null) {
-            blog.setCreateTime(new Date());
+        if (blog.getCreateDate() == null) {
+            blog.setCreateDate(me.zhengjie.utils.DateUtil.parseIntDate(new Date()));
         }
         return blog;
     }
@@ -274,12 +270,11 @@ public class BlogUtil {
         if (str.length() == 8 && str.startsWith("20")) {
             Date date;
             try {
-                date = DateUtil.parse(str, DatePattern.PURE_DATE_PATTERN);
+                blog.setCreateDate(Integer.parseInt(str));
             } catch (Exception e) {
                 blog.setErrorInfo("非法日期：" + str);
                 return;
             }
-            blog.setCreateTime(date);
         } else if ((str.length() < 3)) {
             // 规定最大序号不超过99
             int orderNumb;

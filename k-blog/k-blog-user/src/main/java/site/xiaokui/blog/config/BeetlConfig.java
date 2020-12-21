@@ -35,6 +35,7 @@ public class BeetlConfig {
         return ds;
     }
 
+    @Primary
     @Bean(name = "beetlConfig")
     public BeetlGroupUtilConfiguration getBeetlGroupUtilConfiguration(@Value("${xiaokui.blogUploadPath}") String blogUploadPath) {
         BeetlGroupUtilConfiguration beetlGroupUtilConfiguration = new BeetlUtilConfig();

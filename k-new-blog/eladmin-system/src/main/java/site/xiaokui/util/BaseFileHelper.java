@@ -66,7 +66,7 @@ public abstract class BaseFileHelper {
             }
         } catch (IOException e) {
             // 可能是权限不足
-            e.printStackTrace();
+            throw new RuntimeException(e.getCause());
         }
         return file;
     }

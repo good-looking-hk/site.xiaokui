@@ -58,11 +58,11 @@ public class BlogDetailList {
             while (it.hasNext()) {
                 SysBlog blog = it.next();
                 blog.setBlogPath(BlogUtil.getBlogPath(blog.getDir(), blog.getFileName(), blogSpace));
-                if (blog.getStatus() == BlogTypeEnum.PUBLIC.getCode()) {
+                if (BlogTypeEnum.PUBLIC.getCode().equals(blog.getBlogType())) {
                     handlePublic(blog, pubTemp);
-                } else if (blog.getStatus() == BlogTypeEnum.PROTECTED.getCode()) {
+                } else if (BlogTypeEnum.PROTECTED.getCode().equals(blog.getBlogType())) {
                     handleProtected(blog, proTemp);
-                } else if (blog.getStatus() == BlogTypeEnum.PRIVATE.getCode()) {
+                } else if (BlogTypeEnum.PRIVATE.getCode().equals(blog.getBlogType())) {
                     handlePrivate(blog, priTemp);
                 }
             }

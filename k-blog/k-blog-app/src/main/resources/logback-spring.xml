@@ -3,7 +3,7 @@
 <configuration sacn="false" debug="false">
     <!--该文件位于org.springframework.boot.logging.logback下，是spring的默认配置-->
     <include resource="org/springframework/boot/logging/logback/defaults.xml" />
-    <!--引入spring boot默认的console和file appender-->
+    <!--引入spring boot默认的 console和file appender-->
     <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
     <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
 

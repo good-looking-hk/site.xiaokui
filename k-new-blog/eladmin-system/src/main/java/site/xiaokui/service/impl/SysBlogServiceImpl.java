@@ -2,6 +2,8 @@ package site.xiaokui.service.impl;
 
 import cn.hutool.core.date.DateUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import me.zhengjie.exception.ErrorRequestException;
 import me.zhengjie.utils.FileUtil;
 import me.zhengjie.utils.PageUtil;
 import me.zhengjie.utils.QueryHelp;
@@ -12,7 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import site.xiaokui.domain.SysBlog;
+import org.springframework.web.multipart.MultipartFile;
+import site.xiaokui.domain.*;
 import site.xiaokui.repository.SysBlogRepository;
 import site.xiaokui.service.BaseService;
 import site.xiaokui.service.BlogCacheService;
@@ -20,19 +23,25 @@ import site.xiaokui.service.SysBlogService;
 import site.xiaokui.service.dto.SysBlogDto;
 import site.xiaokui.service.dto.SysBlogQueryCriteria;
 import site.xiaokui.service.mapstruct.SysBlogMapper;
+import site.xiaokui.util.BlogFileHelper;
+import site.xiaokui.util.BlogUtil;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+import static site.xiaokui.Constants.HTML_SUFFIX;
+
 /**
- * @author hk
+ * @author HK
  * @date 2020-12-01
  **/
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SysBlogServiceImpl extends BaseService<SysBlog> implements SysBlogService {
@@ -40,6 +49,7 @@ public class SysBlogServiceImpl extends BaseService<SysBlog> implements SysBlogS
     private final SysBlogRepository sysBlogRepository;
     private final SysBlogMapper sysBlogMapper;
     private final BlogCacheService blogCacheService;
+    private final SysBlogWordServiceImpl blogWordService;
 
     public int getViewCountFromRedis(Long userId, Long blogId) {
         return blogCacheService.getViewCount(userId, blogId);
@@ -120,6 +130,69 @@ public class SysBlogServiceImpl extends BaseService<SysBlog> implements SysBlogS
             return null;
         }
         return list.get(0);
+    }
+
+    public UploadBlog saveTemp(MultipartFile file, Long userId, boolean isBlog) {
+        return BlogUtil.resolveUploadFile(file, userId, isBlog);
+    }
+
+    public SysBlog findBlog(Long userId, String dir, String fileName) {
+        SysBlog sysBlog = new SysBlog();
+        sysBlog.setUserId(userId);
+        sysBlog.setDir(dir);
+        sysBlog.setFileName(fileName);
+        return matchOne(sysBlog);
+    }
+
+    /**
+     * @return 是否为新增
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public boolean saveBlog(SysBlog blog, SysBlogWord sysBlogWord) {
+        Long userId = blog.getUserId();
+        File file = BlogFileHelper.getInstance().findTempFile(userId, blog.getFileName() + HTML_SUFFIX);
+        if (file == null) {
+            log.error("系统找不到文件指定文件（userId={}，SysBlog={}", userId, blog);
+            throw new ErrorRequestException("请先上传文件");
+        }
+        // 先处理文件的逻辑，该文件地址是否已经已经存在，如果存在则替换，反之则新建
+        File targetFile = BlogFileHelper.getInstance().locateFile(userId, blog.getDir(), blog.getFileName() + HTML_SUFFIX);
+        if (targetFile.exists() && !targetFile.delete()) {
+            throw new RuntimeException("删除原有文件失败");
+        }
+        // 如果文件地址未被占用，则移动文件
+        if (!targetFile.exists() && !file.renameTo(targetFile)) {
+            throw new RuntimeException("转存文件文件失败：" + targetFile.getName());
+        }
+
+        boolean isInsert = false;
+        // 再处理数据库的逻辑，数据库是否已存在记录，存在则更新，反之则新建
+        SysBlog origin = findBlog(userId, blog.getDir(), blog.getFileName());
+        if (origin != null) {
+            // 如果博客信息已经存在，需要在数据库更新信息，即使源文件已存在
+            SysBlog temp = new SysBlog();
+            temp.setId(origin.getId());
+            temp.setCreateTime(blog.getCreateTime());
+            temp.setCharacterCount(sysBlogWord.getChineseCount() + sysBlogWord.getEnglishCount());
+            temp.setUpdateTime(blog.getUpdateTime());
+            this.updateByIdIgnoreNull(temp);
+        } else {
+            this.insertIgnoreNullReturnKey(blog);
+            origin = blog;
+            isInsert = true;
+        }
+
+        sysBlogWord.setBlogId(origin.getId());
+        // 最后再处理博客字数的逻辑
+        if (blogWordService.getById(sysBlogWord.getBlogId()) == null) {
+            blogWordService.insert(sysBlogWord);
+        } else {
+            System.out.println(sysBlogWord.toString());
+            blogWordService.updateById(sysBlogWord);
+        }
+        // 清除博客信息缓存
+        BlogUtil.clearBlogCache(userId);
+        return isInsert;
     }
 
     /**
@@ -209,7 +282,7 @@ public class SysBlogServiceImpl extends BaseService<SysBlog> implements SysBlogS
         }).start();
         // Specification使用lambda简写示例，说句老实话，我宁愿多写一点代码
         // 虽然习惯之后是挺简洁的，但第一次看，一脸懵逼
-        SysBlogServiceImpl service = new SysBlogServiceImpl(null, null, null);
+        SysBlogServiceImpl service = new SysBlogServiceImpl(null, null, null, null);
         service.sysBlogRepository.findAll(new Specification<SysBlog>() {
             @Override
             public Predicate toPredicate(Root<SysBlog> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {

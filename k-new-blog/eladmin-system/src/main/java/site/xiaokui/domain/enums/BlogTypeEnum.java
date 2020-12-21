@@ -10,20 +10,20 @@ public enum BlogTypeEnum {
     /**
      * 博客类型
      */
-    PUBLIC(1, "公开"), PROTECTED(2, "受保护，密码访问"), PRIVATE(-1, "仅自己可见");
+    PUBLIC("1", "公开"), PROTECTED("2", "受保护，密码访问"), PRIVATE("-1", "仅自己可见");
 
     @Getter
-    int code;
+    String code;
 
     @Getter
     String msg;
 
-    BlogTypeEnum(int code, String msg) {
+    BlogTypeEnum(String code, String msg) {
         this.code = code;
         this.msg = msg;
     }
 
-    public static Integer codeOf(String msg) {
+    public static String codeOf(String msg) {
         if (msg == null) {
             return null;
         }

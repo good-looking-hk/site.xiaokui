@@ -11,6 +11,7 @@ import lombok.Getter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * @author HK
@@ -20,13 +21,13 @@ public class MarkDownParser {
 
     public final static MarkDownParser PARSER = new MarkDownParser();
 
-    private Parser parser;
+    private final Parser parser;
 
-    private HtmlRenderer renderer;
+    private final HtmlRenderer renderer;
 
     private MarkDownParser() {
         MutableDataSet options = new MutableDataSet();
-        options.set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create()));
+        options.set(Parser.EXTENSIONS, Collections.singletonList(TablesExtension.create()));
         parser = Parser.builder(options).build();
         renderer = HtmlRenderer.builder(options).build();
     }
@@ -36,7 +37,8 @@ public class MarkDownParser {
         return new ParseData(renderer.render(document), document.getTextLength());
     }
 
-    @AllArgsConstructor@Getter
+    @AllArgsConstructor
+    @Getter
     static class ParseData {
         String htmlStr;
         int textLength;

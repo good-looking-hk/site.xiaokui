@@ -1,39 +1,31 @@
-/*
- *  Copyright 2019-2020 Zheng Jie
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
 package me.zhengjie.config;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializerProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.io.IOException;
+
 /**
- *
- * @author Zheng Jie
- * @date 2018-11-30
+ * Spring Web环境相关配置
+ * @author HK
+ * @date 2020-04-26 11:06
  */
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    /** 文件配置 */
+    /**
+     * 文件配置
+     */
     private final FileProperties properties;
 
     @Value("${xiaokui.staticLibPath}")
@@ -42,9 +34,16 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${xiaokui.blogMusicPath}")
     private String blogMusicPath;
 
-
-    public WebConfig(FileProperties properties) {
+    public WebConfig(FileProperties properties, ObjectMapper objectMapper) {
         this.properties = properties;
+        // 将null转为空字符串
+        objectMapper.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
+            @Override
+            public void serialize(Object paramT, JsonGenerator paramJsonGenerator,
+                                  SerializerProvider paramSerializerProvider) throws IOException {
+                paramJsonGenerator.writeString("");
+            }
+        });
     }
 
     @Bean
@@ -65,8 +64,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         FileProperties.ElPath path = properties.getPath();
-        String avatarUtl = "file:" + path.getAvatar().replace("\\","/");
-        String pathUtl = "file:" + path.getPath().replace("\\","/");
+        String avatarUtl = "file:" + path.getAvatar().replace("\\", "/");
+        String pathUtl = "file:" + path.getPath().replace("\\", "/");
         registry.addResourceHandler("/avatar/**").addResourceLocations(avatarUtl).setCachePeriod(0);
         registry.addResourceHandler("/file/**").addResourceLocations(pathUtl).setCachePeriod(0);
         registry.addResourceHandler("/lib/**").addResourceLocations("file:" + staticLibPath);

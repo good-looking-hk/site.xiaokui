@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.exception.BadRequestException;
 import me.zhengjie.exception.EntityExistException;
 import me.zhengjie.exception.EntityNotFoundException;
+import me.zhengjie.exception.ErrorRequestException;
 import me.zhengjie.utils.ThrowableUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,8 +72,10 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = BadRequestException.class)
     public ResponseEntity<ApiError> badRequestException(BadRequestException e) {
-        // 打印堆栈信息
-        log.error(ThrowableUtil.getStackTrace(e));
+        if (e instanceof ErrorRequestException) {
+            // 打印堆栈信息
+            log.error(ThrowableUtil.getStackTrace(e));
+        }
         return buildResponseEntity(ApiError.error(e.getStatus(), e.getMessage()));
     }
 
@@ -116,6 +119,7 @@ public class GlobalExceptionHandler {
      * 处理空指针异常
      */
     @ExceptionHandler(value = NullPointerException.class)
+    @ResponseBody
     public ResponseEntity<ApiError> npe(NullPointerException e) {
         // 打印堆栈信息
         String errorMsg = ThrowableUtil.getStackTrace(e);
@@ -130,7 +134,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     @ResponseBody
     public ResponseEntity<ApiError> notFound(RuntimeException e, HttpServletRequest request) {
-        log.error("url[{}]访问出错,错误信息:{}", request.getRequestURI(), e.getCause());
+        log.error("url[{}]访问出错,错误信息:{}", request.getRequestURI(), e);
         return buildResponseEntity(ApiError.error(e.getMessage()));
     }
 

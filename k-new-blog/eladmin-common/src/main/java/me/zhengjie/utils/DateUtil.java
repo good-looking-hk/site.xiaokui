@@ -25,10 +25,18 @@ import java.util.Date;
  * @date: 2020/6/11 16:28
  * @apiNote: JDK 8  新日期类 格式化与字符串转换 工具类
  */
-public class DateUtil {
+public class DateUtil extends cn.hutool.core.date.DateUtil {
 
     public static final DateTimeFormatter DFY_MD_HMS = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     public static final DateTimeFormatter DFY_MD = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public static Integer parseIntDate(Date date) {
+        return Integer.valueOf(DateUtil.format(date, "yyyyMMdd"));
+    }
+
+    public static Date formatIntDate(String yyyyMMdd) {
+        return DateUtil.parse(yyyyMMdd, "yyyyMMdd");
+    }
 
     /**
      * LocalDateTime 转时间戳

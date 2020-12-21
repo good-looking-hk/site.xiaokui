@@ -8,3 +8,14 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiIzMmE2M2Q1NDdmMTc0NDY2OTcwM
   "dir": "33",
   "title": "33"
 }
+
+### 上传博客
+POST http://localhost:8000/api/sysBlog/upload
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJqdGkiOiIyZTRjMmZmY2UwZDk0ZmI3ODZjMDIwZmMzNTUzOTBiYyIsInN1YiI6ImFkbWluIn0.4zbP9gNE6RhI1EqFWurWHKYLNRiF992XvvFicbLX9Lon9q7pksJB_MIHBfJz-LvHKpF_9d7wdiltJrwOVwigNA
+{
+"id": 199,
+"dir": "33",
+"title": "33"
+}
+

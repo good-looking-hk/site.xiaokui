@@ -72,6 +72,15 @@ public class SecurityUtils {
     }
 
     /**
+     * 获取博客空间
+     * @return 博客空间
+     */
+    public static String getCurrentBlogSpace() {
+        UserDetails userDetails = getCurrentUser();
+        return new JSONObject(new JSONObject(userDetails).get("user")).get("blogSpace", String.class);
+    }
+
+    /**
      * 获取当前用户的数据权限
      * @return /
      */
