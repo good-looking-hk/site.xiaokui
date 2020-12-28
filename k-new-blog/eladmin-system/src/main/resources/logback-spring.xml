@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--debug:是否logback内部的日志信息，scan:是否自动扫描文件改动-->
+<configuration sacn="false" debug="false">
+    <!--该文件位于org.springframework.boot.logging.logback下，是spring的默认配置-->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+    <property name="logDir" value="/xiaokui/product/"/>
+    <property name="logFile" value="prod.logs"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%red(%d{yyyy-MM-dd HH:mm:ss.SSS}) %green([%thread]) %highlight(%-5level) %boldMagenta(%logger{50}) %yellow(Line:%-3L) - %gray(%msg%n)</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="MY_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>${logDir}${logFile}</File>
+        <encoder>
+            <!--&lt;!&ndash;格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符&ndash;&gt;-->
+            <pattern>%date [%level] [%thread] %logger{60} [%file : %line] %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 添加.gz 历史日志会启用压缩 大大缩小日志文件所占空间 -->
+            <fileNamePattern>${logDir}history/${logFile}.%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <maxHistory>90</maxHistory><!--  保留30天日志 -->
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <springProfile name="dev" additivity="false">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="MY_FILE"/>
+        </root>
+        <logger name="xiaokui.site" level="DEBUG">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="MY_FILE"/>
+        </logger>
+        <!--监控sql日志输出 -->
+        <logger name="jdbc.sqlonly" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE" />
+        </logger>
+        <logger name="jdbc.resultset" level="ERROR" additivity="false">
+            <appender-ref ref="CONSOLE" />
+        </logger>
+        <!--  如想看到表格数据，将OFF改为INFO  -->
+        <logger name="jdbc.resultsettable" level="OFF" additivity="false">
+            <appender-ref ref="CONSOLE" />
+        </logger>
+        <logger name="jdbc.connection" level="OFF" additivity="false">
+            <appender-ref ref="CONSOLE" />
+        </logger>
+        <logger name="jdbc.sqltiming" level="OFF" additivity="false">
+            <appender-ref ref="CONSOLE" />
+        </logger>
+        <logger name="jdbc.audit" level="OFF" additivity="false">
+            <appender-ref ref="CONSOLE" />
+        </logger>
+    </springProfile>
+    <springProfile name="prod" additivity="false">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="MY_FILE"/>
+        </root>
+        <logger name="xiaokui.site" level="INFO">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="MY_FILE"/>
+        </logger>
+        <!--监控sql日志输出 -->
+        <logger name="jdbc.sqlonly" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE" />
+        </logger>
+        <logger name="jdbc.resultset" level="ERROR" additivity="false">
+            <appender-ref ref="CONSOLE" />
+        </logger>
+        <!--  如想看到表格数据，将OFF改为INFO  -->
+        <logger name="jdbc.resultsettable" level="OFF" additivity="false">
+            <appender-ref ref="CONSOLE" />
+        </logger>
+        <logger name="jdbc.connection" level="OFF" additivity="false">
+            <appender-ref ref="CONSOLE" />
+        </logger>
+        <logger name="jdbc.sqltiming" level="OFF" additivity="false">
+            <appender-ref ref="CONSOLE" />
+        </logger>
+        <logger name="jdbc.audit" level="OFF" additivity="false">
+            <appender-ref ref="CONSOLE" />
+        </logger>
+    </springProfile>
+</configuration>

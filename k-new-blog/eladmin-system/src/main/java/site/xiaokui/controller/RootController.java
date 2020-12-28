@@ -59,7 +59,6 @@ public class RootController implements ErrorController {
     @PostMapping("/blog/music/{userId}/{dir}")
     @ResponseBody
     public ResponseEntity<Object> list(@PathVariable Integer userId, @PathVariable String dir) {
-        System.out.println(xiaokuiProperties.toString());
         File musicDir = new File( xiaokuiProperties.getBlogMusicPath() + userId + "/" + dir);
         List<String> list = new ArrayList<>(4);
         if (musicDir.isDirectory()) {

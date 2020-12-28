@@ -30,5 +30,6 @@ elif [[ $file_name == *$war_suffix ]]; then
 else
   echo $war_suffix
 fi
+cd /home/hk-pc/JavaSpace/newxiaokui && gralde -p k-new-blog clean
 echo '本地构建完成'
 

@@ -1,0 +1,9 @@
+# 查看host，默认本地环境 test.xiaokui.site 为预发布环境
+sudo vi /etc/hosts
+
+# 指定配置文件，运行nginx
+sudo nginx -t /home/hk-pc/JavaSpace/newxiaokui/k-new-blog/other/nginx.conf
+sudo nginx -c /home/hk-pc/JavaSpace/newxiaokui/k-new-blog/other/nginx.conf
+sudo nginx -c /home/hk-pc/JavaSpace/newxiaokui/k-new-blog/other/simple.conf
+
+# 1238127943Khh!

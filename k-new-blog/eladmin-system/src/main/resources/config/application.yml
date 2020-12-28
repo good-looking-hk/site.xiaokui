@@ -1,9 +1,9 @@
 server:
-  port: 8000
+  port: 9090
 
 spring:
   profiles:
-    active: prod
+    active: dev
   freemarker:
     check-template-location: false
   jackson:
@@ -42,19 +42,17 @@ xiaokui:
   # 单个用户单日对所有博客最大贡献访问量，两个限制条件不冲突
   single-user-contribute--all-blog: 40
 
-  basePath: /xiaokui/
+  basePath: /xiaokui/product
+  # 文件资源路径
+  file-path: ${xiaokui.basePath}/file/
   # 静态资源路径
-  staticLibPath: ${xiaokui.basePath}lib/
+  staticLibPath: ${xiaokui.basePath}/lib/
   # 博客上传路径
-  blogUploadPath: ${xiaokui.basePath}upload/
+  blogUploadPath: ${xiaokui.basePath}/upload/
   # 音乐保存目录
-  blogMusicPath: ${xiaokui.basePath}music/
+  blogMusicPath: ${xiaokui.basePath}/music/
   # 头像上传目录
-  avatarUploadPath: ${xiaokui.basePath}avatar/
-  # 系统日志目的地
-  logsPath: ${xiaokui.basePath}logs/
-  # 日志文件名
-  logName: remote.log
+  avatarUploadPath: ${xiaokui.basePath}/avatar/
 
 task:
   pool:

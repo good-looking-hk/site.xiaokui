@@ -12,6 +12,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import site.xiaokui.config.XiaokuiProperties;
 
 import java.io.IOException;
 
@@ -24,18 +25,12 @@ import java.io.IOException;
 public class WebConfig implements WebMvcConfigurer {
 
     /**
-     * 文件配置
+     * 加载配置文件
      */
-    private final FileProperties properties;
+    private final XiaokuiProperties xiaokuiProperties;
 
-    @Value("${xiaokui.staticLibPath}")
-    private String staticLibPath;
-
-    @Value("${xiaokui.blogMusicPath}")
-    private String blogMusicPath;
-
-    public WebConfig(FileProperties properties, ObjectMapper objectMapper) {
-        this.properties = properties;
+    public WebConfig(XiaokuiProperties xiaokuiProperties, ObjectMapper objectMapper) {
+        this.xiaokuiProperties = xiaokuiProperties;
         // 将null转为空字符串
         objectMapper.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
             @Override
@@ -63,13 +58,10 @@ public class WebConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        FileProperties.ElPath path = properties.getPath();
-        String avatarUtl = "file:" + path.getAvatar().replace("\\", "/");
-        String pathUtl = "file:" + path.getPath().replace("\\", "/");
-        registry.addResourceHandler("/avatar/**").addResourceLocations(avatarUtl).setCachePeriod(0);
-        registry.addResourceHandler("/file/**").addResourceLocations(pathUtl).setCachePeriod(0);
-        registry.addResourceHandler("/lib/**").addResourceLocations("file:" + staticLibPath);
-        registry.addResourceHandler("/music/**").addResourceLocations("file:" + blogMusicPath);
+        registry.addResourceHandler("/avatar/**").addResourceLocations("file:" + xiaokuiProperties.getAvatarUploadPath());
+        registry.addResourceHandler("/file/**").addResourceLocations("file:" + xiaokuiProperties.getFilePath());
+        registry.addResourceHandler("/lib/**").addResourceLocations("file:" + xiaokuiProperties.getStaticLibPath());
+        registry.addResourceHandler("/music/**").addResourceLocations("file:" + xiaokuiProperties.getBlogMusicPath());
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/", "classpath:/META-INF/resources/");
     }
 }

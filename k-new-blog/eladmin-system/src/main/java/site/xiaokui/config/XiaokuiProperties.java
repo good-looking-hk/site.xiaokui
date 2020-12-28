@@ -31,6 +31,8 @@ public class XiaokuiProperties {
 
     private String basePath;
 
+    private String filePath;
+
     private String staticLibPath;
 
     private String blogUploadPath;

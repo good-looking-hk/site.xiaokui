@@ -23,7 +23,7 @@ public class BeetlConfig {
     public static final String FILE_START_FLAG = "file:";
 
     @Bean(name = "beetlConfig")
-    public BeetlGroupUtilConfiguration getBeetlGroupUtilConfiguration(@Value("${xiaokui.blogUploadPath}") String blogUploadPath) {
+    public BeetlGroupUtilConfiguration getBeetlGroupUtilConfiguration(XiaokuiProperties xiaokuiProperties) {
         BeetlGroupUtilConfiguration beetlGroupUtilConfiguration = new BeetlGroupUtilConfiguration();
         // 获取Spring Boot 的ClassLoader
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -34,7 +34,7 @@ public class BeetlConfig {
         ClasspathResourceLoader classpathResourceLoader = new ClasspathResourceLoader(classLoader, "templates");
 
         // 自定义的模板加载器，linux环境下默认为/xiaokui/upload/
-        FileResourceLoader blogFileResourceLoader = new FileResourceLoader(blogUploadPath);
+        FileResourceLoader blogFileResourceLoader = new FileResourceLoader(xiaokuiProperties.getBlogUploadPath());
         FileResourceLoader fileResourceLoader = new FileResourceLoader("");
 
         CompositeResourceLoader compositeResourceLoader = new CompositeResourceLoader();

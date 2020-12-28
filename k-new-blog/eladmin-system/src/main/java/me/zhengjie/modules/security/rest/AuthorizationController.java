@@ -155,4 +155,16 @@ public class AuthorizationController {
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @ApiOperation("清除缓存")
+    @AnonymousGetMapping(value = "/clear")
+    public ResponseEntity<Object> clear() {
+        if (!loginProperties.isCacheEnable()) {
+            redisUtils.del("data::*");
+            redisUtils.del("user::*");
+            redisUtils.del("role::*");
+            redisUtils.del("menu::*");
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

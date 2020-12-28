@@ -17,10 +17,11 @@ include 'k-blog:k-blog-app'
 // 为了界面的美化，采用前后端完全分离开发（主要是管理端，vue的界面和操作体验真是没话说）
 // 又由于后台管理的基础模板较多，这里就不再多做重复的轮子了
 // 不是造不出轮子，而是没必要，请知悉（项目源代码一路看下来没压力，且之前已经造了一个差不多了的）
-// 基础模板借鉴自 https://github.com/elunez/eladmin，约有80%左右的代码重复量
+// 基础模板借鉴自 https://github.com/elunez/eladmin，约有70%左右的代码重复量
 // 自己补充了大量注释，包含但不限于流程理解、内部逻辑、代码优化、大体实现，以便于自己深入理解，可自行比较本项目代码与原作者代码
 // 技术架构变化有 安全认证框架shiro -> spring security，数据库操作框架beetlsql -> jpa，
 // 重构一时爽，一直重构火葬场，硬着头皮完成了代码迁移
+// 至于前端水平能看出多少，就要看你是不是行家了
 include 'k-new-blog:eladmin-common'
 include 'k-new-blog:eladmin-system'
 include 'k-new-blog:eladmin-logging'

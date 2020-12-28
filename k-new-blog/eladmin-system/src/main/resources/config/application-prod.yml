@@ -6,7 +6,7 @@ spring:
     host: ${REDIS_HOST:120.79.20.49}
     port: ${REDIS_PORT:6379}
     password: ${REDIS_PWD:1238127943Hk~}
-    #连接超时时间
+    #连接超时时cd
     timeout: 5000
   datasource:
     druid:

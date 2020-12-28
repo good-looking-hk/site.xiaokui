@@ -1,8 +1,8 @@
 #!/usr/bin/bash
-# 自动找到服务端运行的jar线程，停掉并启动新的jar，又外部调用，不能单独使用
 # @author HK
 # @date 2020-03-21
 # @version 1.1
+source /etc/profile
 rootJarPath=/xiaokui/product/eladmin-system-v2.0.jar
 nohup=nohup
 
@@ -12,7 +12,7 @@ then
   echo 'jar包或war包路径为空' && exit 1;
 fi
 
-pid=$(ps -aux | grep -E "ROOT.war|ROOT.jar" | grep -v grep | grep -v 'bash -s' | awk '{print $2}')
+pid=$(ps -aux | grep -E "eladmin-system-v2.0.war|eladmin-system-v2.0.jar" | grep -v grep | grep -v 'bash -s' | awk '{print $2}')
 echo "准备部署应用，找到目标PID:${pid}"
 
 function runApp() {
@@ -21,10 +21,10 @@ function runApp() {
     # 如果不为空
     if test -n "$nohup"
     then
-        nohup java -jar $rootJarPath --server.port=9090 --spring.profiles.active=remote --kpwd=Z1w@9?1997&
+        nohup java -jar $rootJarPath --server.port=9090 --spring.profiles.active=prod --kpwd=Z1w@9?1997&
     else
-        java -jar $rootJarPath --server.port=9090 --spring.profiles.active=remote --kpwd=Z1w@9?1997&
-    fi    
+        java -jar $rootJarPath --server.port=9090 --spring.profiles.active=prod --kpwd=Z1w@9?1997&
+    fi
 }
 
 # 如果找到pid数大于1
@@ -48,4 +48,3 @@ then
     runApp
     exit 0
 fi
-

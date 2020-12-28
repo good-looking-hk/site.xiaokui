@@ -32,7 +32,7 @@ public class BlogUser {
 
     public BlogUser(UserDto user) {
         this.id = user.getId();
-        this.name = user.getUsername();
+        this.name = user.getNickName();
         this.avatar = "/avatar/" + user.getAvatarName();
         // 判断用户是否自定义博客空间名称
         if (StrUtil.isEmpty(user.getBlogSpace())) {

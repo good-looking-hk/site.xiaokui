@@ -239,7 +239,10 @@ public class SysBlog implements Serializable {
         if (this.getCharacterCount() != null) {
             characterValue = (double) this.characterCount / 650 + 2;
         }
-        double value = 1150 - createTimeValue - (updateTimeValue * 49) + yesterdayValue + viewCountValue + characterValue;
+        // 最终推荐值大致依赖关系如下:
+        // 1. 创建值越大，推荐值越小。创建值越小，则推荐值越大
+        // 2. 更新值越大，推荐值越小。更新值越小，则推荐值越大
+        double value = 1150 - (createTimeValue * 3) - (updateTimeValue * 49) + yesterdayValue + viewCountValue + characterValue;
         if (this.title.contains("**")) {
             value += 500;
         } else if (this.title.contains("*")) {

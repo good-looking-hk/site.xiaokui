@@ -243,6 +243,9 @@ public class MenuServiceImpl implements MenuService {
                     if (menuDTO.getChildren() == null) {
                         menuDTO.setChildren(new ArrayList<>());
                     }
+                    // 这里迎合前端vue改造，去掉二级路由
+                    // 其二级路由统一改为 / + 父路由path + 子路由name，形如 / + system + User
+                    it.setPath("/" + menuDTO.getPath() + it.getComponentName());
                     menuDTO.getChildren().add(it);
                     ids.add(it.getId());
                 }
