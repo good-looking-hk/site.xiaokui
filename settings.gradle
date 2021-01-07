@@ -56,5 +56,8 @@ include 'k-cloud:register-center'
 include 'k-cloud:register-center:eureka-server'
 include 'k-cloud:api-gateway'
 
-// elk + flink相关实战代码
+// elk 相关实战代码
 include 'k-elk'
+
+// flink 相关实战代码
+include 'k-flink'

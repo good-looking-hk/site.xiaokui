@@ -20,7 +20,7 @@
 <div class="header-nav">
     <div class="layui-main">
         <ul class="layui-nav fly-nav" id="nav-log" >
-            <a href="http://localhost:8013/login" target="_blank">
+            <a href="/admin/login" target="_blank">
                 <img class="img-circle" alt="用户头像" height="54" title="${user.selfDescription!'该用户的什么都没留下'}"
                      width="54" src="${ctxPath + user.avatar!'/img/rabbit.gif'}"/>
                 ${user.name}
@@ -39,10 +39,20 @@
             <li class="layui-nav-item"><a href="${ctxPath}/">首页</a></li>
             <li class="layui-nav-item">
                 <a href="javascript:;">归档</a>
-                <dl class="layui-nav-child" id="nav-l">
+                <dl class="layui-nav-child">
                     <dd><a href="javascript:void(0);" onclick="dealClick('layout', '');">默认归档</a></dd>
                     <dd><a href="javascript:void(0);" onclick="dealClick('layout', 'time');">按日期</a></dd>
-                    <dd><a href="javascript:void(0);" onclick="dealClick('layout', 'dir');">按分类</a></dd>
+                    <dd><a href="javascript:void(0);" onclick="dealClick('layout', 'dir');">按目录</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">项目演示</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="/admin/login" target="_blank">管理后台</a></dd>
+                    <dd><a href="javascript:void(0);" onclick="dealClick('layout', 'time');">公众号</a></dd>
+                    <dd><a href="https://github.com/good-looking-hk/site.xiaokui/blob/master/settings.gradle" target="_blank">源代码</a></dd>
+                    <dd><a href="/admin/login" target="_blank">ELK</a></dd>
+                    <dd><a href="/admin/login" target="_blank">大数据</a></dd>
                 </dl>
             </li>
             <li class="layui-nav-item"><a href="javascript:void(0);" onclick="dealClick('type', 'pro');">非公开</a></li>

@@ -5,7 +5,7 @@ export PRE_DIR=/xiaokui/pre
 # 进入代码工作目录
 cd /home/hk-pc/study/eladmin-web-master/new-blog-web && echo '构建开始于:'; date
 # 开始构建
-npm run build:prod
+npm run build:prod index
 
 # 上一步不成功则退出
 if [ $? -ne 0 ]; then
