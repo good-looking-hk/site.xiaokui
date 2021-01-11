@@ -19,6 +19,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import me.zhengjie.utils.DateUtil;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -62,9 +63,9 @@ public class SysBlog implements Serializable {
     @ApiModelProperty(value = "博客类型")
     private String blogType;
 
-    @Column(name = "create_time")
+    @Column(name = "create_date")
     @ApiModelProperty(value = "创建时间")
-    private Date createTime;
+    private Integer createDate;
 
     @Column(name = "last_upload_time")
     @ApiModelProperty(value = "上次上传时间")
@@ -133,8 +134,8 @@ public class SysBlog implements Serializable {
                     return o1.orderNum.compareTo(o2.getOrderNum());
                 }
             }
-            if (!o1.createTime.equals(o2.getCreateTime())) {
-                return o1.createTime.compareTo(o2.getCreateTime());
+            if (!o1.createDate.equals(o2.createDate)) {
+                return o1.createDate.compareTo(o2.createDate);
             }
             // 后面上传的排在前面
             return o1.id.compareTo(o2.getId()) * -1;
@@ -154,25 +155,13 @@ public class SysBlog implements Serializable {
         @Override
         public int compare(SysBlog o1, SysBlog o2) {
             if (orderByCreateTime) {
-                int r = o2.createTime.compareTo(o1.createTime);
+                int r = o2.createDate.compareTo(o1.createDate);
                 if (r != 0) {
                     return r;
                 }
                 return o2.id.compareTo(o1.id);
             } else {
-                Date updateTime1, updateTime2;
-                if (o1.updateTime == null) {
-                    updateTime1 = o1.createTime;
-                } else {
-                    updateTime1 = o1.updateTime;
-                }
-                if (o2.updateTime == null) {
-                    updateTime2 = o2.createTime;
-                } else {
-                    updateTime2 = o2.updateTime;
-                }
-
-                return updateTime2.compareTo(updateTime1);
+                return o2.lastUploadTime.compareTo(o1.lastUploadTime);
             }
         }
     }
@@ -204,9 +193,9 @@ public class SysBlog implements Serializable {
     public int calculateRecommendValue() {
         Date now = new Date();
         double createTimeValue = 0, updateTimeValue = 7, yesterdayValue = 2, viewCountValue = 1, characterValue = 0;
-        if (this.getCreateTime() != null) {
+        if (this.createDate != null) {
             // 这个值越大，则推荐值越低，负相关
-            createTimeValue = (double) (now.getTime() - this.getCreateTime().getTime()) / (24 * 60 * 60 * 1000);
+            createTimeValue = (double) (DateUtil.parseIntDate(now) - this.createDate);
         }
         if (this.getUpdateTime() != null) {
             // 这个值越小，则推荐值越高，负相关

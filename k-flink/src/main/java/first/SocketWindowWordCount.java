@@ -17,6 +17,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
+ * \\ 反斜杠
+ * \t 间隔 ('\u0009')
+ * \n 换行 ('\u000A')
+ * \r 回车 ('\u000D')
+ * \d 数字 等价于 [0-9]
+ * \D 非数字 等价于 [^0-9]
+ * \s 空白符号 [\t\n\x0B\f\r]
+ * \S 非空白符号 [^\t\n\x0B\f\r]
+ * \w 单独字符 [a-zA-Z_0-9]
+ * \W 非单独字符 [^a-zA-Z_0-9]
+ * \f 换页符
+ * \e Escape
+ * \b 一个单词的边界
+ * \B 一个非单词的边界
+ * \G 前一个匹配的结束
+ *
  * 参考来源 https://github.com/apache/flink/blob/master/flink-examples/flink-examples-streaming/src/main/java/org/apache/flink/streaming/examples/socket/SocketWindowWordCount.java
  * <p>
  * 该示例代码 统计特定时间窗口内输入字符的次数，先开命令行，再启动程序即可，已对代码做了输出优化，显而易懂

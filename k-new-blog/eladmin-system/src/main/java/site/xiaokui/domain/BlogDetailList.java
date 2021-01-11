@@ -126,7 +126,7 @@ public class BlogDetailList {
             // 自定义比较器
             blogList.sort(new SysBlog.DateComparator(true));
             if (blogList.size() != 0 && blogList.get(0) != null) {
-                int newYear = DateUtil.year(blogList.get(0).getCreateTime());
+                int newYear = Integer.parseInt(blogList.get(0).getCreateDate().toString().substring(0, 8));
                 createYears.add(newYear);
                 List<SysBlog> temp = new ArrayList<>();
                 Iterator<SysBlog> it = blogList.iterator();
@@ -134,7 +134,7 @@ public class BlogDetailList {
                 // 分解list成多个子list
                 while (it.hasNext()) {
                     SysBlog blog = it.next();
-                    int year = DateUtil.year(blog.getCreateTime());
+                    int year = Integer.parseInt(blog.getCreateDate().toString().substring(0, 8));
                     if (year == newYear) {
                         temp.add(blog);
                     } else {

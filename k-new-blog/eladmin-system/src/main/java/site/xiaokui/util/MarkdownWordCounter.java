@@ -1,9 +1,11 @@
 package site.xiaokui.util;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
 import site.xiaokui.domain.WordCounter;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 
 /**
  * markdown文件字数统计工具
@@ -13,6 +15,7 @@ import site.xiaokui.domain.WordCounter;
  * 2.只统计汉字、英文字母、数字
  * 3.标点符号、空格、换行均不统计
  * 4.一汉字为一有效字符、一连串英文字符为一有效字符、一连串数字为一有效字符
+ * 5.log4j也为一有效字符
  * <p>
  * 各种字符的unicode编码的范围：
  * 　 汉字：[0x4e00,0x9fa5] 或  十进制[19968,40869]
@@ -57,30 +60,42 @@ public class MarkdownWordCounter {
                 }
                 chineseCount++;
             } else if (isEnglish(c)) {
-                if (preIsNumber) {
-                    numberCount++;
-                    preIsNumber = false;
-                }
                 preIsEnglish = true;
             } else if (isNumber(c)) {
-                if (preIsEnglish) {
-                    englishCount++;
-                    preIsEnglish = false;
-                }
                 preIsNumber = true;
             } else {
                 if (preIsEnglish) {
                     englishCount++;
                     preIsEnglish = false;
-                }
-                if (preIsNumber) {
+                } else if (preIsNumber) {
                     numberCount++;
                     preIsNumber = false;
                 }
                 otherCount++;
             }
         }
+        // WordCounter(chineseCount=8056, englishCount=21128, numberCount=3961, otherCount=55921)
+        // WordCounter(chineseCount=8056, englishCount=21228, numberCount=4056, otherCount=55921)
         return new WordCounter(chineseCount, englishCount, numberCount, otherCount);
+    }
+
+    public static WordCounter readFile(File mdFile) {
+        WordCounter total = new WordCounter(0, 0, 0, 0);
+        try {
+            InputStreamReader inputFileReader = new InputStreamReader(new FileInputStream(mdFile), "UTF-8");
+            BufferedReader reader = new BufferedReader(inputFileReader);
+            String str;
+            while ((str = reader.readLine()) != null) {
+                WordCounter temp = MarkdownWordCounter.calcWordCount(str);
+                total.chineseCount += temp.chineseCount;
+                total.englishCount += temp.englishCount;
+                total.numberCount += temp.numberCount;
+                total.otherCount += temp.otherCount;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return total;
     }
 
     public static void main(String[] args) {
@@ -108,5 +123,7 @@ public class MarkdownWordCounter {
                 "共 23 + 30 + 7 + 10 + 本段字数 = 67。";
         System.out.println(calcWordCount(str));
         System.out.println(calcWordCount(ss));
+        File file = new File("/xiaokui/product/upload/1/$md/Spring源码：Spring MVC之Web请求处理流程-13-20200402.md");
+        System.out.println(readFile(file));
     }
 }

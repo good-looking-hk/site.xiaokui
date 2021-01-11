@@ -11,6 +11,7 @@ import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.unit.DataUnit;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -328,7 +329,7 @@ public class IndexController {
         SysBlog blog = new SysBlog();
         blog.setTitle("这是预览文件，记得点击保存哟，亲^_^");
         blog.setFilePath(user.getId() + BlogFileHelper.getTempDir() + blogName);
-        blog.setCreateTime(new Date());
+        blog.setCreateDate(me.zhengjie.utils.DateUtil.parseIntDate(new Date()));
 
         BlogUser blogUser = new BlogUser(user);
         blogUser.setBlog(blog);
@@ -354,7 +355,7 @@ public class IndexController {
         }
         SysBlog blog = new SysBlog();
         blog.setTitle(name);
-        blog.setCreateTime(DateUtil.date(file.lastModified()));
+        blog.setCreateDate(me.zhengjie.utils.DateUtil.parseIntDate(new Date(file.lastModified())));
         blog.setFilePath(user.getId() + "/" + name);
 
         BlogUser blogUser = new BlogUser(user);

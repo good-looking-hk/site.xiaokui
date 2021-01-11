@@ -24,6 +24,22 @@ import java.util.Date;
 import java.util.List;
 
 /**
+ * \\ 反斜杠
+ * \t 间隔 ('\u0009')
+ * \n 换行 ('\u000A')
+ * \r 回车 ('\u000D')
+ * \d 数字 等价于 [0-9]
+ * \D 非数字 等价于 [^0-9]
+ * \s 空白符号 [\t\n\x0B\f\r]
+ * \S 非空白符号 [^\t\n\x0B\f\r]
+ * \w 单独字符 [a-zA-Z_0-9]
+ * \W 非单独字符 [^a-zA-Z_0-9]
+ * \f 换页符
+ * \e Escape
+ * \b 一个单词的边界
+ * \B 一个非单词的边界
+ * \G 前一个匹配的结束
+ *
  * split -l 20000 -d -a 2 UserBehavior.csv
  * 获取 实时访问 热门商品
  * @author HK

@@ -70,7 +70,7 @@ public class SysBlogController {
         blog.setTitle(saveBlogDto.getName());
         blog.setFileName(saveBlogDto.getName());
         blog.setOrderNum(saveBlogDto.getOrderNum());
-        blog.setCreateTime(DateUtil.formatIntDate(saveBlogDto.getCreateDate()));
+        blog.setCreateDate(Integer.parseInt(saveBlogDto.getCreateDate()));
         blog.setUpdateTime(new Date());
         blog.setBlogType(BlogTypeEnum.PUBLIC.getCode());
 

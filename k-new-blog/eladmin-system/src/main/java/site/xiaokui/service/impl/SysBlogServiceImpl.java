@@ -104,8 +104,8 @@ public class SysBlogServiceImpl extends BaseService<SysBlog> implements SysBlogS
             query.andLess("order_num", blog.getOrderNum());
             query.desc("order_num").limit(1, 1);
         } else {
-            query.andLess("create_time", blog.getCreateTime());
-            query.desc("create_time").limit(1, 1);
+            query.andLess("create_date", blog.getCreateDate());
+            query.desc("create_date").limit(1, 1);
         }
         List<SysBlog> list = query.select();
         if (list == null || list.size() == 0) {
@@ -122,7 +122,7 @@ public class SysBlogServiceImpl extends BaseService<SysBlog> implements SysBlogS
             query.andGreat("order_num", blog.getOrderNum());
             query.asc("order_num").limit(1, 1);
         } else {
-            query.andGreat("create_time", blog.getCreateTime());
+            query.andGreat("create_time", blog.getCreateDate());
             query.asc("create_time").limit(1, 1);
         }
         List<SysBlog> list = query.select();
@@ -172,7 +172,7 @@ public class SysBlogServiceImpl extends BaseService<SysBlog> implements SysBlogS
             // 如果博客信息已经存在，需要在数据库更新信息，即使源文件已存在
             SysBlog temp = new SysBlog();
             temp.setId(origin.getId());
-            temp.setCreateTime(blog.getCreateTime());
+            temp.setCreateDate(blog.getCreateDate());
             temp.setCharacterCount(sysBlogWord.getChineseCount() + sysBlogWord.getEnglishCount());
             temp.setUpdateTime(blog.getUpdateTime());
             this.updateByIdIgnoreNull(temp);
