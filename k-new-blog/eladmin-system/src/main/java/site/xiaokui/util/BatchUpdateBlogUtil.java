@@ -3,6 +3,7 @@ package site.xiaokui.util;
 import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.SQLReady;
 import site.xiaokui.domain.SysBlog;
+import site.xiaokui.domain.enums.BlogTypeEnum;
 
 import java.io.File;
 import java.util.List;
@@ -32,17 +33,31 @@ public class BatchUpdateBlogUtil {
             Integer orderNum = item.getOrderNum();
             Integer createDate = item.getCreateDate();
             String filePath = localMdIdr + dir + "/" + dir + "：" +  fileName + "-" + orderNum + "-" + createDate + ".md";
-            File mdFile = new File(filePath);
-            if (mdFile.exists()) {
-                System.out.println("dir=" + dir + " file_name=" + fileName + " title=" + title);
-                okRow.getAndIncrement();
-            } else {
-                System.err.println(filePath);
-//                System.err.println("dir=" + dir + " file_name=" + fileName + " title=" + title);
-                errorRow.getAndIncrement();
-//                sqlManager.executeUpdate(new SQLReady("update sys_blog set create_date = create_date - 2 where id = " + item.getId()));
+            if (item.getBlogType().equals(BlogTypeEnum.PUBLIC.getCode())) {
+                File mdFile = new File(filePath);
+                if (mdFile.exists()) {
+                    System.out.println("dir=" + dir + " file_name=" + fileName + " title=" + title);
+                    if (title.contains("@")) {
+                        title = title.replace("@", "*");
+                        sqlManager.executeUpdate(new SQLReady("update sys_blog set title = '" + title + "', file_name = '" + title + "' where id = " + item.getId()));
+                        /// mdFile.renameTo(new File(filePath.replace("*", "@")));
+                    }
+                    okRow.getAndIncrement();
+                } else {
+                    System.err.println(filePath);
+                    errorRow.getAndIncrement();
+                }
+            } else if (item.getBlogType().equals(BlogTypeEnum.PROTECTED.getCode())) {
+                filePath = localMdIdr + dir + "/" + createDate + "-" + title + ".md";
+                File file = new File(filePath);
+                if (!file.exists()) {
+                    System.err.println(filePath);
+                    errorRow.getAndIncrement();
+                } else {
+                    okRow.getAndIncrement();
+                }
             }
         });
-        System.out.println("正确条数:" + okRow + "错误条数:" + errorRow);
+        System.out.println("正确条数:" + okRow + " 错误条数:" + errorRow);
     }
 }

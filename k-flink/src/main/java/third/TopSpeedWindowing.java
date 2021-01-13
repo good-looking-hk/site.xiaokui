@@ -18,8 +18,8 @@ package third;
  */
 
 
+import org.apache.flink.annotation.Public;
 import org.apache.flink.api.common.functions.RichMapFunction;
-import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -31,7 +31,9 @@ import org.apache.flink.streaming.api.windowing.evictors.TimeEvictor;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.triggers.DeltaTrigger;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -43,9 +45,27 @@ import java.util.concurrent.TimeUnit;
  */
 public class TopSpeedWindowing {
 
-    // *************************************************************************
-    // PROGRAM
-    // *************************************************************************
+    @Public
+    public static class Tuple4<T0, T1, T2, T3> extends org.apache.flink.api.java.tuple.Tuple4<T0, T1, T2, T3>  {
+
+        public Tuple4() {}
+
+        public Tuple4(T0 value0, T1 value1, T2 value2, T3 value3) {
+            this.f0 = value0;
+            this.f1 = value1;
+            this.f2 = value2;
+            this.f3 = value3;
+        }
+
+        @Override
+        public String toString() {
+            if (this.f2 instanceof Double) {
+                int temp = ((Double) this.f2).intValue();
+                return "时间" + new SimpleDateFormat("HH:mm:ss.S").format(this.f3) + "车辆=" + this.f0 + ", 当前速度=" + this.f1 + ", 总经过距离=" + temp;
+            }
+            return "时间" + new SimpleDateFormat("HH:mm:ss.S").format(this.f3) + "车辆=" + this.f0 + ", 当前速度=" + this.f1 + ", 总经过距离=" + this.f2;
+        }
+    }
 
     public static void main(String[] args) throws Exception {
 
@@ -66,11 +86,24 @@ public class TopSpeedWindowing {
 
         int evictionSec = 10;
         double triggerMeters = 50;
+        // 四个入参分别为 车辆id、当前速度（kmh)、总经过距离（m）、时间戳
+        // 在过去的y秒内 每x米触发一次 求每辆汽车的最高速度。这里为每10秒内每50米
+        // 总体含义为：过去10秒内，每50m统计一次汽车的最高速度，是有点绕
         DataStream<Tuple4<Integer, Integer, Double, Long>> topSpeeds =
                 carData.assignTimestampsAndWatermarks(new CarTimestamp())
                         .keyBy(value -> value.f0)
                         .window(GlobalWindows.create())
+                        // CountEvictor：在窗口维护用户指定数量的元素，如果多于用户指定的数量，从窗口缓冲区的开头丢弃多余的元素。
+                        // DeltaEvictor：使用 DeltaFunction 和一个阈值，来计算窗口缓冲区中的最后一个元素与其余每个元素之间的差值，并删除差值大于或等于阈值的元素。
+                        // TimeEvictor：以毫秒为单位的时间间隔（interval）作为参数，对于给定的窗口，找到元素中的最大的时间戳max_ts，并删除时间戳小于max_ts - interval的所有元素。
                         .evictor(TimeEvictor.of(Time.of(evictionSec, TimeUnit.SECONDS)))
+                        // EventTimeTrigger：通过对比Watermark和窗口的Endtime确定是否触发窗口计算，如果Watermark大于Window EndTime则触发，否则不触发，窗口将继续等待。
+                        // ProcessTimeTrigger：通过对比ProcessTime和窗口EndTme确定是否触发窗口，如果ProcessTime大于EndTime则触发计算，否则窗口继续等待。
+                        // ContinuousEventTimeTrigger：根据间隔时间周期性触发窗口或者Window的结束时间小于当前EndTime触发窗口计算。
+                        // ContinuousProcessingTimeTrigger：根据间隔时间周期性触发窗口或者Window的结束时间小于当前ProcessTime触发窗口计算。
+                        // CountTrigger：根据接入数据量是否超过设定的阙值判断是否触发窗口计算。
+                        // DeltaTrigger：根据接入数据计算出来的Delta指标是否超过指定的Threshold去判断是否触发窗口计算。
+                        // PurgingTrigger：可以将任意触发器作为参数转换为Purge类型的触发器，计算完成后数据将被清理。
                         .trigger(
                                 DeltaTrigger.of(
                                         triggerMeters,
@@ -84,6 +117,7 @@ public class TopSpeedWindowing {
                                                             oldDataPoint,
                                                     Tuple4<Integer, Integer, Double, Long>
                                                             newDataPoint) {
+                                                // System.err.println("时间" + new SimpleDateFormat("HH:mm:ss.S").format(newDataPoint.f3) + "车辆=" + newDataPoint.f0 + ", 当前速度=" + newDataPoint.f1 + ", 总经过距离=" + newDataPoint.f2.intValue());
                                                 return newDataPoint.f2 - oldDataPoint.f2;
                                             }
                                         },
@@ -126,6 +160,10 @@ public class TopSpeedWindowing {
             return new CarSource(cars);
         }
 
+        /**
+         * 每100毫秒，使两辆车的速度各有二分之一概率变为 55|100 或 0|45 其中的一个最小/最大的数值，其驶过的具体为 += 速度 / 3.6
+         * 这里需要注意的是，驶过的距离 并不一定 与速度 呈线性正相关，关系应该是非线性正相关
+         */
         @Override
         public void run(SourceContext<Tuple4<Integer, Integer, Double, Long>> ctx)
                 throws Exception {
@@ -145,6 +183,8 @@ public class TopSpeedWindowing {
                                     speeds[carId],
                                     distances[carId],
                                     System.currentTimeMillis());
+                    int i = carId;
+                    System.out.println(new SimpleDateFormat("HH:mm:ss.S").format(new Date()) + " 车辆" + i + ": 速度为" + speeds[i] + ", 共行驶距离为" + distances[i].intValue());
                     ctx.collect(record);
                 }
             }

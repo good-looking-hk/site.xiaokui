@@ -105,6 +105,11 @@ public class SysBlog implements Serializable {
      */
     private transient String blogPath;
 
+    /**
+     * 便于前端展示
+     */
+    private transient String blogDate;
+
     private transient String preBlog;
 
     private transient String preBlogTitle;
@@ -192,50 +197,32 @@ public class SysBlog implements Serializable {
      */
     public int calculateRecommendValue() {
         Date now = new Date();
-        double createTimeValue = 0, updateTimeValue = 7, yesterdayValue = 2, viewCountValue = 1, characterValue = 0;
+        double nDayAgo = 1, yesterdayView = 1, totalView = 1, characterCount = 1;
         if (this.createDate != null) {
             // 这个值越大，则推荐值越低，负相关
-            createTimeValue = (double) (DateUtil.parseIntDate(now) - this.createDate);
+            nDayAgo = (DateUtil.parseIntDate(now) - this.createDate);
         }
-        if (this.getUpdateTime() != null) {
-            // 这个值越小，则推荐值越高，负相关
-            updateTimeValue = (double) (now.getTime() - this.getUpdateTime().getTime()) / (24 * 60 * 60 * 1000);
+        if (nDayAgo > 360) {
+            nDayAgo /= 18.8 + 16;
+        } else if (nDayAgo > 180) {
+            nDayAgo /= 14.8 + 12;
+        } else if (nDayAgo > 90) {
+            nDayAgo /= 8.8 + 8;
+        } else if (nDayAgo > 30) {
+            nDayAgo /= 2.8 + 4;
+        } else if (nDayAgo > 15) {
+            nDayAgo = nDayAgo / 2 + 1;
         }
-        if (this.getYesterdayView() != null) {
-            // 正相关
-            yesterdayValue = (this.getYesterdayView() + 2) * 2.1 + 10;
-            if (yesterdayValue > 200) {
-                yesterdayValue = (yesterdayValue - 150) / 4.7 + 20;
-            }
-        }
-        if (this.getViewCount() != null) {
-            // 正相关
-            viewCountValue = (this.getViewCount() + 1) * 1.7 + 20;
-            if (yesterdayValue > 300) {
-                yesterdayValue = (yesterdayValue - 200) / 6.3 + 30;
-            }
-        }
-        if (createTimeValue > 365) {
-            createTimeValue /= 4.8;
-        } else {
-            createTimeValue = createTimeValue / 4.7 + 25;
-        }
-        if (updateTimeValue > 30) {
-            updateTimeValue = updateTimeValue / 11 + 1;
-        } else {
-            updateTimeValue = updateTimeValue / 2.8 - 9;
-        }
-        if (this.getCharacterCount() != null) {
-            characterValue = (double) this.characterCount / 650 + 2;
-        }
-        // 最终推荐值大致依赖关系如下:
-        // 1. 创建值越大，推荐值越小。创建值越小，则推荐值越大
-        // 2. 更新值越大，推荐值越小。更新值越小，则推荐值越大
-        double value = 1150 - (createTimeValue * 3) - (updateTimeValue * 49) + yesterdayValue + viewCountValue + characterValue;
+        // 再非实时计算的前提下，最终我们希望得到如下一个近似结果，总推荐值
+        // 1. 跟创建天数成反比，创建天数越小推荐值越大，影响占比约为 50%
+        // 2. 跟昨日访问和总访问成正比，访问越多推荐值越大，影响占比约为 5% 15%
+        // 3. 跟字符数成正比，字数越多-代表写得越好，则推荐值越大，影响占比约为 30%
+        // 4. 对于标注*的，一个 * 加200推荐值，总推荐值应固定在1500左右
+        double value = 2150 - (nDayAgo * 1)  + yesterdayView / 3 + totalView / 4 + (characterCount / 76);
         if (this.title.contains("**")) {
-            value += 500;
+            value += 320;
         } else if (this.title.contains("*")) {
-            value += 200;
+            value += 125;
         }
         this.recommendValue = (int) value;
         return this.recommendValue;

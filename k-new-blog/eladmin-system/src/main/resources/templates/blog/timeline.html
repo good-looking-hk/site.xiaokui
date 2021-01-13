@@ -11,7 +11,7 @@
         <h3 style="clear: both;margin: 0;padding: 15px 0 5px;">${titles[listLP.index - 1]}年</h3>
         @for (blog in list) {
         <li style="width:50%;margin:9px 0;float:left;padding-right:5px;">
-            ${blog.createTime, "yyyy-MM-dd"}
+            ${blog.blogDate}
             <a target="_blank" href="${ctxPath + blog.blogPath}">${blog.dir}：${blog.title}</a>
         </li>
         @}
