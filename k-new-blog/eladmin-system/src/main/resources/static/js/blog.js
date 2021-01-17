@@ -81,11 +81,13 @@ $(function () {
     } else if (minute > 15) {
         minute -= 2;
     } else if (minute > 10) {
-        minute -= 1;
-    } else if (minute > 5) {
         minute -= 0.5;
+    } else if (minute > 5) {
+        minute -= 0.2;
+    } else if (minute > 2) {
+        minute -= -0.3
     } else if (minute < 2) {
-        minute -= -0.3;
+        minute -= -0.6;
     }
     $('#countChars').text('字数约 ' + obj.中英文单词数 + ' 字，阅读耗时约 ' + Number(minute).toFixed(1) + ' 分钟');
 });

@@ -28,6 +28,8 @@ public class SaveBlogDto implements Serializable {
     @Size(min = 8, max = 8, message = "必须为有效的日期类型")
     private String createDate;
 
+    private Long lastModified;
+
     @Min(value = 0)
     private int chineseCount;
 

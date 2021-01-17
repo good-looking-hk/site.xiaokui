@@ -54,8 +54,7 @@ public class SysBlogController {
     @GetMapping
     @Log("查询博客")
     @ApiOperation("查询博客")
-//    @PreAuthorize("@el.check('blog:list')")
-//    @PreAuthorize("permitAll()")
+    @PreAuthorize("@el.check('blog:list')")
     public ResponseEntity<Object> query(SysBlogQueryCriteria criteria, Pageable pageable) {
         return new ResponseEntity<>(blogService.queryAll(criteria, pageable), HttpStatus.OK);
     }
@@ -95,7 +94,7 @@ public class SysBlogController {
         blog.setFileName(saveBlogDto.getName());
         blog.setOrderNum(saveBlogDto.getOrderNum());
         blog.setCreateDate(Integer.parseInt(saveBlogDto.getCreateDate()));
-        blog.setLastUploadTime(new Date());
+        blog.setLastUploadTime(new Date(saveBlogDto.getLastModified()));
         blog.setBlogType(BlogTypeEnum.PUBLIC.getCode());
         blog.setCharacterCount(saveBlogDto.getChineseCount() + saveBlogDto.getEnglishCount());
 
@@ -112,9 +111,10 @@ public class SysBlogController {
     @ApiOperation("上传博客")
     @PreAuthorize("@el.check('blog:add')")
     @PostMapping("/upload")
-    public ResponseEntity<Object> temp(MultipartFile file) {
+    public ResponseEntity<Object> temp(MultipartFile file, Long lastModified) {
         checkFile(file);
         UploadBlog blog = blogService.saveTemp(file, SecurityUtils.getCurrentUserId());
+        blog.setLastModified(lastModified);
         if (blog.getErrorInfo() != null) {
             throw new BadRequestException(blog.getErrorInfo());
         }
@@ -125,12 +125,13 @@ public class SysBlogController {
     @Log("同步博客接口")
     @ApiOperation("同步博客接口")
     @AnonymousPostMapping("/asyncBlog")
-    public ResultEntity asyncBlog(MultipartFile file, String token) {
+    public ResultEntity asyncBlog(MultipartFile file, Long lastModified,  String token) {
         if (!"a%f@4d".equals(token)) {
             return ResultEntity.error("token错误");
         }
         checkFile(file);
         UploadBlog blog = blogService.saveTemp(file, 1L);
+        blog.setLastModified(lastModified);
         if (blog.getErrorInfo() != null) {
             throw new BadRequestException(blog.getErrorInfo());
         }

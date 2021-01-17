@@ -23,6 +23,7 @@ public class UploadBlog {
     private Integer orderNum;
     private String suffix;
     private Integer createDate;
+    private Long lastModified;
     private String errorInfo;
     private File uploadFile;
     private WordCounter wordCounter;
