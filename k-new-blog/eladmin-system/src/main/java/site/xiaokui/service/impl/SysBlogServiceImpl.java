@@ -132,8 +132,8 @@ public class SysBlogServiceImpl extends BaseService<SysBlog> implements SysBlogS
         return list.get(0);
     }
 
-    public UploadBlog saveTemp(MultipartFile file, Long userId, boolean isBlog) {
-        return BlogUtil.resolveUploadFile(file, userId, isBlog);
+    public UploadBlog saveTemp(MultipartFile file, Long userId) {
+        return BlogUtil.resolveUploadFile(file, userId);
     }
 
     public SysBlog findBlog(Long userId, String dir, String fileName) {
@@ -173,8 +173,8 @@ public class SysBlogServiceImpl extends BaseService<SysBlog> implements SysBlogS
             SysBlog temp = new SysBlog();
             temp.setId(origin.getId());
             temp.setCreateDate(blog.getCreateDate());
-            temp.setCharacterCount(sysBlogWord.getChineseCount() + sysBlogWord.getEnglishCount());
-            temp.setUpdateTime(blog.getUpdateTime());
+            temp.setCharacterCount(blog.getCharacterCount());
+            temp.setLastUploadTime(blog.getLastUploadTime());
             this.updateByIdIgnoreNull(temp);
         } else {
             this.insertIgnoreNullReturnKey(blog);
@@ -187,7 +187,6 @@ public class SysBlogServiceImpl extends BaseService<SysBlog> implements SysBlogS
         if (blogWordService.getById(sysBlogWord.getBlogId()) == null) {
             blogWordService.insert(sysBlogWord);
         } else {
-            System.out.println(sysBlogWord.toString());
             blogWordService.updateById(sysBlogWord);
         }
         // 清除博客信息缓存

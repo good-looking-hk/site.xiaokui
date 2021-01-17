@@ -119,6 +119,10 @@ public class CacheCenter implements ApplicationRunner {
             return "true".equals(this.cacheMap.get("showAbout"));
         }
 
+        public boolean showProject() {
+            return "true".equals(this.cacheMap.get("showProject"));
+        }
+
         public String getNginxAccessLogPath() {
             return this.cacheMap.get("nginxAccessLogPath");
         }

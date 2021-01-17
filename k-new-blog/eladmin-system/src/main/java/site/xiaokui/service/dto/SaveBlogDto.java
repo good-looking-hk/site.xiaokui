@@ -14,6 +14,8 @@ import java.io.Serializable;
 @Data
 public class SaveBlogDto implements Serializable {
 
+    private Long userId;
+
     @NotBlank
     private String dir;
 

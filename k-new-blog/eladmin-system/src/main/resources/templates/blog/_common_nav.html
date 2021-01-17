@@ -22,7 +22,7 @@
     <ul>
         @for (r in upload) {
         <li>
-            <span class="layui-bg-gray sp1">${r.createTime, "yyyyMMdd"}</span>
+            <span class="layui-bg-gray sp1">${r.createDate}</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
                class="p1" title="${r.title}">${rLP.index}.${r.dir}:${r.title}</a>
         </li>
@@ -36,7 +36,7 @@
     <ul>
         @for (r in update) {
         <li>
-            <span class="layui-bg-gray sp1">${r.updateTime!r.createTime, "yyyyMMdd"}</span>
+            <span class="layui-bg-gray sp1">${r.updateTime!r.createDate, "yyyyMMdd"}</span>
             <a target="_blank" href="${ctxPath + r.blogPath}"
                class="p1" title="${r.title}">${rLP.index}.${r.dir}:${r.title}</a>
         </li>

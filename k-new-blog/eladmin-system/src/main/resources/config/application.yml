@@ -28,9 +28,9 @@ xiaokui:
   # 最多访问数量
   most-view: 8
   # 最近上传数量
-  recent-upload: 0
-  # 最近上传数量
-  recent-update: 8
+  recent-upload: 8
+  # 最近更新数量
+  recent-update: 0
   # 推荐数量
   recommend-count: 16
   # 单个IP单日对单篇博客最大贡献访问量

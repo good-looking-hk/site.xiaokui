@@ -39,6 +39,10 @@
             <appender-ref ref="CONSOLE" />
             <appender-ref ref="MY_FILE"/>
         </logger>
+        <logger name="org.springframework.web" level="info">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="MY_FILE"/>
+        </logger>
         <!--监控sql日志输出 -->
         <logger name="jdbc.sqlonly" level="INFO" additivity="false">
             <appender-ref ref="CONSOLE" />

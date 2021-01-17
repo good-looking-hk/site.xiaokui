@@ -5,8 +5,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import me.zhengjie.annotation.Log;
+import me.zhengjie.annotation.rest.AnonymousPostMapping;
 import me.zhengjie.exception.BadRequestException;
-import me.zhengjie.utils.DateUtil;
 import me.zhengjie.utils.SecurityUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -54,33 +54,10 @@ public class SysBlogController {
     @GetMapping
     @Log("查询博客")
     @ApiOperation("查询博客")
-    @PreAuthorize("@el.check('blog:list')")
+//    @PreAuthorize("@el.check('blog:list')")
+//    @PreAuthorize("permitAll()")
     public ResponseEntity<Object> query(SysBlogQueryCriteria criteria, Pageable pageable) {
         return new ResponseEntity<>(blogService.queryAll(criteria, pageable), HttpStatus.OK);
-    }
-
-    @PostMapping
-    @Log("新增博客")
-    @ApiOperation("新增博客")
-    @PreAuthorize("@el.check('blog:add')")
-    public ResultEntity create(@Validated @RequestBody SaveBlogDto saveBlogDto) {
-        SysBlog blog = new SysBlog();
-        blog.setUserId(SecurityUtils.getCurrentUserId());
-        blog.setDir(saveBlogDto.getDir());
-        blog.setTitle(saveBlogDto.getName());
-        blog.setFileName(saveBlogDto.getName());
-        blog.setOrderNum(saveBlogDto.getOrderNum());
-        blog.setCreateDate(Integer.parseInt(saveBlogDto.getCreateDate()));
-        blog.setUpdateTime(new Date());
-        blog.setBlogType(BlogTypeEnum.PUBLIC.getCode());
-
-        WordCounter wordCounter = new WordCounter(saveBlogDto.getChineseCount(), saveBlogDto.getEnglishCount(), saveBlogDto.getNumberCount(), saveBlogDto.getOtherCount());
-        SysBlogWord sysBlogWord = new SysBlogWord(blog.getId(), wordCounter);
-        boolean isInsert = blogService.saveBlog(blog, sysBlogWord);
-        if (isInsert) {
-            return ResultEntity.ok("新增成功");
-        }
-        return ResultEntity.ok("更新成功");
     }
 
     @PutMapping
@@ -101,16 +78,43 @@ public class SysBlogController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /**
-     * @param isBlog 普通博客或
-     */
+
+    @PostMapping
+    @Log("新增博客")
+    @ApiOperation("新增博客")
+    @PreAuthorize("@el.check('blog:add')")
+    public ResultEntity create(@Validated @RequestBody SaveBlogDto saveBlogDto) {
+        SysBlog blog = new SysBlog();
+        if (saveBlogDto.getUserId() != null) {
+            blog.setUserId(saveBlogDto.getUserId());
+        } else {
+            blog.setUserId(SecurityUtils.getCurrentUserId());
+        }
+        blog.setDir(saveBlogDto.getDir());
+        blog.setTitle(saveBlogDto.getName());
+        blog.setFileName(saveBlogDto.getName());
+        blog.setOrderNum(saveBlogDto.getOrderNum());
+        blog.setCreateDate(Integer.parseInt(saveBlogDto.getCreateDate()));
+        blog.setLastUploadTime(new Date());
+        blog.setBlogType(BlogTypeEnum.PUBLIC.getCode());
+        blog.setCharacterCount(saveBlogDto.getChineseCount() + saveBlogDto.getEnglishCount());
+
+        WordCounter wordCounter = new WordCounter(saveBlogDto.getChineseCount(), saveBlogDto.getEnglishCount(), saveBlogDto.getNumberCount(), saveBlogDto.getOtherCount());
+        SysBlogWord sysBlogWord = new SysBlogWord(blog.getId(), wordCounter);
+        boolean isInsert = blogService.saveBlog(blog, sysBlogWord);
+        if (isInsert) {
+            return ResultEntity.ok("新增成功");
+        }
+        return ResultEntity.ok("更新成功");
+    }
+
     @Log("上传博客")
     @ApiOperation("上传博客")
     @PreAuthorize("@el.check('blog:add')")
     @PostMapping("/upload")
-    public ResponseEntity<Object> temp(MultipartFile file, boolean isBlog) {
+    public ResponseEntity<Object> temp(MultipartFile file) {
         checkFile(file);
-        UploadBlog blog = blogService.saveTemp(file, SecurityUtils.getCurrentUserId(), true);
+        UploadBlog blog = blogService.saveTemp(file, SecurityUtils.getCurrentUserId());
         if (blog.getErrorInfo() != null) {
             throw new BadRequestException(blog.getErrorInfo());
         }
@@ -118,9 +122,25 @@ public class SysBlogController {
         return ResponseEntity.ok(blog);
     }
 
+    @Log("同步博客接口")
+    @ApiOperation("同步博客接口")
+    @AnonymousPostMapping("/asyncBlog")
+    public ResultEntity asyncBlog(MultipartFile file, String token) {
+        if (!"a%f@4d".equals(token)) {
+            return ResultEntity.error("token错误");
+        }
+        checkFile(file);
+        UploadBlog blog = blogService.saveTemp(file, 1L);
+        if (blog.getErrorInfo() != null) {
+            throw new BadRequestException(blog.getErrorInfo());
+        }
+        blog.setBlogSpace("good-looking-hk");
+        return create(blog.toSaveBlogDto());
+    }
+
     private void checkFile(MultipartFile file) {
-        if (file == null || file.isEmpty() || file.getSize() > MAX_BLOG_UPLOAD_FILE) {
-            throw new BadRequestException("文件为空或过大");
+        if (file == null || file.isEmpty()) {
+            throw new BadRequestException("文件为空");
         }
         String fileName = file.getOriginalFilename();
         if (StrUtil.isEmpty(fileName)) {

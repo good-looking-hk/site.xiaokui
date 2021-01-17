@@ -13,19 +13,11 @@ Style with support for rainbow parens
 }
 
 
-/*.hljs-comment,*/
-/*.hljs-quote {*/
-/*  color: #969896;*/
-/*  font-style: italic;*/
-/*}*/
-
 .hljs-comment,
 .hljs-quote {
-  /*color: #5B995B;*/
-  color: greenyellow;
-  /*font-style: italic;*/
+  color: #969896;
+  font-style: italic;
 }
-
 
 .hljs-keyword,
 .hljs-selector-tag,

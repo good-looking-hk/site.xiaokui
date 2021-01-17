@@ -70,8 +70,9 @@ $(function () {
     //     $('#right-nav').css({"padding": '15px 10px'});
     // }
 
-    var obj = countChars();
-    console.error(obj)
+//    var obj = countChars();
+//    console.error(obj)
+    var obj = {'中英文单词数': parseInt($('#countChars').text())};
     var minute = (parseInt(obj.中英文单词数) / 493).toFixed(1);
     if (minute > 25) {
         minute -= 5.5;
@@ -98,15 +99,15 @@ $(function () {
 
         if(scroH > 54){  //距离顶部大于100px时
             $('#right-nav').css({top: '70px'});
-            console.error("顶部高度"+ scroH)
+//            console.error("顶部高度"+ scroH)
         } else {
             $('#right-nav').css({top: '125px'});
         }
         if (contentH - (scroH + viewH) <= 100){  //距离底部高度小于100px
-            console.error("底部高度" + contentH - (scroH + viewH))
+//            console.error("底部高度" + contentH - (scroH + viewH))
         }
         if (contentH === (scroH + viewH)){  //滚动条滑到底部啦
-            console.error("底部" + contentH)
+//            console.error("底部" + contentH)
         }
     });
 

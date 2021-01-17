@@ -59,15 +59,14 @@ public class IndexController {
     private static final String ERROR = "/error", REDIRECT = "redirect:", FORWARD = "forward:";
 
 
-
     private final UserService userService;
 
     private final SysBlogServiceImpl sysBlogService;
 
     private final CacheCenter cacheCenter;
 
-    @Value("${xiaokui.recent-update}")
-    private Integer recentUpdateCount;
+    @Value("${xiaokui.recent-upload}")
+    private Integer recentUploadCount;
 
     @Value("${xiaokui.recommend-count}")
     private Integer recommendCount;
@@ -115,7 +114,7 @@ public class IndexController {
         boolean proCheckPass = false;
         if (passwd != null) {
             // 最好走第一个逻辑吧
-            if (user.getBlogPwd().equals(passwd) || StrUtil.isNotEmpty(user.getPassword())) {
+            if (user.getBlogPwd() != null && user.getBlogPwd().equals(passwd)) {
                 log.info("受保护访问通过，userId为{}，passwd为{}", user.getId(), passwd);
                 proCheckPass = true;
             }
@@ -158,14 +157,14 @@ public class IndexController {
             return ERROR;
         } else {
             // 获取最近更新博客topN
-            List<SysBlog> recentUpdateList = details.getModifyTopN(this.recentUpdateCount);
+            List<SysBlog> recentUploadList = details.getUploadTopN(this.recentUploadCount);
             // 获取推荐阅读topN
             List<SysBlog> recommendList = details.getRecommendTopN(this.recommendCount);
             // 最多访问，这个需要查redis获取topN
             LinkedHashMap<Long, Integer> map = sysBlogService.getMostViewTopN(user.getId(), mostView);
             List<SysBlog> mostViewList = resolveMostViewList(details, map);
 
-            model.addAttribute("update", recentUpdateList);
+            model.addAttribute("upload", recentUploadList);
             model.addAttribute("recommend", recommendList);
             model.addAttribute("view", mostViewList);
 
@@ -371,6 +370,9 @@ public class IndexController {
         }
         if (cacheCenter.getSysConfigCache().showResume()) {
             model.addAttribute("resume", true);
+        }
+        if (cacheCenter.getSysConfigCache().showProject()) {
+            model.addAttribute("project", true);
         }
     }
 

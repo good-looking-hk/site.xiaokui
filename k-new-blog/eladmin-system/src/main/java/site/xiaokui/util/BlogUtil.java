@@ -13,6 +13,7 @@ import site.xiaokui.domain.UploadBlog;
 import site.xiaokui.domain.WordCounter;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -105,10 +106,11 @@ public class BlogUtil {
     /**
      * 解析Typora生成的html/md文件
      */
-    public static UploadBlog resolveUploadFile(MultipartFile upload, Long userId, boolean isBlog) {
-        String fullName = upload.getOriginalFilename();
+    public static UploadBlog resolveUploadFile(MultipartFile upload, Long userId) {
+        String fullName = upload.getOriginalFilename().replace("@", "*");
         // 解析文件名
-        UploadBlog blog = resolveFileName(fullName, isBlog);
+        UploadBlog blog = resolveFileName(fullName);
+        blog.setUserId(userId);
         if (blog.getErrorInfo() != null) {
             return blog;
         }
@@ -121,7 +123,7 @@ public class BlogUtil {
                 throw new RuntimeException("创建文件失败：" + fullName);
             }
             // 目标文件输入流
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(targetFile), "UTF-8");
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(targetFile), StandardCharsets.UTF_8);
             BufferedWriter writer = new BufferedWriter(outputStreamWriter);
 
             // 创建临时文件，将上传流保存
@@ -134,7 +136,7 @@ public class BlogUtil {
             // md文件备份
             upload.transferTo(mdFile);
             // 本地文件流，需要读两次，一次转换html，一次统计字数
-            InputStreamReader inputFileReader = new InputStreamReader(new FileInputStream(mdFile), "UTF-8");
+            InputStreamReader inputFileReader = new InputStreamReader(new FileInputStream(mdFile), StandardCharsets.UTF_8);
             if (MD_SUFFIX.equals(blog.getSuffix())) {
                 MarkDownParser.ParseData data = MarkDownParser.PARSER.parse(inputFileReader);
                 if (data.getHtmlStr() != null) {
@@ -146,7 +148,7 @@ public class BlogUtil {
 
                 }
                 // 再读一次流
-                inputFileReader = new InputStreamReader(new FileInputStream(mdFile), "UTF-8");
+                inputFileReader = new InputStreamReader(new FileInputStream(mdFile), StandardCharsets.UTF_8);
                 BufferedReader reader = new BufferedReader(inputFileReader);
                 String str;
                 WordCounter total = new WordCounter(0, 0, 0, 0);
@@ -189,7 +191,7 @@ public class BlogUtil {
      * @param fullName html文件全名 智能解析
      * @return 解析后上传博客对象
      */
-    public static UploadBlog resolveFileName(String fullName, boolean isBlog) {
+    public static UploadBlog resolveFileName(String fullName) {
         UploadBlog blog = new UploadBlog();
         if (StrUtil.isEmpty(fullName)) {
             blog.setErrorInfo("不合法的文件：" + fullName);
@@ -200,6 +202,8 @@ public class BlogUtil {
             blog.setErrorInfo("文件格式只能为html或md:" + fullName);
             return blog;
         }
+
+        boolean isBlog = !NumberUtil.isInteger(fullName.substring(0, 8));
 
         int index = fullName.lastIndexOf(".");
         // 如.html或.md
@@ -304,17 +308,17 @@ public class BlogUtil {
 
     public static void main(String[] args) {
         String fullName = "Spring源码：bean的加载-6-20180808.html";
-        System.out.println(resolveFileName(fullName, true));
+        System.out.println(resolveFileName(fullName));
         fullName = "Spring源码：bean的加载-20180808-6.html";
-        System.out.println(resolveFileName(fullName, true));
+        System.out.println(resolveFileName(fullName));
         fullName = "Spring源码：bean的加载-6.html";
-        System.out.println(resolveFileName(fullName, true));
+        System.out.println(resolveFileName(fullName));
         fullName = "Spring源码：bean的加载-20180808.html";
-        System.out.println(resolveFileName(fullName, true));
+        System.out.println(resolveFileName(fullName));
         int index = fullName.lastIndexOf(".");
         System.out.println(fullName.substring(index));
         fullName = "20190929-实习周报.md";
-        System.out.println(resolveFileName(fullName, false));
+        System.out.println(resolveFileName(fullName));
     }
 }
 

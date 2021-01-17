@@ -20,6 +20,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.exception.BadRequestException;
+import me.zhengjie.exception.ErrorRequestException;
 import me.zhengjie.utils.enums.DataScopeEnum;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -59,7 +60,7 @@ public class SecurityUtils {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             return userDetails.getUsername();
         }
-        throw new BadRequestException(HttpStatus.UNAUTHORIZED, "找不到当前登录的信息");
+        throw new ErrorRequestException(HttpStatus.UNAUTHORIZED, "找不到当前登录的信息");
     }
 
     /**
