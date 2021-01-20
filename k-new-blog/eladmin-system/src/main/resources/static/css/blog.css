@@ -182,7 +182,7 @@ ul.list-group {
 
 /*—滚动条大小–*/
 ::-webkit-scrollbar{
-    width:13px;
+    width:17px;
     height:18px;
 }
 

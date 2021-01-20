@@ -125,7 +125,7 @@ public class SysBlogController {
     @Log("同步博客接口")
     @ApiOperation("同步博客接口")
     @AnonymousPostMapping("/asyncBlog")
-    public ResultEntity asyncBlog(MultipartFile file, Long lastModified,  String token) {
+    public ResultEntity asyncBlog(MultipartFile file, Long lastModified, String token) {
         if (!"a%f@4d".equals(token)) {
             return ResultEntity.error("token错误");
         }

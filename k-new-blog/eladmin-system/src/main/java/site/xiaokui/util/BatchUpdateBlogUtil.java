@@ -26,6 +26,8 @@ public class BatchUpdateBlogUtil {
 
     private static final String LOCAL_MD_DIR = "/home/hk-pc/gitee/myBlog/md/";
 
+    private static final boolean FORCE_UPDATE = false;
+
     public static void main(String[] args) throws Exception {
         SQLManager sqlManager = LocalSqlManager.getSqlManager();
         List<SysBlog> list = sqlManager.execute(new SQLReady("select * from sys_blog order by dir,id"), SysBlog.class);
@@ -46,7 +48,7 @@ public class BatchUpdateBlogUtil {
                         title = title.replace("@", "*");
                         sqlManager.executeUpdate(new SQLReady("update sys_blog set title = '" + title + "', file_name = '" + title + "' where id = " + item.getId()));
                     }
-                    uploadFileIfNecessary(item, mdFile);
+                    uploadFileIfNecessary(item, mdFile, FORCE_UPDATE);
                 } else {
                     System.err.println(filePath);
                     errorRow++;
@@ -59,29 +61,40 @@ public class BatchUpdateBlogUtil {
                     errorRow++;
                 } else {
                     okRow++;
-                    uploadFileIfNecessary(item, mdFile);
+                    uploadFileIfNecessary(item, mdFile, FORCE_UPDATE);
                 }
             }
         }
-        System.out.println("正确条数:" + okRow + " 错误条数:" + errorRow + " 成功更新文件数:" + updateRow + " 失败更新文件数:" + updateFail + "未更新文件数:" + notUpdateRow);
+        System.out.println("正确条数:" + okRow + " 错误条数:" + errorRow + " 成功更新文件数:" + updateRow + " 失败更新文件数:" + updateFail + " 未更新文件数:" + notUpdateRow);
     }
 
-    private static void uploadFileIfNecessary(SysBlog item, File mdFile) {
+    private static void uploadFileIfNecessary(SysBlog item, File mdFile, boolean forceUpdate) {
         // 如果文件内容发生了变化，需要更新
         if (item.getLastUploadTime().getTime() != mdFile.lastModified()) {
-            Map<String, Object> map = new HashMap<>(4);
-            map.put("file", mdFile);
-            map.put("token", "a%f@4d");
-            map.put("lastModified", mdFile.lastModified());
-            JSONObject json = JSONObject.parseObject(HttpUtil.post("http://localhost:9090/api/blog/asyncBlog", map));
-            if (json != null && (json.getInteger("code") == 200 || json.getInteger("code") == 0)) {
-                updateRow++;
-            } else {
-                System.err.println(json);
-                updateFail++;
-            }
+            uploadBlog(mdFile);
+        } else if(forceUpdate) {
+            uploadBlog(mdFile);
         } else {
             notUpdateRow++;
         }
+    }
+
+    private static void uploadBlog(File mdFile) {
+        Map<String, Object> map = new HashMap<>(4);
+        map.put("file", mdFile);
+        map.put("lastModified", mdFile.lastModified());
+        map.put("token", "a%f@4d");
+        JSONObject json = JSONObject.parseObject(HttpUtil.post("http://localhost:9090/api/blog/asyncBlog", map));
+        if (json != null && json.getString("status") == null) {
+            updateRow++;
+            System.out.println(json);
+        } else {
+            updateFail++;
+            System.err.println(json);
+        }
+    }
+
+    private static void forceUploadFile(SysBlog item, File mdFile) {
+        uploadFileIfNecessary(item, mdFile, true);
     }
 }

@@ -35,6 +35,7 @@ public class UploadBlog {
         dto.setName(name);
         dto.setOrderNum(orderNum);
         dto.setCreateDate(createDate.toString());
+        dto.setLastModified(lastModified);
         dto.setChineseCount(wordCounter.chineseCount);
         dto.setEnglishCount(wordCounter.englishCount);
         dto.setNumberCount(wordCounter.numberCount);
