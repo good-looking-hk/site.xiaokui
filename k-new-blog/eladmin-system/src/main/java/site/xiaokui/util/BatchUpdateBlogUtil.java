@@ -26,10 +26,18 @@ public class BatchUpdateBlogUtil {
 
     private static final String LOCAL_MD_DIR = "/home/hk-pc/gitee/myBlog/md/";
 
-    private static final boolean FORCE_UPDATE = false;
+    /**
+     * 是否强制更新
+     */
+    private static final boolean FORCE_UPDATE = true;
+
+    /**
+     * 是否为更新本地数据库
+     */
+    private static final boolean UPDATE_LOCAL = false;
 
     public static void main(String[] args) throws Exception {
-        SQLManager sqlManager = LocalSqlManager.getSqlManager();
+        SQLManager sqlManager = LocalSqlManager.getSqlManager(UPDATE_LOCAL);
         List<SysBlog> list = sqlManager.execute(new SQLReady("select * from sys_blog order by dir,id"), SysBlog.class);
         for (int i = 0; i < list.size(); i++) {
             SysBlog item = list.get(i);
@@ -84,7 +92,8 @@ public class BatchUpdateBlogUtil {
         map.put("file", mdFile);
         map.put("lastModified", mdFile.lastModified());
         map.put("token", "a%f@4d");
-        JSONObject json = JSONObject.parseObject(HttpUtil.post("http://localhost:9090/api/blog/asyncBlog", map));
+        String serverUrl = UPDATE_LOCAL ? "http://localhost:9090" : "https://www.xiaokui.site";
+        JSONObject json = JSONObject.parseObject(HttpUtil.post(serverUrl + "/api/blog/asyncBlog", map));
         if (json != null && json.getString("status") == null) {
             updateRow++;
             System.out.println(json);
