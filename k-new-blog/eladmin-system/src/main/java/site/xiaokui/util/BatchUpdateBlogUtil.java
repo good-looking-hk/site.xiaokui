@@ -34,7 +34,7 @@ public class BatchUpdateBlogUtil {
     /**
      * 是否为更新本地数据库
      */
-    private static final boolean UPDATE_LOCAL = false;
+    private static final boolean UPDATE_LOCAL = true;
 
     public static void main(String[] args) throws Exception {
         SQLManager sqlManager = LocalSqlManager.getSqlManager(UPDATE_LOCAL);

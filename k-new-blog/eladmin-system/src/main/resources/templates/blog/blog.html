@@ -37,4 +37,24 @@
 <script src="${ctxPath}/js/blog.js"></script>
 <script src="${ctxPath}/js/highlight.pack.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
+<script>
+$(function(){
+    var tips;
+    $('#countChars').on({
+        mouseenter:function(){
+            var that = this;
+            tips =layer.tips("<span style='color:white;'>" +
+            "1. 只统计汉字、英文字母</br>" +
+            "2. 标点符号、空格、换行、数字均不统计</br>" +
+            "3. 一汉字为一有效字符、一连串英文字符为一有效字符</br>" +
+            "4. log4j也为一有效字符</br>" +
+            "5. 具体统计算法见源代码" +
+            "</span>",that,{tips:[3,'black'],time:0,area: 'auto',maxWidth:500});
+        },
+        mouseleave:function(){
+            layer.close(tips);
+        }
+    });
+});
+</script>
 @include("/blog/_footer.html"){}

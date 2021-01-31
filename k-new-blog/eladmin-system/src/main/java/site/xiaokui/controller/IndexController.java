@@ -273,6 +273,9 @@ public class IndexController {
         }
         blog.setFilePath(BlogUtil.getFilePath(user.getId(), blog.getDir(), blog.getFileName()));
 
+        String str = blog.getCreateDate().toString();
+        blog.setBlogDate(str.substring(0, 4) + "-" + str.substring(4, 6) + "-" + str.substring(6, 8));
+
         // 这里提前加了1
         blog.setViewCount(sysBlogService.getViewCountFromRedis(user.getId(), blog.getId()));
         // 实时增加访问量
