@@ -122,8 +122,8 @@ public class SysBlogServiceImpl extends BaseService<SysBlog> implements SysBlogS
             query.andGreat("order_num", blog.getOrderNum());
             query.asc("order_num").limit(1, 1);
         } else {
-            query.andGreat("create_time", blog.getCreateDate());
-            query.asc("create_time").limit(1, 1);
+            query.andGreat("create_date", blog.getCreateDate());
+            query.asc("create_date").limit(1, 1);
         }
         List<SysBlog> list = query.select();
         if (list == null || list.size() == 0) {

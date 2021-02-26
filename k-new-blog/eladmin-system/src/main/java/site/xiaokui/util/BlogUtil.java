@@ -1,12 +1,10 @@
 package site.xiaokui.util;
 
-import cn.hutool.core.date.DatePattern;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
-import me.zhengjie.exception.ErrorRequestException;
 import org.springframework.web.multipart.MultipartFile;
+import site.xiaokui.constant.BlogConstant;
 import site.xiaokui.domain.BlogDetailList;
 import site.xiaokui.domain.SysBlog;
 import site.xiaokui.domain.UploadBlog;
@@ -219,6 +217,7 @@ public class BlogUtil {
             }
             blog.setCreateDate(Integer.parseInt(arr[0]));
             blog.setName(arr[1]);
+            blog.setDir(BlogConstant.DEFAULT_PROTECT_DIR);
             return blog;
         }
 

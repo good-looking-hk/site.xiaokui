@@ -24,7 +24,7 @@ public class Main1 {
         }
         // 进位标志
         boolean needAddOne = false;
-        String targetStr = new String();
+        String targetStr = "";
         for (int i = minStr.length() - 1; i >= 0; i--) {
             // 这里转int有两种，一是以字符0作为标准，而是 Integer.parseInt()，本质都是基于第一种
             int int1 = minStr.charAt(i) - '0';

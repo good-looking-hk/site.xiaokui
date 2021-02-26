@@ -1,4 +1,4 @@
-package site.xiaokui.util;
+package site.xiaokui.util.useful;
 
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -7,6 +7,7 @@ import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.SQLReady;
 import site.xiaokui.domain.SysBlog;
 import site.xiaokui.domain.enums.BlogTypeEnum;
+import site.xiaokui.util.LocalSqlManager;
 
 import java.io.File;
 import java.util.HashMap;

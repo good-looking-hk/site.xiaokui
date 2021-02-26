@@ -17,6 +17,7 @@ package me.zhengjie.modules.quartz.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.exception.BadRequestException;
+import me.zhengjie.exception.ErrorRequestException;
 import me.zhengjie.modules.quartz.domain.QuartzJob;
 import org.quartz.*;
 import org.quartz.impl.triggers.CronTriggerImpl;
@@ -44,7 +45,7 @@ public class QuartzManage {
             JobDetail jobDetail = JobBuilder.newJob(ExecutionJob.class).
                     withIdentity(JOB_NAME + quartzJob.getId()).build();
 
-            //通过触发器名和cron 表达式创建 Trigger
+            // 通过触发器名和cron 表达式创建 Trigger
             Trigger cronTrigger = newTrigger()
                     .withIdentity(JOB_NAME + quartzJob.getId())
                     .startNow()
@@ -53,10 +54,10 @@ public class QuartzManage {
 
             cronTrigger.getJobDataMap().put(QuartzJob.JOB_KEY, quartzJob);
 
-            //重置启动时间
+            // 重置启动时间
             ((CronTriggerImpl)cronTrigger).setStartTime(new Date());
 
-            //执行定时任务
+            // 执行定时任务
             scheduler.scheduleJob(jobDetail,cronTrigger);
 
             // 暂停任务
@@ -65,7 +66,7 @@ public class QuartzManage {
             }
         } catch (Exception e){
             log.error("创建定时任务失败", e);
-            throw new BadRequestException("创建定时任务失败");
+            throw new ErrorRequestException("创建定时任务失败:" + e.getMessage());
         }
     }
 
@@ -84,7 +85,7 @@ public class QuartzManage {
             }
             CronScheduleBuilder scheduleBuilder = CronScheduleBuilder.cronSchedule(quartzJob.getCronExpression());
             trigger = trigger.getTriggerBuilder().withIdentity(triggerKey).withSchedule(scheduleBuilder).build();
-            //重置启动时间
+            // 重置启动时间
             ((CronTriggerImpl)trigger).setStartTime(new Date());
             trigger.getJobDataMap().put(QuartzJob.JOB_KEY,quartzJob);
 
@@ -95,9 +96,8 @@ public class QuartzManage {
             }
         } catch (Exception e){
             log.error("更新定时任务失败", e);
-            throw new BadRequestException("更新定时任务失败");
+            throw new ErrorRequestException("更新定时任务失败");
         }
-
     }
 
     /**
@@ -111,7 +111,7 @@ public class QuartzManage {
             scheduler.deleteJob(jobKey);
         } catch (Exception e){
             log.error("删除定时任务失败", e);
-            throw new BadRequestException("删除定时任务失败");
+            throw new ErrorRequestException("删除定时任务失败");
         }
     }
 
@@ -131,7 +131,7 @@ public class QuartzManage {
             scheduler.resumeJob(jobKey);
         } catch (Exception e){
             log.error("恢复定时任务失败", e);
-            throw new BadRequestException("恢复定时任务失败");
+            throw new ErrorRequestException("恢复定时任务失败");
         }
     }
 
@@ -153,7 +153,7 @@ public class QuartzManage {
             scheduler.triggerJob(jobKey,dataMap);
         } catch (Exception e){
             log.error("定时任务执行失败", e);
-            throw new BadRequestException("定时任务执行失败");
+            throw new ErrorRequestException("定时任务执行失败:" + e.getMessage());
         }
     }
 
@@ -167,7 +167,7 @@ public class QuartzManage {
             scheduler.pauseJob(jobKey);
         } catch (Exception e){
             log.error("定时任务暂停失败", e);
-            throw new BadRequestException("定时任务暂停失败");
+            throw new ErrorRequestException("定时任务暂停失败");
         }
     }
 }

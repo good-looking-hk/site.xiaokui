@@ -1,6 +1,5 @@
 package study.hk.wx;
 
-import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.digest.HMac;
 import cn.hutool.crypto.digest.HmacAlgorithm;
@@ -21,8 +20,8 @@ public class CheckSign {
         map.put("mch_id", 10000100);
         map.put("device_info", 1000);
         map.put("body", "test");
-        // String randomStr = RandomUtil.randomString(5);
-        // 官方示例为 ibuaiVcKdpRxkhJA
+        /// String randomStr = RandomUtil.randomString(5);
+        /// 官方示例为 ibuaiVcKdpRxkhJA
         map.put("nonce_str", "ibuaiVcKdpRxkhJA");
 
         StringBuilder sb = null;
@@ -50,7 +49,7 @@ public class CheckSign {
         sign = hMac.digestHex(sb.toString()).toUpperCase();
         System.out.println(sign);
 
-         // 最后异步
+        // 最后异步
         map.put("sign", sign);
     }
 }

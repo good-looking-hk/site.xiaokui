@@ -46,6 +46,7 @@ import java.util.Set;
 public class QuartzJobController {
 
     private static final String ENTITY_NAME = "quartzJob";
+
     private final QuartzJobService quartzJobService;
 
     @ApiOperation("查询定时任务")

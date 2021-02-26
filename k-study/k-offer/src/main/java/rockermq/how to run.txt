@@ -1,0 +1,38 @@
+Broker
+Broker是RocketMQ系统的主要组成部分。它接收从生产者发送的消息，存储它们并准备处理来自消费者的拉取请求。它还存储与消息相关的元数据，包括消费者组，消耗进度偏移和主题/队列信息。
+
+Name Server
+Name Server充当路由信息提供者。生产者/消费者客户查找主题以查找相应的代理列表。
+
+Topic
+Topic是生产者传递消息和消费者提取消息的类别。Topic与生产者和消费者的关系非常松散。具体而言，Topic可能有零个，一个或多个生成器向其发送消息; 相反，生产者可以发送不同Topic的消息。从消费者的角度来看，Topic可以由零个，一个或多个消费者群体订阅。类似地，消费者组可以订阅一个或多个主题，只要该组的实例保持其订阅一致即可。
+
+Message
+Message是要传递的信息。Message必须有一个主题，可以将其解释为您要发送给的邮件地址。Message还可以具有可选标记和额外的键 - 值对。例如，您可以为消息设置业务密钥，并在代理服务器上查找Message以诊断开发期间的问题。
+
+Tag
+Tag，换句话说，子主题，为用户提供了额外的灵活性。对于标记，来自同一业务模块的具有不同目的的消息可以具有相同的主题和不同的标记。Tag有助于保持代码的清晰和连贯，而Tag也可以方便RocketMQ提供的查询系统。
+
+简单验证
+
+vi ~/.bashrc
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+source ~/.bashrc
+
+先启动脚本如下
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+cd /usr/app/rocketmq-all-4.7.1-bin-release
+bash bin/mqnamesrv
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+cd /usr/app/rocketmq-all-4.7.1-bin-release
+bash bin/mqbroker -n localhost:9876 -c conf/broker.conf
+
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export NAMESRV_ADDR=localhost:9876
+cd /usr/app/rocketmq-all-4.7.1-bin-release
+sh bin/tools.sh org.apache.rocketmq.example.quickstart.Producer
+
+sh bin/tools.sh org.apache.rocketmq.example.quickstart.Consumer
+
+sh bin/mqadmin updateTopic -n localhost:9876 -b 10.10.19.51:10911 -t TopicTest

@@ -1,4 +1,4 @@
-package interview;
+package thread;
 
 import java.util.concurrent.*;
 

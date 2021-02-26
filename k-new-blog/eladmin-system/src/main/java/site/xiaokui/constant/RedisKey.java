@@ -1,4 +1,4 @@
-package site.xiaokui;
+package site.xiaokui.constant;
 
 /**
  * @author HK
