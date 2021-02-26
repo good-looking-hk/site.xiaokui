@@ -113,6 +113,11 @@ public interface UserService {
     List<UserDto> queryAll(UserQueryCriteria criteria);
 
     /**
+     * 查询所有用户，与其他表没有关联
+     */
+    List<User> all();
+
+    /**
      * 导出数据
      * @param queryAll 待导出的数据
      * @param response /

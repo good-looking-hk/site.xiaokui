@@ -59,12 +59,6 @@ public class BlogService extends BaseService<SysBlog> {
         if (userId == null) {
             // 谷歌爬虫一般从23:20多一点开始，到1:00介绍
             // 中午从12:10多一点开始，到12:30左右结束
-            if (hours > 23 && minute > 20) {
-                return;
-            }
-            if (hours < 6) {
-                return;
-            }
             if (hours == 12 && 10 < minute && minute < 30) {
                 // 可能存在误杀
                 // 在不要求用户登录的情况下，想要不被谷歌爬虫刷一个访问量，只有两种办法

@@ -68,6 +68,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> all() {
+        return userRepository.findAll();
+    }
+
+    @Override
     public UserDto getUserByBlogSpace(String blogSpace) {
         User user = userRepository.getUserByBlogSpace(blogSpace);
         return userMapper.toDto(user);

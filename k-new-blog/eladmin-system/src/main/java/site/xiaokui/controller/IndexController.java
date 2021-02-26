@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.modules.system.service.UserService;
 import me.zhengjie.modules.system.service.dto.UserDto;
+import me.zhengjie.utils.IpUtil;
 import org.beetl.sql.core.query.Query;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -279,7 +280,7 @@ public class IndexController {
         // 这里提前加了1
         blog.setViewCount(sysBlogService.getViewCountFromRedis(user.getId(), blog.getId()));
         // 实时增加访问量
-        sysBlogService.addViewCountIntoRedis("127.0.0.1", user.getId(), blog.getId(), blog.getUserId());
+        sysBlogService.addViewCountIntoRedis(IpUtil.getIp(), user.getId(), blog.getId(), blog.getUserId());
 
         BlogUser blogUser = new BlogUser(user);
         blogUser.setBlog(blog);

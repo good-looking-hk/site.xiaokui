@@ -3,13 +3,19 @@ package site.xiaokui;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import me.zhengjie.modules.system.domain.User;
 import me.zhengjie.modules.system.service.UserService;
+import me.zhengjie.modules.system.service.dto.UserDto;
+import me.zhengjie.modules.system.service.dto.UserQueryCriteria;
 import org.beetl.sql.core.SQLManager;
 import org.beetl.sql.core.query.Query;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import site.xiaokui.service.SysBlogService;
+import site.xiaokui.service.impl.SysBlogServiceImpl;
+import site.xiaokui.task.BlogViewCountTask;
 
 import java.util.List;
 import java.util.Map;
@@ -23,27 +29,56 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 @RequiredArgsConstructor
 @Component
-public class CacheCenter implements ApplicationRunner {
+public class CacheCenter implements ApplicationRunner, DisposableBean {
 
     private final SQLManager sqlManager;
 
-    private final SysBlogService sysBlogService;
+    private final SysBlogServiceImpl sysBlogServiceImpl;
 
     private final UserService userService;
 
     private SysConfigCache sysConfigCache;
 
+    private BlogViewCountTask blogViewCountTask;
+
     /**
      * 避免刷新缓存时的线程竞争
      */
-    private final static ReadWriteLock readWriteLock = new ReentrantReadWriteLock(false);
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock(false);
 
     /**
      * Spring启动完成后，初始化缓存数据
      */
     @Override
     public void run(ApplicationArguments args) {
+        // 读取系统参数配置缓存
         this.sysConfigCache = initCacheMap();
+
+        // 将数据库数据刷到缓存
+        List<User> list = userService.all();
+        for (User user : list) {
+            sysBlogServiceImpl.setMostViewCache(user.getId());
+        }
+    }
+
+    /**
+     * Spring会调用java.lang.Runtime.addShutdownHook(Thread hook)注册一个钩子，在以下几种情况会主动调用：
+     *  1.程序正常停止
+     *  2.Reach the end of program
+     *  3.System.exit
+     *  4.程序异常退出
+     *  5.NPE
+     *  6.OutOfMemory
+     *  7.受到外界影响停止
+     *  8.Ctrl+C
+     *  9.用户注销或者关机
+     */
+    @Override
+    public void destroy() throws Exception {
+        // 将缓存数据刷新至数据库
+        blogViewCountTask.syncRedisViewCountToDb();
+        // 清空博客访问量贡献黑名单
+        blogViewCountTask.clearContributeBlackList();
     }
 
     public SysConfigCache getSysConfigCache() {

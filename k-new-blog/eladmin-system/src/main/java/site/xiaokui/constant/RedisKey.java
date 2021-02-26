@@ -7,7 +7,7 @@ package site.xiaokui.constant;
 public class RedisKey {
 
     /**
-     * 单个用户博客最多访问有序集合后缀
+     * 单个用户的博客最多访问有序集合后缀，对应redis里面有序集合，用户id键:博客id 访问数量
      */
     public static final String USER_BLOG_VIEW_COUNT_SORT_MAP_SUFFIX = "_user_blog_view_count_sort_map";
 

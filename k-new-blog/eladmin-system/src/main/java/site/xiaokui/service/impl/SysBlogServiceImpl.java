@@ -84,7 +84,7 @@ public class SysBlogServiceImpl extends BaseService<SysBlog> implements SysBlogS
     }
 
     /**
-     * 一般由缓存调用
+     * 一般由缓存调用，将数据库中博客访问量读入redis缓存
      */
     public void setMostViewCache(Long userId) {
         blogCacheService.setMostView(userId, listBlogByUserId(userId));
