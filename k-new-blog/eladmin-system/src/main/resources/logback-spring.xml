@@ -26,7 +26,7 @@
             <maxHistory>90</maxHistory><!--  保留30天日志 -->
         </rollingPolicy>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>10MB</maxFileSize>
+            <maxFileSize>4MB</maxFileSize>
         </triggeringPolicy>
     </appender>
 

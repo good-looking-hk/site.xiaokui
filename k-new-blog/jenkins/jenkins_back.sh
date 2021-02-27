@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+# 自动找到服务端运行的jar线程，停掉并启动新的jar，又外部调用，不能单独使用
 # @author HK
 # @date 2020-03-21
 # @version 1.1
@@ -17,14 +18,15 @@ echo "准备部署应用，找到目标PID:${pid}"
 
 function runApp() {
     echo "开始部署应用，路径为${rootJarPath}，运行目录为${rootJarPath%/*},nohup=${nohup}"
-    cd "${rootJarPath%/*}" || { echo "进入目录${rootJarPath%/}失败"; exit 1; }
+    # cd "${rootJarPath%/*}" || { echo "进入目录${rootJarPath%/}失败"; exit 1; }
     # 如果不为空
     if test -n "$nohup"
     then
-        nohup java -jar $rootJarPath --server.port=9090 --spring.profiles.active=prod --kpwd=Z1w@9?1997&
+        nohup java -jar $rootJarPath --server.port=9090 --spring.profiles.active=prod --kpwd=Z1w@9?1997 >/xiaokui/product/nohup.log 2>&1 &
     else
-        java -jar $rootJarPath --server.port=9090 --spring.profiles.active=prod --kpwd=Z1w@9?1997&
+        java -jar $rootJarPath --server.port=9090 --spring.profiles.active=prod --kpwd=Z1w@9?1997 >/xiaokui/product/nohup.log 2>&1 &
     fi
+    echo '执行完成'
 }
 
 # 如果找到pid数大于1

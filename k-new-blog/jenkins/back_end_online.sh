@@ -33,3 +33,6 @@ fi
 cd /home/hk-pc/JavaSpace/newxiaokui && gralde -p k-new-blog clean
 echo '本地构建完成'
 
+# /var/lib/jenkins/workspace/site.xiaokui/www.xiaokui.site
+# 快速清除构建残留文件
+# cd /home/hk-pc/JavaSpace/newxiaokui && gralde -p k-new-blog clean

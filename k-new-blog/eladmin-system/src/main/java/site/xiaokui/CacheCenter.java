@@ -13,12 +13,14 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+import site.xiaokui.constant.RedisKey;
 import site.xiaokui.service.SysBlogService;
 import site.xiaokui.service.impl.SysBlogServiceImpl;
 import site.xiaokui.task.BlogViewCountTask;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -37,9 +39,10 @@ public class CacheCenter implements ApplicationRunner, DisposableBean {
 
     private final UserService userService;
 
-    private SysConfigCache sysConfigCache;
+    private final BlogViewCountTask blogViewCountTask;
 
-    private BlogViewCountTask blogViewCountTask;
+
+    private SysConfigCache sysConfigCache;
 
     /**
      * 避免刷新缓存时的线程竞争
@@ -53,12 +56,8 @@ public class CacheCenter implements ApplicationRunner, DisposableBean {
     public void run(ApplicationArguments args) {
         // 读取系统参数配置缓存
         this.sysConfigCache = initCacheMap();
-
         // 将数据库数据刷到缓存
-        List<User> list = userService.all();
-        for (User user : list) {
-            sysBlogServiceImpl.setMostViewCache(user.getId());
-        }
+        blogViewCountTask.syncDbViewCountToRedis();
     }
 
     /**
@@ -79,6 +78,8 @@ public class CacheCenter implements ApplicationRunner, DisposableBean {
         blogViewCountTask.syncRedisViewCountToDb();
         // 清空博客访问量贡献黑名单
         blogViewCountTask.clearContributeBlackList();
+        // 删除redis中所有缓存键
+        blogViewCountTask.dealAllBlogReadsRedisKey();
     }
 
     public SysConfigCache getSysConfigCache() {

@@ -39,7 +39,7 @@ xiaokui:
   # 单个IP单日对所有博客最大贡献访问量
   single-ip-contribute--all-blog: 20
   # 单个用户单日对单篇博客最大贡献访问量
-  single-user-contribute-blog: 20
+  single-user-contribute-blog: 5
   # 单个用户单日对所有博客最大贡献访问量，两个限制条件不冲突
   single-user-contribute--all-blog: 40
 

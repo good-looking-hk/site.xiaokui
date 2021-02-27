@@ -3,6 +3,8 @@ package site.xiaokui.task;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.zhengjie.modules.system.domain.User;
+import me.zhengjie.modules.system.service.UserService;
 import org.beetl.sql.core.SQLReady;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +17,7 @@ import site.xiaokui.service.EmailService;
 import site.xiaokui.service.RedisService;
 import site.xiaokui.service.impl.SysBlogServiceImpl;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -52,8 +55,21 @@ public class BlogViewCountTask {
 
     private final SysBlogServiceImpl sysBlogServiceImpl;
 
+    private final UserService userService;
+
     @Value("${spring.profiles.active}")
     private String profile;
+
+    /**
+     * 同步数据库访问量到redis缓存
+     */
+    public void syncDbViewCountToRedis() {
+        // 将数据库数据刷到缓存
+        List<User> list = userService.all();
+        for (User user : list) {
+            sysBlogServiceImpl.setMostViewCache(user.getId());
+        }
+    }
 
     /**
      * 同步Redis博客访问量到数据库
@@ -80,7 +96,7 @@ public class BlogViewCountTask {
                     count++;
                     blog.setViewCount((int) score);
                     sysBlogServiceImpl.getSqlManager().executeUpdate(new SQLReady(
-                            "update sys_blog set yesterday = ? - view_count, view_count = ? where id = ?", score, score, blog.getId()
+                            "update sys_blog set yesterday_view = ? - view_count, view_count = ? where id = ?", score, score, blog.getId()
                     ));
                 }
             }
@@ -130,6 +146,25 @@ public class BlogViewCountTask {
             } else {
                 log.error("redis任务执行失败，异常信息如下：\n" + ExceptionUtil.stacktraceToString(e));
             }
+        }
+    }
+
+    /**
+     * 删除redis中所有与博客阅读量相关的缓存key
+     */
+    public void dealAllBlogReadsRedisKey() {
+        try (Jedis jedis = redisService.getRedis()) {
+            // 清除ip阅读贡献量黑名单，返回删除条数，默认为1
+            jedis.del(RedisKey.USER_OR_IP_CONTRIBUTE_VIEW_COUNT_MAP);
+
+            // 清除某用户所有博客的阅读贡献量
+            jedis.del("*" + RedisKey.USER_BLOG_VIEW_COUNT_SORT_MAP_SUFFIX);
+
+            // 清除用户或IP对某篇博客的阅读贡献量限制
+            jedis.del("*" + RedisKey.USER_OR_IP_TO_BLOG_CONTRIBUTE_VIEW_COUNT_SUFFIX);
+        } catch (Exception e) {
+            log.error("清除redis缓存失败", e);
+            e.printStackTrace();
         }
     }
 }
