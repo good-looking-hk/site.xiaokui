@@ -1,6 +1,7 @@
 package study.hk.thread.future;
 
-import org.jetbrains.annotations.NotNull;
+
+import com.sun.istack.internal.NotNull;
 
 import java.util.concurrent.*;
 
@@ -23,7 +24,8 @@ public class FutureTest {
             @Override
             public Integer call() throws Exception {
                 Thread.sleep(4000);
-                return 1;            }
+                return 1;
+            }
         };
         ThreadPoolExecutor executor = new ThreadPoolExecutor(5, 10, 10, TimeUnit.MINUTES,
                 new ArrayBlockingQueue<>(10), factory, new ThreadPoolExecutor.CallerRunsPolicy());

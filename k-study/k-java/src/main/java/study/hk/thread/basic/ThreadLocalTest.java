@@ -1,8 +1,5 @@
 package study.hk.thread.basic;
 
-import lombok.ToString;
-import net.sf.ehcache.constructs.scheduledrefresh.OverseerJob;
-
 /**
  * @author HK
  * @date 2019-10-11 10:10

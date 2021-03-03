@@ -1,7 +1,7 @@
 package study.hk.mianshi;
 
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 
 import java.util.AbstractQueue;
 import java.util.Collection;

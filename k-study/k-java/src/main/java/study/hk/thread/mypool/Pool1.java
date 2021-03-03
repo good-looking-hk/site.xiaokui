@@ -1,7 +1,5 @@
 package study.hk.thread.mypool;
 
-import redis.clients.jedis.JedisSentinelPool;
-
 import java.util.LinkedList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;

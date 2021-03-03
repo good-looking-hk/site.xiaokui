@@ -1,7 +1,7 @@
 package study.hk.thread.pool;
 
+import com.sun.istack.internal.NotNull;
 import lombok.SneakyThrows;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.*;
 
