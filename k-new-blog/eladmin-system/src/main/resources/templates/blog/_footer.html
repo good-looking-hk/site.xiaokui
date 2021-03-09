@@ -17,9 +17,9 @@
         $('#key').val(value);
     }
 
-    function search() {
+    function search(key) {
         var url = "/blog/${user.blogSpace}/search?key=";
-        var key = $("#key").val().trim();
+        var key = key || $("#key").val().trim();
         if (typeof key === "string" && key.length > 0) {
             window.open(url + key);
         }

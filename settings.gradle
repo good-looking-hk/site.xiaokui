@@ -2,8 +2,8 @@
 rootProject.name = 'newxiaokui'
 // 记录个人学习的一些代码
 include 'k-study:k-java'
-// 记录关于面试笔试的一些代码
-include 'k-study:k-offer'
+// 记录一些真实遇见的事情
+include 'k-study:k-real'
 
 // 老博客模块，纯原创，开始于2017年，前后端未完全分离
 // 技术架构整体没问题，业务模块也没啥大问题，思而再三，还是决定不用了，改造适配vue工作量过大

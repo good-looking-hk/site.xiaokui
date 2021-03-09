@@ -4,7 +4,7 @@
     <center>本页共 ${user.pageTotal} 篇，分为 ${user.dirCount} 个系列展示</center>
 </div>
 
-<div class="layui-main main-container">
+<div class="layui-main main-container" id="main-blog">
     @if (isNotEmpty(lists) && isNotEmpty(titles)) {
     <ul>
         @for (list in lists) {

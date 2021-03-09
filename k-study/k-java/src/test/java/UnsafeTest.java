@@ -1,4 +1,3 @@
-import lombok.SneakyThrows;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Constructor;
@@ -45,7 +44,6 @@ public class UnsafeTest {
             this.expect = expect;
         }
 
-        @SneakyThrows
         @Override
         public void run () {
 //            Field value = state.getClass().getDeclaredField("value");
