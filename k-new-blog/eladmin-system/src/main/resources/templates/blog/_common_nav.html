@@ -58,15 +58,11 @@
     </ul>
 </div>
 @}
-@if (isNotEmpty(dirs!null)) {
-<div class="right-nav hid" style="left:5%;padding-bottom:2px;top: auto;bottom: 250px !important;">
+@if (isNotEmpty(recommend!null)) {
+<div class="right-nav hid" style="left:5%;padding-left: 0;top: auto;bottom: 54px !important; border: unset !important;">
     <div id="canvas-container" style="float: left">
-        <canvas id="canvas" height="300px"></canvas>
+        <canvas id="canvas" height="240px"></canvas>
     </div>
-<!--    <p>分类导航</p>-->
-<!--    <a href="/" style="font-size: 12px;color: red">Spring源码(1)</a> <a href="/" style="font-size: 11px;color: fuchsia">Java虚拟机(4)</a> <a href="/" style="font-size: 20px;color: blue">Java基础(6)</a>-->
-<!--    <a href="/" style="font-size: 14px;color: greenyellow">设计模式(2)</a> <a href="/" style="font-size: 13px;color: blue">Spring(5)</a> <a href="/" style="font-size: 18px;color: blue">人生篇(11)</a>-->
-<!--    <a href="/" style="font-size: 15px;color: yellow">剑指Offer(3)</a>-->
 </div>
 @}
 <div id="aplayer"></div>
