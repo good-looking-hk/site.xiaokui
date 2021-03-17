@@ -5,7 +5,7 @@ package real;
  * @author HK
  * @date 2021-02-27 16:17
  */
-public class Main3 {
+public class Main3$1 {
 
     private static int startValue = 0, endValue = 7;
 

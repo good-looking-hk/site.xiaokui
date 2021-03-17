@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * 两个线程A,B按序输出 0-100 之间的元素，线程A只负责输出质数,线程B负责输出其他元素
  *
- * 不使用等待通知机制，而是用轮询机制 + 锁机制
+ * 不使用等待通知机制，而是用轮询机制 + 锁机制 - 可运行
  *
  * @author HK
  * @date 2021-03-03 09:28

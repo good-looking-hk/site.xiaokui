@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author HK
  * @date 2021-03-01 09:13
  */
-public class Main4 {
+public class Main3$2 {
 
     static int startValue = 1, endValue = 8;
 
