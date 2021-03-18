@@ -1,0 +1,32 @@
+### 第一个测试，测试基本的 数据回文-传送
+POST http://127.0.0.1:7070/100
+Content-Type: application/json
+
+{
+  "head": {
+    "sign_type": "MD5",
+    "version": "1.0",
+    "serial_no": "",
+    "sign": ""
+  },
+  "data": {
+    "login_type": "08",
+    "login_str": "abcd"
+  }
+}
+
+### 第二个测试，测试数据库查询
+POST http://127.0.0.1:7070/200
+Content-Type: application/json
+
+{
+  "head": {
+    "sign_type": "MD5",
+    "version": "1.0",
+    "service_id": "U1001001",
+    "serial_no": "",
+    "sign": ""
+  },
+  "data": {
+  }
+}

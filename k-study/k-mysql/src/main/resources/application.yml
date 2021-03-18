@@ -1,0 +1,23 @@
+server:
+  port: 7070
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      force: true
+
+spring:
+  profiles:
+    #需要激活的profile local或remote
+    active: local
+  mvc:
+    view:
+      prefix: /
+    pathmatch:
+      use-suffix-pattern: true #忽略小数点后缀，如/test.tss仍然是匹配/test
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+  aop:
+    proxy-target-class: true #false为启用jdk默认动态代理(面向接口),true为cglib动态代理(面向继承)
