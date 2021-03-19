@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
  * @date 2018-11-23
  */
 @Data
-class ApiError {
+public class ApiError {
 
     private Integer status = 400;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,8 +37,25 @@ public class TestBaseController {
 
     @PostMapping(InterCode.CAN_QUERY)
     @ResponseBody
-    public Object test1(@RequestBody Map<String, Object> map) {
+    public Object test1() {
+        Map<String, Object> map = new HashMap<>(8);
         List<User> allUser = userService.allUser();
-        return ResultEntity.ok(allUser);
+        User user = userService.findFirst();
+        map.put("all_user", allUser);
+        map.put("first_user", user);
+        return ResultEntity.ok(map);
+    }
+
+    @PostMapping(InterCode.INSERT_USER)
+    @ResponseBody
+    public Object test2() {
+        List<User> allUser = userService.allUser();
+        User user = new User();
+        user.setName("测试账号" + allUser.size());
+        user.setPhone("123123123" + allUser.size());
+        user.setCreateTime(new Date());
+        user.setModifiedTime(new Date());
+        userService.insert(user);
+        return ResultEntity.ok();
     }
 }

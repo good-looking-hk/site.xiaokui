@@ -16,4 +16,9 @@ public class InterCode {
      * 测试mybatis是否正常运行
      */
     public static final String CAN_QUERY = "/200";
+
+    /**
+     * 增加用户
+     */
+    public static final String INSERT_USER = "/300";
 }

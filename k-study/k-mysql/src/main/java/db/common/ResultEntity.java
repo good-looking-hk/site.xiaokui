@@ -18,7 +18,7 @@ public class ResultEntity extends HashMap<String, Object> {
 
     public static ResultEntity ok() {
         ResultEntity result = new ResultEntity();
-        result.put("code", "200");
+        result.put("code", "0");
         result.put("msg", "success");
         return result;
     }
@@ -31,9 +31,16 @@ public class ResultEntity extends HashMap<String, Object> {
         return result;
     }
 
+    public static ResultEntity error(String msg) {
+        ResultEntity result = new ResultEntity();
+        result.put("code", "-1");
+        result.put("msg", msg);
+        return result;
+    }
+
     public static ResultEntity failed(String msg) {
         ResultEntity result = new ResultEntity();
-        result.put("code", "0");
+        result.put("code", "-1");
         result.put("msg", msg);
         return result;
     }

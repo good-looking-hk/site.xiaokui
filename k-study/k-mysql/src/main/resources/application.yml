@@ -21,3 +21,9 @@ spring:
 
   aop:
     proxy-target-class: true #false为启用jdk默认动态代理(面向接口),true为cglib动态代理(面向继承)
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: db.entity
+
+

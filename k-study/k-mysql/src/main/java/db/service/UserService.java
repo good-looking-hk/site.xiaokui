@@ -18,7 +18,15 @@ public class UserService {
     private final UserDao userDao;
 
     public List<User> allUser() {
+        System.out.println(userDao.getClass());
         return userDao.findAll();
     }
 
+    public User findFirst() {
+        return userDao.selectByPrimaryKey(1L);
+    }
+
+    public void insert(User user) {
+        userDao.insertSelective(user);
+    }
 }

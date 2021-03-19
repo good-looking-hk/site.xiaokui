@@ -23,7 +23,21 @@ Content-Type: application/json
   "head": {
     "sign_type": "MD5",
     "version": "1.0",
-    "service_id": "U1001001",
+    "serial_no": "",
+    "sign": ""
+  },
+  "data": {
+  }
+}
+
+### 第三个测试，增加一个用户
+POST http://127.0.0.1:7070/300
+Content-Type: application/json
+
+{
+  "head": {
+    "sign_type": "MD5",
+    "version": "1.0",
     "serial_no": "",
     "sign": ""
   },
