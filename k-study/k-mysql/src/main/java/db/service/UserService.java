@@ -1,9 +1,11 @@
 package db.service;
 
+import db.dao.UserBalanceDao;
 import db.dao.UserDao;
 import db.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,6 +19,8 @@ public class UserService {
 
     private final UserDao userDao;
 
+    private final UserBalanceDao userBalanceDao;
+
     public List<User> allUser() {
         System.out.println(userDao.getClass());
         return userDao.findAll();
@@ -28,5 +32,11 @@ public class UserService {
 
     public void insert(User user) {
         userDao.insertSelective(user);
+    }
+
+    @Transactional()
+    public void initUser(User user) {
+        userDao.insertSelective(user);
+        userBalanceDao.toString()
     }
 }

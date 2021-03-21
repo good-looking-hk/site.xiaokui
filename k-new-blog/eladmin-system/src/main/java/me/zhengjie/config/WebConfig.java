@@ -10,8 +10,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import site.xiaokui.config.RequestInterceptor;
 import site.xiaokui.config.XiaokuiProperties;
 
 import java.io.IOException;
@@ -63,5 +65,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/lib/**").addResourceLocations("file:" + xiaokuiProperties.getStaticLibPath());
         registry.addResourceHandler("/music/**").addResourceLocations("file:" + xiaokuiProperties.getBlogMusicPath());
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/", "classpath:/META-INF/resources/");
+    }
+
+    /**
+     * 配置拦截器
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(new RequestInterceptor());
     }
 }
