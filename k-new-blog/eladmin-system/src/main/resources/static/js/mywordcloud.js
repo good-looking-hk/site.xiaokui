@@ -29,7 +29,7 @@ $(function () {
         }
         arrData.push([key, count]);
     }
-    console.error(wordData, arrData);
+    // console.error(wordData, arrData);
 //    var wordFreqData = [['各位观众',45],['词云', 21],['来啦!!!',13]];
     var canvas = document.getElementById('canvas');
     var options = {
