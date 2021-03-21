@@ -37,6 +37,6 @@ public class UserService {
     @Transactional()
     public void initUser(User user) {
         userDao.insertSelective(user);
-        userBalanceDao.toString()
+        userBalanceDao.toString();
     }
 }
