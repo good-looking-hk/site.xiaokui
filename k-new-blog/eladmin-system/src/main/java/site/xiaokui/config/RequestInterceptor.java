@@ -7,11 +7,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-
-import static javax.servlet.http.HttpServletResponse.SC_MOVED_TEMPORARILY;
 
 /**
  * @author HK

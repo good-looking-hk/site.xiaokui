@@ -72,7 +72,8 @@ $(function () {
 
 //    var obj = countChars();
 //    console.error(obj)
-    var obj = {'中英文单词数': parseInt($('#countChars').text())};
+    var info = $('#countChars').text();
+    var obj = {'中英文单词数': parseInt(info.split(' ')[0]), 'create_date': info.split(' ')[1]};
     var minute = (parseInt(obj.中英文单词数) / 493).toFixed(1);
     if (minute > 25) {
         minute -= 5.5;
@@ -89,7 +90,7 @@ $(function () {
     } else if (minute < 2) {
         minute -= -0.6;
     }
-    $('#countChars').text('字数约 ' + obj.中英文单词数 + ' 字，阅读耗时约 ' + Number(minute).toFixed(1) + ' 分钟');
+    $('#countChars').text('创建于 ' + obj.create_date + '，字数约 ' + obj.中英文单词数 + ' 字，阅读耗时约 ' + Number(minute).toFixed(1) + ' 分钟');
 });
 
 

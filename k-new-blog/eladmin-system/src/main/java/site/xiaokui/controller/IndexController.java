@@ -274,6 +274,7 @@ public class IndexController {
         }
         blog.setFilePath(BlogUtil.getFilePath(user.getId(), blog.getDir(), blog.getFileName()));
 
+        // 针对创建日期做下特殊处理，格式化 20210203 -> 2021-02-03
         String str = blog.getCreateDate().toString();
         blog.setBlogDate(str.substring(0, 4) + "-" + str.substring(4, 6) + "-" + str.substring(6, 8));
 
