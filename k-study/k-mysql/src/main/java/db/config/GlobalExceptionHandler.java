@@ -57,8 +57,8 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     @ResponseBody
-    public ResultEntity notFound(RuntimeException e, HttpServletRequest request) {
-        log.error("url[{}]访问出错,错误信息:{}", request.getRequestURI(), e.getCause());
+    public ResultEntity error(RuntimeException e, HttpServletRequest request) {
+        log.error("url[{}]访问出错,错误信息:{}", request.getRequestURI(), e);
         Map<String, String[]> map = request.getParameterMap();
         for (Map.Entry<String, String[]> m : map.entrySet()) {
             log.error(m.getKey() + ":" + Arrays.toString(m.getValue()));

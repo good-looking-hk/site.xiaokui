@@ -58,4 +58,56 @@ public class TestBaseController {
         userService.insert(user);
         return ResultEntity.ok();
     }
+
+    @PostMapping(InterCode.INIT_USER)
+    @ResponseBody
+    public Object test3() {
+        List<User> allUser = userService.allUser();
+        User user = new User();
+        user.setName("测试账号" + allUser.size());
+        user.setPhone("123123123" + allUser.size());
+        user.setCreateTime(new Date());
+        user.setModifiedTime(new Date());
+        userService.initUser(user);
+        return ResultEntity.ok();
+    }
+
+    @PostMapping(InterCode.INIT_USER1)
+    @ResponseBody
+    public Object test4() {
+        List<User> allUser = userService.allUser();
+        User user = new User();
+        user.setName("测试账号" + allUser.size());
+        user.setPhone("123123123" + allUser.size());
+        user.setCreateTime(new Date());
+        user.setModifiedTime(new Date());
+        userService.initUser1(user);
+        return ResultEntity.ok();
+    }
+
+    @PostMapping(InterCode.INIT_USER_FAIL1)
+    @ResponseBody
+    public Object test5() {
+        List<User> allUser = userService.allUser();
+        User user = new User();
+        user.setName("测试账号" + allUser.size());
+        user.setPhone("123123123" + allUser.size());
+        user.setCreateTime(new Date());
+        user.setModifiedTime(new Date());
+        userService.initUser2(user);
+        return ResultEntity.ok();
+    }
+
+    @PostMapping(InterCode.INIT_USER_FAIL2)
+    @ResponseBody
+    public Object test6() {
+        List<User> allUser = userService.allUser();
+        User user = new User();
+        user.setName("测试账号" + allUser.size());
+        user.setPhone("123123123" + allUser.size());
+        user.setCreateTime(new Date());
+        user.setModifiedTime(new Date());
+        userService.initUser3(user);
+        return ResultEntity.ok();
+    }
 }

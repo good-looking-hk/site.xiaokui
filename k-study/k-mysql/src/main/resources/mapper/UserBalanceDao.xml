@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="db.dao.UserBalanceDao">
+  <resultMap id="BaseResultMap" type="db.entity.UserBalance">
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="user_balance" jdbcType="DECIMAL" property="userBalance" />
+  </resultMap>
+  <insert id="insert" parameterType="db.entity.UserBalance">
+    insert into k_balance (user_id, user_balance)
+    values (#{userId,jdbcType=BIGINT}, #{userBalance,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="db.entity.UserBalance">
+    insert into k_balance
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="userBalance != null">
+        user_balance,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="userBalance != null">
+        #{userBalance,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+</mapper>

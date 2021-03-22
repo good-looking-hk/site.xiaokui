@@ -44,3 +44,63 @@ Content-Type: application/json
   "data": {
   }
 }
+
+### 第四个测试，增加一个用户，并初始化用户余额，余额数默认为100，显式通过注解调用事务
+POST http://127.0.0.1:7070/400
+Content-Type: application/json
+
+{
+  "head": {
+    "sign_type": "MD5",
+    "version": "1.0",
+    "serial_no": "",
+    "sign": ""
+  },
+  "data": {
+  }
+}
+
+### 第五个测试，增加一个用户，并初始化用户余额，余额数默认为100，显式代码调用事务
+POST http://127.0.0.1:7070/401
+Content-Type: application/json
+
+{
+  "head": {
+    "sign_type": "MD5",
+    "version": "1.0",
+    "serial_no": "",
+    "sign": ""
+  },
+  "data": {
+  }
+}
+
+### 第六个测试，测试开启事务失败，代理非 public 方法
+POST http://127.0.0.1:7070/500
+Content-Type: application/json
+
+{
+  "head": {
+    "sign_type": "MD5",
+    "version": "1.0",
+    "serial_no": "",
+    "sign": ""
+  },
+  "data": {
+  }
+}
+
+### 第七个测试，测试开启事务失败，自调用导致事务切面未成功注入
+POST http://127.0.0.1:7070/501
+Content-Type: application/json
+
+{
+  "head": {
+    "sign_type": "MD5",
+    "version": "1.0",
+    "serial_no": "",
+    "sign": ""
+  },
+  "data": {
+  }
+}
