@@ -23,6 +23,8 @@ public interface UserDao {
     })
     List<User> findAll();
 
+    int deleteAll();
+
     int deleteByPrimaryKey(Long id);
 
     int insert(User record);

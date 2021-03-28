@@ -61,6 +61,10 @@ public class UserService {
      */
     private final TransactionTemplate transactionTemplate;
 
+    public int deleteAll() {
+        return userDao.deleteAll();
+    }
+
     public List<User> allUser() {
         return userDao.findAll();
     }

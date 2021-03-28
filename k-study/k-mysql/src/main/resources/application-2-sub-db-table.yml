@@ -3,17 +3,17 @@ spring:
   shardingsphere:
     datasource:
       ds0:
-        driver-class-name: com.mysql.jdbc.Driver
-        password: root
-        type: com.alibaba.druid.pool.DruidDataSource
-        url: jdbc:mysql://localhost:3306/ds0?characterEncoding=utf-8
+        driver-class-name: com.mysql.cj.jdbc.Driver
         username: root
+        password:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://localhost:3309/k-mysql1?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=true
       ds1:
-        driver-class-name: com.mysql.jdbc.Driver
-        password: root
-        type: com.alibaba.druid.pool.DruidDataSource
-        url: jdbc:mysql://localhost:3306/ds1?characterEncoding=utf-8
+        driver-class-name: com.mysql.cj.jdbc.Driver
         username: root
+        password:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://localhost:3309/k-mysql2?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=true
       names: ds0,ds1
     props:
       sql:
@@ -22,13 +22,14 @@ spring:
       # 根据年龄分库
       default-database-strategy:
         inline:
+          # 该表达式为取模， 年龄为奇数即值为1，落ds1 - k-mysql2，  偶数则值为0，落ds0 - k-mysql1
           algorithm-expression: ds$->{age % 2}
           sharding-column: age
       tables:
         # 根据id分表
-        tab_user:
-          actual-data-nodes: ds$->{0..1}.tab_user$->{0..1}
+        k_user:
+          actual-data-nodes: ds$->{0..1}.k_user$->{0..1}
           table-strategy:
             inline:
-              algorithm-expression: tab_user$->{id % 2}
+              algorithm-expression: k_user$->{id % 2}
               sharding-column: id

@@ -42,11 +42,13 @@ mysqld --basedir=/home/hk-pc/DEV/mysql/3309 --datadir=/home/hk-pc/DEV/mysql/3309
 ### 初始化数据库
 mysql_install_db --defaults-file=/home/hk-pc/DEV/mysql/3307/my.conf
 mysql_install_db --defaults-file=/home/hk-pc/DEV/mysql/3308/my.conf
+mysql_install_db --defaults-file=/home/hk-pc/DEV/mysql/3309/my.conf
 
 
 ### 启动数据库
 mysqld_safe --defaults-file=/home/hk-pc/DEV/mysql/3307/my.conf &
 mysqld_safe --defaults-file=/home/hk-pc/DEV/mysql/3308/my.conf &
+mysqld_safe --defaults-file=/home/hk-pc/DEV/mysql/3309/my.conf &
 
 ###登录从数据库，//mysql-bin.000001，show master status 为之前master查到的状态值。
 change master to master_host='127.0.0.1',master_user='root',master_password='199710',master_log_file='mysql-bin.000001',master_log_pos=1493;
@@ -56,6 +58,7 @@ show slave status;
 ### 登录从数据库
 mysql -h 127.0.0.1 -u root -P 3307 -p
 mysql -h 127.0.0.1 -u root -P 3308 -p
+mysql -h 127.0.0.1 -u root -P 3309 -p
 
 ### 找出3307
 netstat -nptl|grep 3307

@@ -4,12 +4,13 @@
   <resultMap id="BaseResultMap" type="db.entity.User">
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="age" jdbcType="INTEGER" property="age" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, `name`, phone, create_time, modified_time
+    id, age, `name`, phone, create_time, modified_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
@@ -17,19 +18,31 @@
     from k_user
     where id = #{id,jdbcType=BIGINT}
   </select>
+
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
     delete from k_user
     where id = #{id,jdbcType=BIGINT}
   </delete>
+
+  <delete id="deleteAll" parameterType="java.lang.Long">
+    delete from k_user;
+  </delete>
+
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="db.entity.User" useGeneratedKeys="true">
-    insert into k_user (`name`, phone, create_time, 
+    insert into k_user (age, `name`, phone, create_time,
       modified_time)
-    values (#{name,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+    values (#{age,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
       #{modifiedTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="db.entity.User" useGeneratedKeys="true">
     insert into k_user
     <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="age != null">
+        age,
+      </if>
       <if test="name != null">
         `name`,
       </if>
@@ -44,6 +57,12 @@
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="age != null">
+        #{age,jdbcType=INTEGER},
+      </if>
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>
@@ -61,6 +80,9 @@
   <update id="updateByPrimaryKeySelective" parameterType="db.entity.User">
     update k_user
     <set>
+      <if test="age != null">
+        `name` = #{age,jdbcType=INTEGER},
+      </if>
       <if test="name != null">
         `name` = #{name,jdbcType=VARCHAR},
       </if>
@@ -78,7 +100,8 @@
   </update>
   <update id="updateByPrimaryKey" parameterType="db.entity.User">
     update k_user
-    set `name` = #{name,jdbcType=VARCHAR},
+    set age = #{name,jdbcType=INTEGER},
+      `name` = #{name,jdbcType=VARCHAR},
       phone = #{phone,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       modified_time = #{modifiedTime,jdbcType=TIMESTAMP}
