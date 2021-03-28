@@ -1,0 +1,32 @@
+# 读写分离
+spring:
+  shardingsphere:
+    datasource:
+      names: master,slave0,slave1
+      master:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+        password: 199710
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://localhost:3306/k-mysql?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=true
+      slave0:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+        password:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://localhost:3307/k-mysql?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=true
+      slave1:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+        password:
+        type: com.zaxxer.hikari.HikariDataSource
+        jdbc-url: jdbc:mysql://localhost:3308/k-mysql?useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&useSSL=true
+    masterslave:
+      # 从库负载均衡算法类型，可选值：ROUND_ROBIN，RANDOM。若loadBalanceAlgorithmClassName存在则忽略该配置,默认为ROUND_ROBIN
+      load-balance-algorithm-type: round_robin
+      master-data-source-name: master
+      name: ms
+      slave-data-source-names: [slave0, slave1]
+    props:
+      sql:
+        show: true

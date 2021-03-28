@@ -7,7 +7,8 @@
             <span class="next-blog"><a href='${ctxPath}${user.blog.nextBlog!"#"}'>下一篇:${user.blog.nextBlogTitle!"本系列完"}</a></span>
         </div>
         <div class="panel-body">
-            <p id="countChars" style="font-size: 14px;color: #777777;">${user.blog.characterCount} ${user.blog.blogDate}</p>
+            <p><span id="countChars" style="font-size: 14px;color: #777777;">${user.blog.characterCount} ${user.blog.blogDate}</span>
+            </p>
             @printFile("blog:" + user.blog.filePath + ".html");
             @if(isNotEmpty(user.blog.blogDate) && isNotEmpty(user.blog.updateTime)) {
             <blockquote>

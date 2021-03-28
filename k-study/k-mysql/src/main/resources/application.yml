@@ -8,8 +8,12 @@ server:
 
 spring:
   profiles:
-    #需要激活的profile local或remote
-    active: local
+#    active: 0-base
+    active: 1-read-write
+#    active: 0-base
+#    active: 0-base
+#    active: 0-base
+
   mvc:
     view:
       prefix: /
@@ -26,4 +30,13 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: db.entity
 
+logging:
+  level.root: info
+  level.db: debug
+  level.org.springframework.web: debug
+  level.redis: debug
+  level.jdbc: debug
+  level.org.apache.ibatis: debug
+  level.org.springframework.transaction: debug
+  level.org.springframework.jdbc: debug
 

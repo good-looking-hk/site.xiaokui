@@ -1,0 +1,54 @@
+mybatis:
+  config-location: classpath:mybatis-config.xml
+server:
+  port: 8088
+spring:
+  shardingsphere:
+    datasource:
+      master0:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: root
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://localhost:3306/ms0?characterEncoding=utf-8
+        username: root
+      master1:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: root
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://localhost:3306/ms1?characterEncoding=utf-8
+        username: root
+      names: master0,slave0,master1,slave1
+      slave0:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: root
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://localhost:3306/sl0?characterEncoding=utf-8
+        username: root
+      slave1:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: root
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://localhost:3306/sl1?characterEncoding=utf-8
+        username: root
+    props:
+      sql:
+        show: true
+    sharding:
+      default-database-strategy:
+        inline:
+          algorithm-expression: master$->{age % 2}
+          sharding-column: age
+      master-slave-rules:
+        master0:
+          master-data-source-name: master0
+          slave-data-source-names: slave0
+        master1:
+          master-data-source-name: master1
+          slave-data-source-names: slave1
+      tables:
+        tab_user:
+          actual-data-nodes: master$->{0..1}.tab_user$->{0..1}
+          table-strategy:
+            inline:
+              algorithm-expression: tab_user$->{id % 2}
+              sharding-column: id

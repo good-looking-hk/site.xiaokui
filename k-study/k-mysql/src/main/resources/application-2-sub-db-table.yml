@@ -1,0 +1,34 @@
+# 分库分表
+spring:
+  shardingsphere:
+    datasource:
+      ds0:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: root
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://localhost:3306/ds0?characterEncoding=utf-8
+        username: root
+      ds1:
+        driver-class-name: com.mysql.jdbc.Driver
+        password: root
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://localhost:3306/ds1?characterEncoding=utf-8
+        username: root
+      names: ds0,ds1
+    props:
+      sql:
+        show: true
+    sharding:
+      # 根据年龄分库
+      default-database-strategy:
+        inline:
+          algorithm-expression: ds$->{age % 2}
+          sharding-column: age
+      tables:
+        # 根据id分表
+        tab_user:
+          actual-data-nodes: ds$->{0..1}.tab_user$->{0..1}
+          table-strategy:
+            inline:
+              algorithm-expression: tab_user$->{id % 2}
+              sharding-column: id

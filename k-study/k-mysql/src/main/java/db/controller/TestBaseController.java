@@ -6,6 +6,7 @@ import db.entity.User;
 import db.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -17,10 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 测试框架基本功能
+ * 测试事务基本功能
+ *
  * @author HK
  * @date 2021-03-17 17:07
  */
+@Profile("0-base")
 @Slf4j
 @RequiredArgsConstructor
 @RestController

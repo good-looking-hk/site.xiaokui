@@ -1,0 +1,59 @@
+### 第一个测试，向主库插入数据
+POST http://127.0.0.1:7070/insert
+Content-Type: application/json
+
+{
+  "head": {
+    "sign_type": "MD5",
+    "version": "1.0",
+    "serial_no": "",
+    "sign": ""
+  },
+  "data": {
+  }
+}
+
+### 第二个测试，向主库修改数据
+POST http://127.0.0.1:7070/update?id=27
+Content-Type: application/json
+
+{
+  "head": {
+    "sign_type": "MD5",
+    "version": "1.0",
+    "serial_no": "",
+    "sign": ""
+  },
+  "data": {
+  }
+}
+
+### 第三个测试，向从库查询数据
+POST http://127.0.0.1:7070/query
+Content-Type: application/json
+
+{
+  "head": {
+    "sign_type": "MD5",
+    "version": "1.0",
+    "serial_no": "",
+    "sign": ""
+  },
+  "data": {
+  }
+}
+
+### 第四个测试，向从库查询数据单个数据
+POST http://127.0.0.1:7070/query?id=24
+Content-Type: application/json
+
+{
+  "head": {
+    "sign_type": "MD5",
+    "version": "1.0",
+    "serial_no": "",
+    "sign": ""
+  },
+  "data": {
+  }
+}

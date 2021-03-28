@@ -14,13 +14,3 @@ spring:
     host: localhost
     port: 6379
     password:
-
-logging:
-  level.root: info
-  level.db: debug
-  level.org.springframework.web: debug
-  level.redis: debug
-  level.jdbc: trace
-  level.org.apache.ibatis: trace
-  level.org.springframework.transaction: trace
-  level.org.springframework.jdbc: trace

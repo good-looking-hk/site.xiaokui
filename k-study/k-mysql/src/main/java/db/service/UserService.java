@@ -21,6 +21,7 @@ import java.util.List;
  *
  * TransactionDefinition.PROPAGATION_NOT_SUPPORTED：以非事务方式运行，如果当前存在事务，则把当前事务挂起 - 如果在事务环境运行，就挂起事务，自己以非事务运行
  *
+ * Spring默认传播机制
  * TransactionDefinition.PROPAGATION_REQUIRED：如果当前存在事务，则加入该事务；如果当前没有事务，则创建一个新的事务 - 如果存在事务则加入，否则新建
  *
  * TransactionDefinition.PROPAGATION_REQUIRES_NEW：创建一个新的事务，如果当前存在事务，则把当前事务挂起 - 新建一个事务，独立于外部事务
@@ -70,6 +71,14 @@ public class UserService {
 
     public void insert(User user) {
         userDao.insertSelective(user);
+    }
+
+    public int update(User user) {
+        return userDao.updateByPrimaryKeySelective(user);
+    }
+
+    public User querySingle(Long id) {
+        return userDao.selectByPrimaryKey(id);
     }
 
     /**
