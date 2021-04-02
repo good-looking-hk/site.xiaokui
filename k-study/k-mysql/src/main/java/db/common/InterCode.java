@@ -40,4 +40,10 @@ public class InterCode {
 
     /** 查询用户接口 */
     public static final String QUERY_SINGLE_USER = "/query";
+
+    /** 分页查询 */
+    public static final String PAGE_QUERY_USER = "/page";
+
+    /** 分组统计 */
+    public static final String QUERY_SUM_USER = "/groupByAndSum";
 }

@@ -3,6 +3,7 @@
 <mapper namespace="db.dao.UserDao">
   <resultMap id="BaseResultMap" type="db.entity.User">
     <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="age" jdbcType="INTEGER" property="age" />
     <result column="phone" jdbcType="VARCHAR" property="phone" />
@@ -10,13 +11,24 @@
     <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, age, `name`, phone, create_time, modified_time
+    id, age, sex, `name`, phone, create_time, modified_time
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
     from k_user
-    where id = #{id,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT} order by id
+  </select>
+
+  <select id="pageQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from k_user order by id limit ${offset}, ${size}
+  </select>
+
+  <select id="groupByAndSum" resultType="java.util.Map">
+    select sum(${sum})
+    from k_user group by ${groupBy}
   </select>
 
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
@@ -29,9 +41,9 @@
   </delete>
 
   <insert id="insert" keyColumn="id" keyProperty="id" parameterType="db.entity.User" useGeneratedKeys="true">
-    insert into k_user (age, `name`, phone, create_time,
+    insert into k_user (age, sex, `name`, phone, create_time,
       modified_time)
-    values (#{age,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
+    values (#{age,jdbcType=INTEGER}, #{sex,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
       #{modifiedTime,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="db.entity.User" useGeneratedKeys="true">
@@ -42,6 +54,9 @@
       </if>
       <if test="age != null">
         age,
+      </if>
+      <if test="sex != null">
+        sex,
       </if>
       <if test="name != null">
         `name`,
@@ -63,6 +78,9 @@
       <if test="age != null">
         #{age,jdbcType=INTEGER},
       </if>
+      <if test="sex != null">
+        #{sex,jdbcType=VARCHAR},
+      </if>
       <if test="name != null">
         #{name,jdbcType=VARCHAR},
       </if>
@@ -81,7 +99,10 @@
     update k_user
     <set>
       <if test="age != null">
-        `name` = #{age,jdbcType=INTEGER},
+        `age` = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="sex != null">
+        `sex` = #{name,jdbcType=VARCHAR},
       </if>
       <if test="name != null">
         `name` = #{name,jdbcType=VARCHAR},
@@ -101,6 +122,7 @@
   <update id="updateByPrimaryKey" parameterType="db.entity.User">
     update k_user
     set age = #{name,jdbcType=INTEGER},
+      sex = #{sex,jdbcType=VARCHAR},
       `name` = #{name,jdbcType=VARCHAR},
       phone = #{phone,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},

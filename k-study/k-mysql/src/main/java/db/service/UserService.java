@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TransactionDefinition.PROPAGATION_NEVER：以非事务方式运行，如果当前存在事务，则抛出异常 - 在事务环境运行就保存
@@ -67,6 +68,14 @@ public class UserService {
 
     public List<User> allUser() {
         return userDao.findAll();
+    }
+
+    public List<User> pageQuery(int offset, int size) {
+        return userDao.pageQuery(offset, size);
+    }
+
+    public List<Map<String, Object>> groupByAndSum(String sum, String groupBy) {
+        return userDao.groupByAndSum(sum, groupBy);
     }
 
     public User findFirst() {

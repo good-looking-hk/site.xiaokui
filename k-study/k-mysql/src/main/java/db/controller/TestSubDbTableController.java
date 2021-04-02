@@ -39,6 +39,7 @@ public class TestSubDbTableController {
             user.setId((long) i);
             // 是数据分布均匀
             user.setAge(i + 1);
+            user.setSex("1");
             user.setName("名字" + i);
             user.setPhone("12344321 " + i);
             user.setCreateTime(new Date());
@@ -50,6 +51,7 @@ public class TestSubDbTableController {
             user.setId((long) i);
             // 是数据分布均匀
             user.setAge(i);
+            user.setSex("2");
             user.setName("名字" + i);
             user.setPhone("12344321 " + i);
             user.setCreateTime(new Date());
@@ -72,17 +74,10 @@ public class TestSubDbTableController {
         return ResultEntity.ok();
     }
 
-    @PostMapping(InterCode.UPDATE_SINGLE_USER)
-    public Object update(Long id) {
-        List<User> allUser = userService.allUser();
-        User user = new User();
-        user.setId(id);
-        user.setName("读写修改账号" + allUser.size());
-        user.setPhone("123123123" + allUser.size());
-        user.setCreateTime(new Date());
-        user.setModifiedTime(new Date());
-        int row = userService.update(user);
-        return ResultEntity.ok(row);
+    @PostMapping(InterCode.PAGE_QUERY_USER)
+    public Object page(int offset, int size) {
+        List<User> list = userService.pageQuery(offset, size);
+        return ResultEntity.ok(list);
     }
 
     @PostMapping(InterCode.QUERY_SINGLE_USER)
@@ -94,4 +89,11 @@ public class TestSubDbTableController {
         User user = userService.querySingle(id);
         return ResultEntity.ok(user);
     }
+
+    @PostMapping(InterCode.QUERY_SUM_USER)
+    public Object groupByAndSum(String sum, String groupBy) {
+        return ResultEntity.ok(userService.groupByAndSum(sum, groupBy));
+    }
 }
+
+

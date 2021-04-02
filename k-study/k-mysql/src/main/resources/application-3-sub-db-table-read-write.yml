@@ -1,3 +1,14 @@
+# 关于分布式id的生成，可以参考滴滴的tinydd 或 美团的leaf
+# 分库分表中的分页查询，比如我查询两个库中的第二页，一页三条数据
+# 即 select * from sys_user order by id limit 2, 3（100）  -- offset size
+# 那么sharding-jdbc是怎么实现的，去每个库中去前5（102）条，然后比较排序得出需要的3（100）条数据
+
+# 分组 + 统计 / group by + sum 原理都是统计每个库每个表，然后一起汇总
+# 分库分表概念我们知道，那么具体怎么个分表法呢？
+
+# 以水平分表为例：奇数id走user_1, 偶数id走user_2
+# 以水平分库为例：男走库1，女走库2
+
 mybatis:
   config-location: classpath:mybatis-config.xml
 server:

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author HK
@@ -16,7 +17,7 @@ import java.util.List;
  */
 public interface UserDao {
 
-    @Select("select * from k_user")
+    @Select("select * from k_user order by id")
     @Results({
             @Result(property = "createTime", column = "create_time", javaType = Date.class),
             @Result(property = "modifiedTime", column = "modified_time", javaType = Date.class),
@@ -32,6 +33,10 @@ public interface UserDao {
     int insertSelective(User record);
 
     User selectByPrimaryKey(Long id);
+
+    List<User> pageQuery(int offset, int size);
+
+    List<Map<String, Object>> groupByAndSum(String sum, String groupBy);
 
     int updateByPrimaryKeySelective(User record);
 

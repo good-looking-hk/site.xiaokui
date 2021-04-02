@@ -17,6 +17,11 @@ public class User implements Serializable {
      */
     private Long id;
 
+    /**
+     * 1-男 2-女
+     */
+    private String sex;
+
     private Integer age;
 
     private String name;
