@@ -51,6 +51,7 @@ hashmap在jdk8中如何解决死循环
 HashMap和hashset的关系
 concurrenthashmap的实现
 
+
 常见并发模块和类
 valatile的作用和原理
 ThreadPoolExecutor 用法与关键参数关系、核心参数理解
@@ -59,10 +60,12 @@ ThreadLocal是怎样实现的，需要注意些什么？
 sleep和wait的区别
 进程间通信方式有哪些，各有什么优缺点，挑一两种说下使用场景
 
+
 synchronized和重入锁的区别
 aqs逻辑，加锁，释放锁
 重入锁有几条队列
 cas理解，产生问题，怎么解决，哪些类通过版本
+
 
 jvm内存结构
 栈溢出情况，新生代内存结构及其比例划分&为什么怎么设计
@@ -70,11 +73,13 @@ jvm内存结构
 jvm常见参数，常见分析指令 jps jmap jstack zprofile等
 调优实战 Integer
 
+
 类加载机制 双亲委派 为什么怎么设计 如何打破，tomcat osgi jdbc如何做的
 其他语言怎么做的，nodes里面的npm
 自定义加载器如何实现，注解的原理，如何实现自定义注解
 maven jar包，冲突解决方案，spring cloud是怎么做的，版本代号
 如何排查类冲突，如何隔离冲突，如何自定义类加载器
+
 
 spring aop的理解，用了哪些设计模式，动态代理理解？有哪些实现方式，jdk、cglib、asm，选型对比？
 BeanFactory和ApplicationContext的差异
@@ -82,12 +87,15 @@ spring容器启动顺序和流程，扩展点BeanFactoryPostProcessor的加载�
 springcontext管理bean加载插件
 spring事务传播机制，异常处理
 
+
 Spring ioc的初始化和声明周期
 spring的ioc启动流程简述：refresh方法，解析xml文件或注解，beandefinition、初始化上下文ApplicationContext
 相互依赖 死循环问题 - 三级缓存 提前曝光 还没初始化先放到缓存里
 
+
 springboot和spring的区别，如何自定义stater、spring.factories实现自动配置，加载所有需要加载的bean
 bean factory和factory bean的区别
+
 
 bio、nio、aio各自特点及对应场景
 nio在nettiy中的封装模型及底层操作系统epoll的实现，select实现对比？
