@@ -1,0 +1,27 @@
+### 查询数据
+GET http://localhost:7070/total
+
+
+### 生成数据,单位均为万
+GET http://localhost:7070/generate?total=100
+
+
+### 删除数据,单位均为万
+GET http://localhost:7070/delete?maxId=10
+
+
+### 导出数据,单位均为万
+### 最终优化，需要在浏览器打开
+GET http://localhost:7070/export?paymentDateTimeStart=2020-07-01&paymentDateTimeEnd=2020-07-31
+
+### 导出数据,单位均为万
+### 初步优化，需要在浏览器打开
+GET http://localhost:7070/export1?paymentDateTimeStart=2020-07-01&paymentDateTimeEnd=2020-07-31
+
+### 导出数据,单位均为万
+### 未优化，需要在浏览器打开
+GET http://localhost:7070/export2?paymentDateTimeStart=2020-07-01&paymentDateTimeEnd=2020-07-31
+
+
+### 初始化表数据
+GET http://localhost:7070/init
