@@ -90,10 +90,9 @@ public class WxPortalController {
 
             out = outMessage.toXml();
             log.info("\n组装回复信息：{}", out);
-            System.out.println(out.toString());
 
             // 记录输出日志
-            msgLog = new MsgLogBuilder(outMessage).build();
+            msgLog = new MsgLogBuilder(outMessage).msgId(inMessage.getMsgId()).build();
             msgLogService.insert(msgLog);
             return out;
         } else if ("aes".equalsIgnoreCase(encType)) {

@@ -1,5 +1,5 @@
 server:
-  port: 7070
+  port: 7078
   servlet:
     context-path: /
     encoding:

@@ -2,6 +2,7 @@ package site.xiaokui.weixin.mp.entity;
 
 import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
+import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMusicMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutTextMessage;
 import site.xiaokui.base.util.DateUtil;
 
@@ -38,6 +39,10 @@ public class MsgLogBuilder {
         if (outMessage instanceof WxMpXmlOutTextMessage) {
             msgLog.setMsgContent(((WxMpXmlOutTextMessage) outMessage).getContent());
         }
+        if (outMessage instanceof WxMpXmlOutMusicMessage) {
+            WxMpXmlOutMusicMessage musicMessage = (WxMpXmlOutMusicMessage) outMessage;
+            msgLog.setMsgContent(musicMessage.getTitle() + " " + musicMessage.getDescription());
+        }
     }
 
     public MsgLogBuilder toUser(String toUser) {
@@ -65,8 +70,8 @@ public class MsgLogBuilder {
         return this;
     }
 
-    public MsgLogBuilder msgId(String msgId) {
-        msgLog.setMsgType(msgId);
+    public MsgLogBuilder msgId(Long msgId) {
+        msgLog.setMsgId(msgId);
         return this;
     }
 

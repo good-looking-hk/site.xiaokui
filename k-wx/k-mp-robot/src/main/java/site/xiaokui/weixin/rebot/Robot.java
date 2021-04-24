@@ -17,7 +17,9 @@ import me.chanjar.weixin.mp.builder.outxml.TextBuilder;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -90,8 +92,18 @@ public class Robot {
                 .description("\n点击播放").hqMusicUrl(url).toUser(toUser).fromUser(me).build();
         }
         else if (AnswerType.NEWS.getType().equals(answerType)) {
+            List<WxMpXmlOutNewsMessage.Item> articles = new ArrayList<>();
             WxMpXmlOutNewsMessage.Item item = new WxMpXmlOutNewsMessage.Item();
-            return new NewsBuilder().addArticle().toUser(toUser).fromUser(me).build();
+
+            JSONObject msgContent = (JSONObject) json.getJSONArray("msg").get(0);
+            msgContent = (JSONObject) msgContent.getJSONArray("articles").get(0);
+
+            item.setDescription(msgContent.getStr("description"));
+            item.setPicUrl(msgContent.getStr("pic_url"));
+            item.setTitle(msgContent.getStr("title"));
+            item.setUrl(msgContent.getStr("url"));
+            articles.add(item);
+            return new NewsBuilder().articles(articles).toUser(toUser).fromUser(me).build();
         }
         return new TextBuilder().content("小冰冰正在独自发呆中....").toUser(toUser).fromUser(me).build();
     }

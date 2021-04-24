@@ -3,12 +3,14 @@ package site.xiaokui.weixin.mp.entity;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import site.xiaokui.base.entity.BaseEntity;
 
 /**
  * @author HK
  * @date 2020-10-02 16:42
  */
+@EqualsAndHashCode(callSuper=false)
 @Data
 public class MsgLog extends BaseEntity implements Serializable {
 
