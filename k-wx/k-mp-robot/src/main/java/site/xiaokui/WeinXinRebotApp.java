@@ -10,9 +10,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @date 2020-10-02 16:42
  */
 @SpringBootApplication
-public class WeinXinRobotApplication {
+public class WeinXinRebotApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(WeinXinRobotApplication.class, args);
+        SpringApplication.run(WeinXinRebotApp.class, args);
     }
 }

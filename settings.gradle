@@ -61,5 +61,8 @@ include 'k-cloud:api-gateway'
 // elk 相关实战代码
 include 'k-elk'
 
+// mini spring
+include 'k-spring'
+
 // flink 相关实战代码
 include 'k-flink'
