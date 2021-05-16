@@ -1,6 +1,7 @@
 package site.xiaokui.weixin.rebot;
 
 import cn.hutool.core.net.URLDecoder;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
@@ -88,6 +89,10 @@ public class Robot {
             String singerName = msgContent.getStr("singer_name");
             String songName = msgContent.getStr("song_name");
             String respTitle = msgContent.getStr("resp_title");
+            if (StrUtil.isEmpty(singerName)) {
+                return new MusicBuilder().musicUrl(url).title(songName)
+                        .description("\n点击播放").hqMusicUrl(url).toUser(toUser).fromUser(me).build();
+            }
             return new MusicBuilder().musicUrl(url).title(singerName + " - " + songName)
                 .description("\n点击播放").hqMusicUrl(url).toUser(toUser).fromUser(me).build();
         }

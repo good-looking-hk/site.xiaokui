@@ -1,5 +1,6 @@
 package site.xiaokui.weixin.mp.handler;
 
+import cn.hutool.core.util.StrUtil;
 import me.chanjar.weixin.common.session.WxSessionManager;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
@@ -43,10 +44,29 @@ public class MsgHandler extends AbstractHandler {
             return new TextBuilder().content(content).build();
         }
 
+        boolean inHumanStr = false;
+        char[] charArr = wxMessage.getContent().toCharArray();
+        int i = 0, j = 0;
+        for (char c : charArr) {
+            if (isChinese(c)) {
+                i++;
+            } else {
+                j++;
+            }
+        }
+        if (i < j || wxMessage.getContent().equals("【收到不支持的消息类型，暂无法显示】")) {
+            String content = "小冰冰暂时还有点笨，不好意思";
+            return new TextBuilder().content(content).build();
+        }
 
         String fromUser = wxMessage.getFromUser();
         String me = wxMessage.getToUser();
         String msg = wxMessage.getContent();
         return Robot.sendToRobot(fromUser, me,  msg);
     }
+
+    public static boolean isChinese(char c) {
+        return c >= 0x4E00 && c <= 0x9FA5;
+    }
+
 }

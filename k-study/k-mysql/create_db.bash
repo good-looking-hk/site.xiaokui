@@ -63,3 +63,4 @@ mysql -h 127.0.0.1 -u root -P 3309 -p
 ### 找出3307
 netstat -nptl|grep 3307
 netstat -nptl|grep 3308
+netstat -nptl|grep 3309

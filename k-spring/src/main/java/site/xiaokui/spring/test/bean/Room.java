@@ -8,6 +8,19 @@ import site.xiaokui.spring.bean.annotation.Autowired;
  */
 public class Room {
 
+    static {
+        System.out.println("1 这是Room类里面的静态代码块");
+    }
+
+    {
+        System.out.println("4 这是Room类里面的代码块");
+    }
+
+    private static Temp t1 = new Temp("2 这是Room类里面的静态常量");
+
+    private Temp t2 = new Temp("3 这是Room类里面的实例常量");
+
+
     @Autowired
     private Human mathTeacher;
 
