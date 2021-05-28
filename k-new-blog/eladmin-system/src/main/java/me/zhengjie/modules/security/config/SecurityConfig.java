@@ -117,7 +117,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/**/*.gif",
                         "/**/*.ico",
                         "/**/*.mp3",
-                        "/webSocket/**"
+                        "/webSocket/**",
+                        "/temp/**"
                 ).permitAll()
                 // swagger 文档
                 .antMatchers("/swagger-ui.html").permitAll()

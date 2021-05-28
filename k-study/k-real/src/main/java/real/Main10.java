@@ -8,14 +8,17 @@ package real;
 public class Main10 {
 
     static  class Singleton {
-        int i = 0;
+        static int i = 0;
         public Singleton () {
             System.out.println("我只初始化了一次！");
         }
 
         /**
          * 加上 synchronized 可以保证 print打印结果有序且正确
-         * 否则，实际结果输出可能比预期小，由于线程冲突，会丢失几次 ++i
+         * 否则，实际结果输出可能比预期小，由于线程冲突，会丢失几次 ++，主要是 volatile 虽然保证每次更改对线程可见，
+         * 但无法保证其原子性，而i++其实不是一个原子操作
+         * 如果不适用volatile的话，static static volatile的区别，两者性能无法比较，但在高并发情况下，都会发生错误
+         * 比如100线程 + 1000次，使用Barrier、CountLatch
          */
         public void print() {
             System.out.println(Thread.currentThread().getName() +  ": i=" + ++i);

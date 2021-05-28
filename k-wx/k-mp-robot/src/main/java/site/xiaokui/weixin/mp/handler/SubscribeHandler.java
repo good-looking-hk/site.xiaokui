@@ -64,7 +64,7 @@ public class SubscribeHandler extends AbstractHandler {
      */
     private WxMpXmlOutMessage handleSpecial(WxMpXmlMessage wxMessage)
         throws Exception {
-        String content = "您好！我是机器人小冰冰，可以在线陪聊、点歌、看最新资讯，欢迎来撩^_^";
+        String content = "您好！我是机器人小冰冰，可以在线陪聊、点歌、讲故事、看最新资讯，欢迎来撩^_^";
         return new TextBuilder().content(content).build();
     }
 

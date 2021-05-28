@@ -25,3 +25,8 @@ GET http://localhost:7070/export2?paymentDateTimeStart=2020-07-01&paymentDateTim
 
 ### 初始化表数据
 GET http://localhost:7070/init
+
+
+
+### 生成数据,单位均为万
+GET http://localhost:7070/test1?total=9

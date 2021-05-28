@@ -1,5 +1,6 @@
 package db.controller;
 
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.alibaba.excel.write.builder.ExcelWriterBuilder;
@@ -24,6 +25,7 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
+ * 测试excel导出
  * @author HK
  * @date 2021-04-21 17:14
  */
@@ -40,6 +42,37 @@ public class TestMillionExcelController {
     private static final Random OR = new Random();
     private static final Random AR = new Random();
     private static final Random DR = new Random();
+
+    /**
+     * 赵钱孙李周吴郑王
+     * 冯陈褚卫蒋沈韩杨
+     * 朱秦尤许何吕施张
+     * 孔曹严华金魏陶姜
+     * 辉葵黄海强斌冬韬
+     * http://localhost:7070/test1
+     */
+    @GetMapping(value = "/test1")
+    public void test1(int total, HttpServletResponse response) throws Exception {
+        total *= 10000;
+        long startTime = System.currentTimeMillis();
+        for (int d = 0; d < total / 100; d++) {
+            String item = "('%s','%d','%d','%s','%s')";
+            StringBuilder sql = new StringBuilder("INSERT INTO t_user(name,sex,age,tag,remark) VALUES ");
+            for (int i = 0; i < total / (total / 100); i++) {
+                String name = RandomUtil.randomString("赵钱孙李周吴郑王冯陈褚卫蒋沈韩杨朱秦尤许何吕施张孔曹严华金魏陶姜辉葵黄海强斌冬韬", 2);
+                int sex= RandomUtil.randomInt(1, 3);
+                int age = RandomUtil.randomInt(15, 25);
+                String tag = RandomUtil.randomString("穷富中", 1);
+                String remark = RandomUtil.randomString("abcdefghijklmnopqrstuvwxyz", 3);
+                sql.append(String.format(item, name, sex, age, tag, remark)).append(",");
+            }
+            jdbcTemplate.execute(sql.substring(0, sql.lastIndexOf(",")));
+        }
+        response.setContentType("text/html;charset=UTF-8");
+        response.getWriter().write("生成" + total + "数据成功，耗时 " + (System.currentTimeMillis() - startTime) + " ms");
+        response.getWriter().flush();
+    }
+
 
     /**
      * http://localhost:7070/init
